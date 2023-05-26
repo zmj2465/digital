@@ -10,7 +10,7 @@
 #include "compatible.h"
 #include "queue.h"
 
-
+#define aaaaaa 20
 
 
 #define MAX_DEVICE	12
