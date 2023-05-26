@@ -109,7 +109,7 @@ void link_init()
 	/*本机作为服务端 等待比自身索引号大的设备连接*/
 	for (i = MY_INDEX + 1; i < info.simulated_link_num; i++)
 	{
-		printf("wait for %d connect", i);
+		printf("wait for %d connect\n", i);
 		FD[i].addr_len = sizeof(FD[i].addr);
 		FD[i].fd = accept(LFD, (struct sockaddr*)&(FD[i].addr), &(FD[i].addr_len));
 		printf("device %d ip %s is connected\r\n", i, inet_ntoa(FD[i].addr.sin_addr));
@@ -118,7 +118,7 @@ void link_init()
 	/*本机作为客户端 连上比自身索引号小的设备*/
 	for (i = 0; i < MY_INDEX; i++)
 	{
-		printf("is connecting to %d", i);
+		printf("is connecting to %d\n", i);
 		FD[i].fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		memset(&FD[i].addr, 0, sizeof(FD[i].addr));
 		FD[i].addr.sin_family = AF_INET;

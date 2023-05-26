@@ -10,6 +10,6 @@
     "\\rs485",
     "\\schedule"
   ],
-  "SelectedNode": "\\main.c",
+  "SelectedNode": "\\link\\link_control_thread.c",
   "PreviewInSolutionExplorer": false
 }
