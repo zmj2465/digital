@@ -10,5 +10,9 @@
     "\\rs485",
     "\\schedule"
   ],
+<<<<<<< HEAD
+=======
+  "SelectedNode": "\\common\\common.h",
+>>>>>>> master
   "PreviewInSolutionExplorer": false
 }
