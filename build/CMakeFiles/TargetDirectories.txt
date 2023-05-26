@@ -1,0 +1,3 @@
+/home/gt/桌面/project/build/CMakeFiles/rebuild_cache.dir
+/home/gt/桌面/project/build/CMakeFiles/project.dir
+/home/gt/桌面/project/build/CMakeFiles/edit_cache.dir

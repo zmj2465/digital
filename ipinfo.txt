@@ -1,0 +1,15 @@
+[IP]
+192.168.5.15
+192.168.3.15
+192.168.1.15
+[END]
+
+[PORT]
+communication_port 7777
+fddi_port 7778
+control_port 7779
+display_port 7780
+
+
+
+

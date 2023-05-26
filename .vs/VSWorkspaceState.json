@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\common",
+    "\\control",
+    "\\display",
+    "\\fddi",
+    "\\link",
+    "\\master",
+    "\\rs485",
+    "\\schedule"
+  ],
+  "SelectedNode": "\\main.c",
+  "PreviewInSolutionExplorer": false
+}

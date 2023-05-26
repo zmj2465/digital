@@ -1,0 +1,38 @@
+cmake_minimum_required (VERSION 3.8)
+
+project(Project)
+
+add_executable(project main.c main.h "rs485/rs485_send_thread.c" "rs485/rs485_send_thread.h" "common/compatible.c" "common/compatible.h" "common/common.c" "common/common.h" "rs485/rs485_recv_thread.c" "rs485/rs485_recv_thread.h" "fddi/fddi_thread.c" "fddi/fddi_thread.h" "schedule/schedule_thread.c" "schedule/schedule_thread.h" "control/control_recv_thread.c" "control/control_recv_thread.h" "display/display_send_thread.c" "display/display_send_thread.h" "master/master_thread.c" "master/master_thread.h" "link/link_control_thread.c" "link/link_control_thread.h" "link/data_send_thread.c" "link/data_send_thread.h" "link/data_recv_thread.c" "link/data_recv_thread.h" "common/queue.c" "common/queue.h")
+
+include_directories(${PROJECT_SOURCE_DIR}/rs485)
+include_directories(${PROJECT_SOURCE_DIR}/fddi)
+include_directories(${PROJECT_SOURCE_DIR}/schedule)
+include_directories(${PROJECT_SOURCE_DIR}/control)
+include_directories(${PROJECT_SOURCE_DIR}/display)
+include_directories(${PROJECT_SOURCE_DIR}/master)
+include_directories(${PROJECT_SOURCE_DIR}/link)
+include_directories(${PROJECT_SOURCE_DIR}/common)
+
+
+#pthread兼容
+#target_link_libraries(project ${PTHREAD_LIBRARIES})
+#set(CMAKE_C_STANDARD 11)
+
+if(WIN32)
+    target_link_libraries(project ws2_32)
+    target_link_libraries(project winmm)
+    set(CMAKE_SYSTEM_NAME Windows)
+    set(CMAKE_C_COMPILER E:/mingw64/bin/gcc.exe)
+    set(CMAKE_CXX_COMPILER E:/mingw64/bin/g++.exe)
+    set(CMAKE_FIND_ROOT_PATH E:/mingw64/x86_64-w64-mingw32)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+    include_directories(${CMAKE_FIND_ROOT_PATH}/include)
+    link_directories(${CMAKE_FIND_ROOT_PATH}/lib)
+    set(PTHREAD_LIBRARIES pthreadVC3)
+else()
+    set(CMAKE_C_COMPILER "/usr/bin/gcc")
+    add_compile_options(-D_POSIX_C_SOURCE=199309L)
+    target_link_libraries(project pthread)
+endif()
