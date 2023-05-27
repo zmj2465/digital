@@ -41,10 +41,12 @@
 #define OVERALL_FILE "../../../ipinfo.txt"
 #define PRIVATE_FILE "../../../base_info.txt"
 #define SIMULATE_FILE "../../../simulation_config.txt"
+#define END_FLAG "\n"
 #else
 #define OVERALL_FILE "../ipinfo.txt"
 #define PRIVATE_FILE "../base_info.txt"
 #define SIMULATE_FILE "../simulation_config.txt"
+#define END_FLAG "\r"
 #endif
 
 

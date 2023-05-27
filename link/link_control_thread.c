@@ -14,8 +14,13 @@ void* link_control_thread(void* arg)
 
 	link_init();
 
-	
+	sem_post(&info.thread_create_semaphore);
 
+	link_info_print();
+
+	init_complete_judge();
+
+	link_complete_boardcast();
 
 }
 
@@ -94,6 +99,10 @@ void link_init()
 	//创建侦听socket
 	LFD = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
+	//设置端口复用
+	int opt = 1;
+	if (setsockopt(LFD, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt) == -1) printf("setsockopt error");
+
 	//绑定本机ip地址、端口号
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
@@ -109,23 +118,38 @@ void link_init()
 	/*本机作为服务端 等待比自身索引号大的设备连接*/
 	for (i = MY_INDEX + 1; i < info.simulated_link_num; i++)
 	{
-		printf("wait for %d connect\n", i);
+		printf("wait for connect\n", i);
+		struct sockaddr_in temp_addr;
 		FD[i].addr_len = sizeof(FD[i].addr);
-		FD[i].fd = accept(LFD, (struct sockaddr*)&(FD[i].addr), &(FD[i].addr_len));
-		printf("device %d ip %s is connected\r\n", i, inet_ntoa(FD[i].addr.sin_addr));
+		int fd= accept(LFD, (struct sockaddr*)&temp_addr, &(FD[i].addr_len));
+		int j;
+		for (j = 0; j < info.simulated_link_num; j++)
+		{
+			if (strcmp(FD[j].ip, inet_ntoa(temp_addr.sin_addr)) == 0)
+			{
+				FD[j].fd = fd;
+				memcpy(&FD[j].addr, &temp_addr, sizeof(struct sockaddr_in));
+				printf("(device)%d (ip)%s (fd)%d is connected\n", j, inet_ntoa(FD[j].addr.sin_addr), FD[j].fd);
+				break;
+			}
+		}
 	}
 
 	/*本机作为客户端 连上比自身索引号小的设备*/
-	for (i = 0; i < MY_INDEX; i++)
+	for (i = MY_INDEX - 1; i >= 0; i--)
 	{
-		printf("is connecting to %d\n", i);
 		FD[i].fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		memset(&FD[i].addr, 0, sizeof(FD[i].addr));
 		FD[i].addr.sin_family = AF_INET;
 		FD[i].addr.sin_port = htons(info.communication_port);
 		inet_pton(AF_INET, FD[i].ip, (void*)&FD[i].addr.sin_addr);
-		while (0 != connect(FD[i].fd, (struct sockaddr*)&FD[i].addr, sizeof(FD[i].addr)));
-		printf("connect device %d ip %s succeed\r\n", i, inet_ntoa(FD[i].addr.sin_addr));
+
+		printf("is connecting to (device)%d (ip)%s (fd)%d\n", i, FD[i].ip,FD[i].fd);
+		while (0 != connect(FD[i].fd, (struct sockaddr*)&FD[i].addr, sizeof(FD[i].addr)))
+		{
+			perror("link connect");
+		}
+		printf("connect device %d ip %s succeed\n", i, inet_ntoa(FD[i].addr.sin_addr));
 	}
 
 	return 0;
@@ -144,13 +168,25 @@ void link_complete_boardcast()
 		for (i = 1; i < info.simulated_link_num; i++)
 		{
 			send(FD[i].fd, &boardcast_msg, sizeof(start_boardcast_t), 0);
+			printf("base time=%lld,%ld start time=%d\n", boardcast_msg.base_time.tv_sec, boardcast_msg.base_time.tv_nsec, boardcast_msg.start_time);
 		}
 	}
 }
 
-
 void init_complete_judge()
 {
+	while (info.control_system.fd == 0 || info.display_system.fd == 0 || info.fddi_system.fd == 0)
+	{
+		sleep(5);
+	}
+}
 
 
+void link_info_print()
+{
+	int i;
+	for (i = 0; i < info.simulated_link_num; i++)
+	{
+		printf("(device)%d (ip)%s (aip)%s (fd)%d\n", i, FD[i].ip, inet_ntoa(FD[i].addr.sin_addr), FD[i].fd);
+	}
 }

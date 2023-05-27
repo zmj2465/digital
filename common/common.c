@@ -10,7 +10,4 @@ void queue_init()
 		init_msg_queue(&info.thread_queue[i], 6);
 	}
 
-
-
-
 }

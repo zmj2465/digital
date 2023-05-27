@@ -41,8 +41,8 @@ int main()
     load_ip_config();
 
   
-
     sem_init(&info.send_semaphore, 0, 0);
+    sem_init(&info.thread_create_semaphore, 0, 0);
 
     /* */
     ret = pthread_create(&info.rs_485_recv_thread_id, NULL, rs_485_recv_thread, NULL);
@@ -100,6 +100,9 @@ int main()
         printf("error\n");
     }
 
+    sem_wait(&info.thread_create_semaphore);
+
+
     /* */
     ret = pthread_create(&info.data_send_thread_id, NULL, data_recv_thread, NULL);
     if (ret != 0)
@@ -114,27 +117,10 @@ int main()
         printf("error\n");
     }
 
-    //const char* memFileName = "MyMemoryFile";  // 内存文件名
-
-    //HANDLE hFileMapping = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1073741824, memFileName);
-    //if (hFileMapping == NULL) {
-    //    printf("Failed to create file mapping. Error code: %d\n", GetLastError());
-    //    return 1;
-    //}
-
-    //// 将文件映射到进程的地址空间
-    //LPVOID memPtr = MapViewOfFile(hFileMapping, FILE_MAP_ALL_ACCESS, 0, 0, 0);
-    //if (memPtr == NULL) {
-    //    printf("Failed to map view of file. Error code: %d\n", GetLastError());
-    //    CloseHandle(hFileMapping);
-    //    return 1;
-    //}
-
-
 
     while (1)
     {
-        udelay(200000);
+        sleep(200000);
     }
 }
 
@@ -159,12 +145,12 @@ void load_ip_config()
     while (fgets(line, sizeof(line), file) != NULL)
     {
         // 去除行尾的换行符
-        line[strcspn(line, "\n")] = '\0';
+        line[strcspn(line, END_FLAG)] = '\0';
         // 检查是否为"[IP]"行，如果是，则跳过
         if (strcmp(line, "[IP]") == 0) {
             while (fgets(line, sizeof(line), file) != NULL)
             {
-                line[strcspn(line, "\n")] = '\0';
+                line[strcspn(line, END_FLAG)] = '\0';
                 if (strcmp(line, "[END]")==0) break;
                 // 存储IP地址到数组
                 strncpy(FD[FD_NUM].ip, line, IP_LEN);
@@ -177,12 +163,12 @@ void load_ip_config()
     while (fgets(line, sizeof(line), file) != NULL)
     {
         // 去除行尾的换行符
-        line[strcspn(line, "\n")] = '\0';
+        line[strcspn(line, END_FLAG)] = '\0';
         // 检查是否为"[PORT]"行
         if (strcmp(line, "[PORT]") == 0) {
             // 读取下一行的端口号
             fgets(line, sizeof(line), file);
-            line[strcspn(line, "\n")] = '\0';
+            line[strcspn(line, END_FLAG)] = '\0';
             sscanf(line, "communication_port %d", &info.communication_port);
             fgets(line, sizeof(line), file);
             sscanf(line, "fddi_port %d", &info.fddi_port);

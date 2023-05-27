@@ -85,6 +85,7 @@ typedef struct _info_t
 
 	/* */
 	sem_t send_semaphore;
+	sem_t thread_create_semaphore;
 
 	/* */
 	msg_queue_t thread_queue[END_THREAD];
