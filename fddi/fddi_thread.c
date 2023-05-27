@@ -28,6 +28,10 @@ void fddi_thread_init()
     //创建侦听socket
     lfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
+    //设置端口复用
+    int opt = 1;
+    if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt) == -1) printf("setsockopt error");
+
     //绑定本机ip地址、端口号
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;

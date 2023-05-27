@@ -75,6 +75,7 @@
 //	}
 //}
 
+
 void init_msg_queue(msg_queue_t* queue, int max_size) {
 	queue->head = 0;
 	queue->tail = 0;
