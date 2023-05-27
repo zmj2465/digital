@@ -39,6 +39,8 @@ void fddi_thread_init()
     addr.sin_port = htons(info.fddi_port); //**port**
     ret = bind(lfd, (struct sockaddr*)&addr, sizeof addr);
 
+    printf("fddi_thread_init ret=%d\n", ret);
+
     //¿ªÊ¼¼àÌý
     listen(lfd, SOMAXCONN);
 

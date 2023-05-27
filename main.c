@@ -133,6 +133,7 @@ void load_self_config()
 void load_ip_config()
 {
     FILE* file;
+    int i;
     //char ip[50];
     char line[100];
     // 打开文件
@@ -200,16 +201,34 @@ void load_ip_config()
     fgets(line, sizeof(line), file);
     sscanf(line, "%s", info.display_ip);
 
+    MY_INDEX = -1;
+    for (i = 0; i < info.simulated_link_num; i++)
+    {
+        if (strcmp(info.ip, FD[i].ip) == 0)
+        {
+            MY_INDEX = i;
+            break;
+        }
+    }
+
     fclose(file);
 
+    if (MY_INDEX == -1)
+    {
+        printf("config error\n");
+        while (1);
+    }
+
     // 打印读取的值
-    printf("IP地址: %s\n", FD[0].ip);
-    printf("IP地址: %s\n", FD[1].ip);
-    printf("IP地址: %s\n", FD[2].ip);
+    for (i = 0; i < info.simulated_link_num; i++)
+    {
+        printf("IP地址: %s\n", FD[i].ip);
+    }
     printf("communication_port: %d %s\n", info.communication_port,info.ip);
     printf("fddi_port: %d %s\n", info.fddi_port, info.fddi_ip);
     printf("control_port: %d %s\n", info.control_port, info.control_ip);
     printf("display_port: %d %s\n", info.display_port, info.display_ip);
+    printf("MY_INDEX=%d\n", MY_INDEX);
 }
 
 void load_simulation_config()

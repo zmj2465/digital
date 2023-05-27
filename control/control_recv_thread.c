@@ -14,7 +14,6 @@ void* control_recv_thread(void* arg)
     {
         /*数据接收*/
         
-
         //read
 
         /*送往master*/

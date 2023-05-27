@@ -38,14 +38,14 @@
 
 
 #ifdef _WIN32
-#define OVERALL_FILE "../../../ipinfo.txt"
-#define PRIVATE_FILE "../../../base_info.txt"
-#define SIMULATE_FILE "../../../simulation_config.txt"
+#define OVERALL_FILE "../../../info set/ipinfo.txt"
+#define PRIVATE_FILE "../../../info set/base_info.txt"
+#define SIMULATE_FILE "../../../info set/simulation_config.txt"
 #define END_FLAG "\n"
 #else
-#define OVERALL_FILE "../ipinfo.txt"
-#define PRIVATE_FILE "../base_info.txt"
-#define SIMULATE_FILE "../simulation_config.txt"
+#define OVERALL_FILE "../info set/ipinfo.txt"
+#define PRIVATE_FILE "../info set/base_info.txt"
+#define SIMULATE_FILE "../info set/simulation_config.txt"
 #define END_FLAG "\r"
 #endif
 

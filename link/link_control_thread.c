@@ -4,13 +4,13 @@ void* link_control_thread(void* arg)
 {
     pthread_detach(pthread_self());
 
-	configure_init();
+	//configure_init();
 
-	if (MY_INDEX == -1)
-	{
-		printf("config error\n");
-		return -1;
-	}
+	//if (MY_INDEX == -1)
+	//{
+	//	printf("config error\n");
+	//	return -1;
+	//}
 
 	link_init();
 
