@@ -4,21 +4,13 @@ void* link_control_thread(void* arg)
 {
     pthread_detach(pthread_self());
 
-	//configure_init();
-
-	//if (MY_INDEX == -1)
-	//{
-	//	printf("config error\n");
-	//	return -1;
-	//}
+	init_complete_judge();
 
 	link_init();
 
 	sem_post(&info.thread_create_semaphore);
 
 	link_info_print();
-
-	init_complete_judge();
 
 	link_complete_boardcast();
 
