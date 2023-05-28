@@ -15,9 +15,7 @@ void* rs_485_recv_thread(void* arg)
 {
     pthread_detach(pthread_self());
 
-
     char get[MAX_DATA_LEN];
-
 
     while (1)
     {
@@ -27,4 +25,5 @@ void* rs_485_recv_thread(void* arg)
         msg_proc(get);
 
     }
+
 }

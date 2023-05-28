@@ -28,6 +28,27 @@ int main()
 {
     int ret;
 
+    HANDLE hFile = CreateFile("../../../bbb.txt", GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE) {
+        printf("Failed to open file\n");
+        return 1;
+    }
+
+    DWORD fileSize = GetFileSize(hFile, NULL);
+    if (fileSize == INVALID_FILE_SIZE) {
+        printf("Failed to get file size\n");
+        CloseHandle(hFile);
+        return 1;
+    }
+    HANDLE hMapping = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
+    if (hMapping == NULL) {
+        printf("Failed to create file mapping\n");
+        CloseHandle(hFile);
+        return 1;
+    }
+
+    while (1);
+
     // 创建共享内存
     info.hSharedMem = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, "ok");
     if (info.hSharedMem == NULL) {
