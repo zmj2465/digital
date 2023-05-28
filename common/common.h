@@ -21,6 +21,7 @@
 #define bbb 222
 #define ok 
 #define aaa 111
+#define aaaaa 20
 
 #define MAX_DEVICE	12
 #define HOST_NAME_LEN	20
