@@ -10,17 +10,7 @@
 #include "compatible.h"
 #include "queue.h"
 
-#define aaaaaa 20
 
-#define ok 20
-#define ok 20
-#define ok 20
-#define ok 20
-#define ok 20
-#define test 20
-#define bbb 222
-#define ok 
-#define aaa 111
 
 #define MAX_DEVICE	12
 #define HOST_NAME_LEN	20
