@@ -3,5 +3,6 @@
 
 void load_ip_config();
 void load_simulation_config();
+void data_store_init();
 
 #endif

@@ -11,7 +11,7 @@
 #include "queue.h"
 
 
-
+#define STORE_SIZE  1024
 #define MAX_DEVICE	12
 #define HOST_NAME_LEN	20
 #define IP_LEN			20

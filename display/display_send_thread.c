@@ -8,24 +8,20 @@ void* display_send_thread(void* arg)
     ///*以太网连接*/
     display_send_thread_init();
 
-    //char data[MAX_DATA_LEN];
-    //int len;
-    //while (1)
-    //{
-    //    /*数据接收*/
-    //    dequeue(&info.thread_queue[DISPLAY_SEND_THREAD], &data, &len);
-    //}
+    char data[MAX_DATA_LEN];
+    int len;
 
-    char* sharedData = (char*)info.lpSharedMem;
-    int count = 0;
-    char test[] = { 69,70,71,72,73,74,75};
-    while (1) {
-        // 将数据写入共享内存
-        memcpy(sharedData+info.mem_ptr, test, sizeof(test));
-        info.mem_ptr += sizeof(test);
+    char test[] = { 69,70,71,72,73 };
+    int ptr = 0;
+    while (1)
+    {
+        /*数据接收*/
+        //dequeue(&info.thread_queue[DISPLAY_SEND_THREAD], &data, &len);
 
-        printf("write to mem %d ok\n", info.mem_ptr);
-        sleep(20);  // 假设每秒写入一次数据
+        memcpy(info.lpSharedMem + ptr, test, sizeof(test));
+        ptr += sizeof(test);
+        printf("write to mem %d ok\n", ptr);
+        sleep(5);
     }
 
 }

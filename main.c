@@ -28,43 +28,6 @@ int main()
 {
     int ret;
 
-    HANDLE hFile = CreateFile("../../../bbb.txt", GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE) {
-        printf("Failed to open file\n");
-        return 1;
-    }
-
-    DWORD fileSize = GetFileSize(hFile, NULL);
-    if (fileSize == INVALID_FILE_SIZE) {
-        printf("Failed to get file size\n");
-        CloseHandle(hFile);
-        return 1;
-    }
-    HANDLE hMapping = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, fileSize, NULL);
-    if (hMapping == NULL) {
-        printf("Failed to create file mapping\n");
-        CloseHandle(hFile);
-        return 1;
-    }
-
-    while (1);
-
-    // 创建共享内存
-    info.hSharedMem = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, "ok");
-    if (info.hSharedMem == NULL) {
-        printf("Failed to create shared memory\n");
-        return 1;
-    }
-
-    // 映射共享内存到进程的内存空间
-    info.lpSharedMem = MapViewOfFile(info.hSharedMem, FILE_MAP_ALL_ACCESS, 0, 0, 1024);
-    if (info.lpSharedMem == NULL) {
-        printf("Failed to map view of shared memory\n");
-        CloseHandle(info.hSharedMem);
-        return 1;
-    }
-
-
     /* */
     wsa_init();
 
@@ -76,6 +39,9 @@ int main()
 
     /* */
     load_ip_config();
+
+    /* */
+    data_store_init();
 
   
     sem_init(&info.send_semaphore, 0, 0);
@@ -153,27 +119,10 @@ int main()
         printf("error\n");
     }
 
-    int i;
-    while (1) {
-        // 将共享内存中的数据写入文本文件
-        FILE* outputFile = fopen(OUTPUT_FILE_NAME, "a");
-        if (outputFile != NULL) {
-
-            for (i = info.act_prt; i < info.mem_ptr; i++, info.act_prt++) {
-                fprintf(outputFile, "%d", *((char*)info.lpSharedMem + i));
-            }
-
-            fclose(outputFile);
-        }
-        printf("write to txt %d ok\n", info.act_prt);
-        sleep(5);  // 假设每两秒写入一次文件
-        // 在这里可以添加退出循环的条件，如达到某个数据数量或接收到终止信号等
+    while (1)
+    {
+        sleep(200000);
     }
-
-    //while (1)
-    //{
-    //    sleep(200000);
-    //}
 }
 
 
@@ -286,4 +235,35 @@ void load_ip_config()
 void load_simulation_config()
 {
 
+}
+
+void data_store_init()
+{
+    // 打开文件
+    HANDLE hFile = CreateFile(OUTPUT_FILE_NAME, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE) {
+        printf("Failed to open file\n");
+        return 1;
+    }
+
+    // 设置文件大小
+    SetFilePointer(hFile, STORE_SIZE, NULL, FILE_BEGIN);
+    SetEndOfFile(hFile);
+
+    // 创建内存映射
+    HANDLE hMapping = CreateFileMapping(hFile, NULL, PAGE_READWRITE, 0, STORE_SIZE, NULL);
+    if (hMapping == NULL) {
+        printf("Failed to create file mapping\n");
+        CloseHandle(hFile);
+        return 1;
+    }
+
+    // 映射到进程的内存空间
+    info.lpSharedMem = MapViewOfFile(hMapping, FILE_MAP_WRITE, 0, 0, STORE_SIZE);
+    if (info.lpSharedMem == NULL) {
+        printf("Failed to map view of file\n");
+        CloseHandle(hMapping);
+        CloseHandle(hFile);
+        return 1;
+    }
 }
