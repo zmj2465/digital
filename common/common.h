@@ -17,6 +17,7 @@
 #define ok 20
 #define ok 20
 #define ok 20
+#define test 20
 
 #define MAX_DEVICE	12
 #define HOST_NAME_LEN	20
