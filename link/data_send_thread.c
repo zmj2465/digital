@@ -9,6 +9,7 @@ void* data_send_thread(void* arg)
 
     int i = 0;
 
+
     while (1)
     {
         sem_wait(&info.send_semaphore);
