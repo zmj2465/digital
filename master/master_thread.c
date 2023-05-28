@@ -12,6 +12,7 @@ void* master_thread(void* arg)
     {
         /*接收消息*/
         dequeue(&info.thread_queue[MASTER_THREAD], &data, &len);
+
         /*数据分析*/
         sleep(3);
 

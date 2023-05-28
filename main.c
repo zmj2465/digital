@@ -28,6 +28,22 @@ int main()
 {
     int ret;
 
+    // 创建共享内存
+    info.hSharedMem = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024, "ok");
+    if (info.hSharedMem == NULL) {
+        printf("Failed to create shared memory\n");
+        return 1;
+    }
+
+    // 映射共享内存到进程的内存空间
+    info.lpSharedMem = MapViewOfFile(info.hSharedMem, FILE_MAP_ALL_ACCESS, 0, 0, 1024);
+    if (info.lpSharedMem == NULL) {
+        printf("Failed to map view of shared memory\n");
+        CloseHandle(info.hSharedMem);
+        return 1;
+    }
+
+
     /* */
     wsa_init();
 
@@ -102,7 +118,6 @@ int main()
 
     sem_wait(&info.thread_create_semaphore);
 
-
     /* */
     ret = pthread_create(&info.data_send_thread_id, NULL, data_recv_thread, NULL);
     if (ret != 0)
@@ -117,11 +132,27 @@ int main()
         printf("error\n");
     }
 
+    int i;
+    while (1) {
+        // 将共享内存中的数据写入文本文件
+        FILE* outputFile = fopen(OUTPUT_FILE_NAME, "a");
+        if (outputFile != NULL) {
 
-    while (1)
-    {
-        sleep(200000);
+            for (i = info.act_prt; i < info.mem_ptr; i++, info.act_prt++) {
+                fprintf(outputFile, "%d", *((char*)info.lpSharedMem + i));
+            }
+
+            fclose(outputFile);
+        }
+        printf("write to txt %d ok\n", info.act_prt);
+        sleep(5);  // 假设每两秒写入一次文件
+        // 在这里可以添加退出循环的条件，如达到某个数据数量或接收到终止信号等
     }
+
+    //while (1)
+    //{
+    //    sleep(200000);
+    //}
 }
 
 

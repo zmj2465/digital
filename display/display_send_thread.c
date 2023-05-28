@@ -5,16 +5,29 @@ void* display_send_thread(void* arg)
 {
     pthread_detach(pthread_self());
 
-    /*以太网连接*/
+    ///*以太网连接*/
     display_send_thread_init();
 
-    char data[MAX_DATA_LEN];
-    int len;
-    while (1)
-    {
-        /*数据接收*/
-        dequeue(&info.thread_queue[DISPLAY_SEND_THREAD], &data, &len);
+    //char data[MAX_DATA_LEN];
+    //int len;
+    //while (1)
+    //{
+    //    /*数据接收*/
+    //    dequeue(&info.thread_queue[DISPLAY_SEND_THREAD], &data, &len);
+    //}
+
+    char* sharedData = (char*)info.lpSharedMem;
+    int count = 0;
+    char test[] = { 69,70,71,72,73,74,75};
+    while (1) {
+        // 将数据写入共享内存
+        memcpy(sharedData+info.mem_ptr, test, sizeof(test));
+        info.mem_ptr += sizeof(test);
+
+        printf("write to mem %d ok\n", info.mem_ptr);
+        sleep(20);  // 假设每秒写入一次数据
     }
+
 }
 
 void display_send_thread_init()
@@ -41,7 +54,6 @@ void display_send_thread_init()
 
     info.display_system.addr_len = sizeof(info.display_system.addr); //**
     info.display_system.fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
-
 
     printf("display_system connect success %d\n", info.display_system.fd);
 

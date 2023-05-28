@@ -41,6 +41,7 @@
 #define OVERALL_FILE "../../../info set/ipinfo.txt"
 #define PRIVATE_FILE "../../../info set/base_info.txt"
 #define SIMULATE_FILE "../../../info set/simulation_config.txt"
+#define OUTPUT_FILE_NAME "../../../aaa.txt"
 #define END_FLAG "\n"
 #else
 #define OVERALL_FILE "../info set/ipinfo.txt"

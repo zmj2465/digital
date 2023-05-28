@@ -144,6 +144,8 @@ void link_init()
 		printf("connect device %d ip %s succeed\n", i, inet_ntoa(FD[i].addr.sin_addr));
 	}
 
+	printf("all link complete\n");
+
 	return 0;
 }
 

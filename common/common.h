@@ -109,6 +109,13 @@ typedef struct _info_t
 	int control_port;
 	int display_port;
 
+	/* */
+	HANDLE hSharedMem;
+	LPVOID lpSharedMem;
+	int mem_ptr;
+	int act_prt;
+
+
 }info_t;
 
 

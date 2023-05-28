@@ -26,6 +26,5 @@ void* rs_485_recv_thread(void* arg)
 
         msg_proc(get);
 
-
     }
 }
