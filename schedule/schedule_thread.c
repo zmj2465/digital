@@ -5,6 +5,7 @@
 int slot_table[SLOT_NUM] = { 200,400,800,200,600 };
 
 
+
 void* schedule_thread(void* arg)
 {
     pthread_detach(pthread_self());

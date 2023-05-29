@@ -5,6 +5,8 @@
 #define HEAD_LEN 3
 #define CC_LEN   100
 
+#define aa
+
 void msg_proc(char* get)
 {
 

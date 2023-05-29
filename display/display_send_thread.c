@@ -23,7 +23,6 @@ void* display_send_thread(void* arg)
         printf("write to mem %d ok\n", ptr);
         sleep(5);
     }
-
 }
 
 void display_send_thread_init()
