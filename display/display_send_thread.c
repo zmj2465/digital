@@ -5,7 +5,7 @@ void* display_send_thread(void* arg)
 {
     pthread_detach(pthread_self());
 
-    ///*以太网连接*/
+    //*以太网连接*/
     display_send_thread_init();
 
     char data[MAX_DATA_LEN];
@@ -51,5 +51,4 @@ void display_send_thread_init()
     info.display_system.fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
 
     printf("display_system connect success %d\n", info.display_system.fd);
-
 }
