@@ -8,5 +8,6 @@
 #include "common.h"
 
 void* master_thread(void* arg);
+int master_proc(void);
 
 #endif

@@ -17,6 +17,7 @@
 #include <time.h>
 #include <signal.h>
 #include "common.h"
+#include "protocol.h"
 
 sem_t semaphore;
 pthread_mutex_t lock;
@@ -46,6 +47,8 @@ int main()
   
     sem_init(&info.send_semaphore, 0, 0);
     sem_init(&info.thread_create_semaphore, 0, 0);
+
+    fsm_do(EVENT_INIT);
 
     /* */
     ret = pthread_create(&info.rs_485_recv_thread_id, NULL, rs_485_recv_thread, NULL);
@@ -118,6 +121,8 @@ int main()
     {
         printf("error\n");
     }
+
+
 
     while (1)
     {

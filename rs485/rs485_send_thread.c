@@ -13,6 +13,10 @@ void* rs_485_send_thread(void* arg)
     {
         /*提取信息*/
         dequeue(&info.thread_queue[RS485_SEND_THREAD], &data, &len);
+
         /*送往rs485*/
+
+
     }
+
 }

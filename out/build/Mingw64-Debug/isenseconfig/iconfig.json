@@ -1,7 +1,7 @@
 {
   "host_identifier": "local",
   "predefines": {
-    "cpp_compiler": "E:/mingw64/bin/g++.exe",
+    "cpp_compiler": "D:/mingw64/bin/g++.exe",
     "cpp_compiler_defines": {
       "__DBL_MIN_EXP__": "(-1021)",
       "__FLT32X_MAX_EXP__": "1024",
@@ -407,7 +407,7 @@
     },
     "cpp_user_defines": {},
     "cpp_user_undefines": [],
-    "c_compiler": "E:/mingw64/bin/gcc.exe",
+    "c_compiler": "D:/mingw64/bin/gcc.exe",
     "c_compiler_defines": {
       "__DBL_MIN_EXP__": "(-1021)",
       "__FLT32X_MAX_EXP__": "1024",

@@ -1,6 +1,10 @@
 #include "data_recv_thread.h"
 
-
+/*
+功能：数据接收线程
+参数：无
+返回值：无
+*/
 void* data_recv_thread(void* arg)
 {
     pthread_detach(pthread_self());
@@ -16,7 +20,7 @@ void* data_recv_thread(void* arg)
     while (1)
     {
         /*接收消息*/
-		recv_proc();
+		data_recv_proc();
 
         /*信道仿真*/
 
@@ -26,7 +30,12 @@ void* data_recv_thread(void* arg)
 }
 
 
-int recv_proc()
+/*
+功能：数据接收的处理，存入对应socket端口的接收数据缓存区
+参数：无
+返回值：0表示成功
+*/
+int data_recv_proc()
 {
 	int ret = 0;
 	int maxfd = 0;
@@ -37,6 +46,7 @@ int recv_proc()
 		maxfd = FD[i].fd > maxfd ? FD[i].fd : maxfd;
 		FD_SET(FD[i].fd, &RSET);
 	}
+
 
 	ret = select(maxfd + 1, &RSET, NULL, NULL, NULL);
 	if (ret < 0)

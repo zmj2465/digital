@@ -38,7 +38,21 @@ enum {
 	LINK_CONTROL_THREAD,
 	DATA_SEND_THREAD,
 	DATA_RECV_THREAD,
+	MASTER_THREAD_DATA,
 	END_THREAD
+};
+
+enum frame_type
+{
+	SLEF_TEST = 0x00,
+	SLEF_TEST_RESULT = 0x10,
+	PARAMETER_LOAD = 0xcc,
+	SHORT_FRAME = 0x30,
+	LONG_FRAME = 0x60,
+	START_GUN = 0x70,
+	SCAN_REQ = 0x80,
+	SCAN_RES = 0x90,
+	SCAN_CON = 0xa0
 };
 
 typedef struct _link_info_t
@@ -56,11 +70,12 @@ typedef struct _link_info_t
 
 typedef struct _device_info_t
 {
-	int  id;						//设备id
-	int  role;						//设备角色
-	//char host_name[HOST_NAME_LEN];  //设备名
-	//char ip[IP_LEN];				//设备ip
-
+	uint8_t node_role;	//节点角色（00H：M，01H：Z）
+	uint8_t node_id;	//节点ID（10H：M，11H：Z1，12H：Z2，13H：Z3，14H：Z4）
+	uint8_t node_num;	//网络节点个数（01-05H）
+	uint8_t node_list;	//网络节点ID列表（前3位表示个数，后5位表示网络在网节点，0为不在网，1为在网）
+	uint8_t freqC;		//扩频码组（1-8）
+	uint8_t freqP;		//跳频序列（1-8）
 }device_info_t;
 
 
@@ -116,40 +131,53 @@ typedef struct _info_t
 	int mem_ptr;
 	int act_prt;
 
-
+	device_info_t device_info[MAX_DEVICE];
 }info_t;
 
-
-typedef struct _mmsg_t
-{
-	int len;
-	void* data;
-}mmsg_t;
-
-typedef struct _head_t
-{
-	char dst;
-	char src;
-	char type;
-}head_t;
-
-typedef struct _cp_t
-{
-	char ad;
-
-}cp_t;
-
-
-//new
 typedef struct _start_boardcast_t
 {
 	struct timespec base_time;
 	int start_time;
 }start_boardcast_t;
 
+typedef struct _head_t
+{
+	uint8_t dst;
+	uint8_t src;
+	uint8_t type;
+	start_boardcast_t sbt;
+	//位置信息
+}head_t;
+
+typedef struct _cp_t
+{
+	uint8_t para;
+	/*待补充*/
+}cp_t;
+
+typedef struct _sp_t
+{
+	uint16_t st;	/*self test result*/
+	/*待补充*/
+}sp_t;
+
+typedef struct _frame_t
+{
+	uint32_t flag_start;
+	head_t head;
+	cp_t cp;
+	uint16_t crc;
+	uint32_t flag_end;
+}frame_t;
+
+typedef struct _msg_t
+{
+	head_t	head;
+	uint8_t data[MAX_DATA_LEN];//样机内部数据只传输data
+	int		len;			//指示data的真实长度，不含head的长度
+}msg_t;
 
 extern info_t info;
-
 
 void queue_init();
 

@@ -18,6 +18,7 @@ void* link_control_thread(void* arg)
 
 void configure_init()
 {
+
 	int ret = 0;
 	int i;
 	FILE* file;
@@ -82,6 +83,7 @@ void configure_init()
 	//	close(FD[0].fd);
 	//}
 
+
 }
 
 void link_init()
@@ -141,6 +143,7 @@ void link_init()
 		{
 			perror("link connect");
 		}
+
 		printf("connect device %d ip %s succeed\n", i, inet_ntoa(FD[i].addr.sin_addr));
 	}
 
@@ -148,6 +151,7 @@ void link_init()
 
 	return 0;
 }
+
 
 void link_complete_boardcast()
 {

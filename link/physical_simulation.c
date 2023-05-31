@@ -87,6 +87,12 @@ void synchronous() {}
 void channel_simulation() {}
 
 
+void transmission_delay() {}
+void doppler_shift() {}
+void path_loss() {}
+
+
+
 
 
 
