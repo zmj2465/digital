@@ -26,6 +26,7 @@ void* data_recv_thread(void* arg)
 }
 
 
+
 int recv_proc()
 {
 	int ret = 0;
@@ -37,6 +38,7 @@ int recv_proc()
 		maxfd = FD[i].fd > maxfd ? FD[i].fd : maxfd;
 		FD_SET(FD[i].fd, &RSET);
 	}
+
 
 	ret = select(maxfd + 1, &RSET, NULL, NULL, NULL);
 	if (ret < 0)

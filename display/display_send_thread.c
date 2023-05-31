@@ -18,7 +18,6 @@ void* display_send_thread(void* arg)
         /*数据接收*/
         //dequeue(&info.thread_queue[DISPLAY_SEND_THREAD], &data, &len);
 
-
         memcpy(info.lpSharedMem + ptr, test, sizeof(test));
         ptr += sizeof(test);
         printf("write to mem %d ok\n", ptr);

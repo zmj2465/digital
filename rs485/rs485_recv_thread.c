@@ -25,9 +25,7 @@ void* rs_485_recv_thread(void* arg)
         //read
 
         msg_proc(get);
-
     }
-
 }
 
 

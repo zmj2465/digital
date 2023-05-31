@@ -19,10 +19,13 @@ void* schedule_thread(void* arg)
 
     while (1)
     {
+
         /*delay*/
         udelay(1);
+
         /*发送信号*/
         sem_post(&info.send_semaphore);
+
     }
 }
 
