@@ -9,7 +9,7 @@
 #include "protocol.h"
 
 void* data_send_thread(void* arg);
-int data_send_proc(msg_t* smsg);
-void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg);
+int   data_send_proc(void);
+void  generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg);
 
 #endif

@@ -21,7 +21,7 @@ void* schedule_thread(void* arg)
     {
 
         /*delay*/
-        udelay(1);
+        udelay(100000);
 
         /*发送信号*/
         sem_post(&info.send_semaphore);

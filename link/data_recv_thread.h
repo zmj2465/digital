@@ -9,7 +9,6 @@
 
 
 void* data_recv_thread(void* arg);
-
-int data_recv_proc();
+int   data_recv_proc();
 
 #endif

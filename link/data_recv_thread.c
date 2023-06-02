@@ -19,13 +19,8 @@ void* data_recv_thread(void* arg)
 
     while (1)
     {
-        /*接收消息*/
+        /*接收消息并送往主控模块*/
 		data_recv_proc();
-
-        /*信道仿真*/
-
-        /*送往上层*/
-        //enqueue(&info.thread_queue[MASTER_THREAD], data, len);
     }
 }
 
@@ -69,6 +64,10 @@ int data_recv_proc()
 				{
 					start_boardcast_t* time = FD[i].recvBuffer;
 					printf("base time=%lld,%ld start time=%d\n", time->base_time.tv_sec, time->base_time.tv_nsec, time->start_time);
+					
+					/*送往master线程的数据队列*/
+					msg_t* msg = FD[i].recvBuffer;
+					enqueue(&info.thread_queue[MASTER_THREAD_DATA], msg, msg->len);
 				}
 			}
 		}
