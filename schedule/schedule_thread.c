@@ -13,7 +13,7 @@ void* schedule_thread(void* arg)
     set_thread_priority();
 
     /*等待开始信号*/
-    sleep(10);
+    Sleep(10);
 
     int i = 0;
 

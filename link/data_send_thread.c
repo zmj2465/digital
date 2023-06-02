@@ -42,8 +42,8 @@ int data_send_proc(void)
 
             break;
         case FSM_OFF://发送信令枪启动仿真建链
-            clock_gettime(CLOCK_MONOTONIC, &info.str.base_time);
-            info.str.start_time = 10000;
+            //clock_gettime(CLOCK_MONOTONIC, &info.str.base_time);
+            //info.str.start_time = 10000;
 
             for (i = 1; i < FD_NUM; i++)
             {
@@ -112,7 +112,7 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
     if (type == START_GUN && MY_INDEX == 0)
     {
         msg->head.sbt.base_time = info.str.base_time;
-        msg->head.sbt.start_time = info.str.start_time;/*仿真开始时间(ms)，暂定1000ms后*/
+        msg->head.sbt.start_time = info.str.start_time;/*仿真开始时间(ms)，暂定10000ms后*/
     }
     else
     {

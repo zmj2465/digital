@@ -108,6 +108,19 @@ int fsm_init2off_st(int para)
 	{
 		info.device_info[i].node_id = (i | 16);
 	}
+
+	/*主机发送信令枪*/
+	if (MY_INDEX == 0)
+	{
+		clock_gettime(CLOCK_MONOTONIC, &info.str.base_time);
+		info.str.start_time = 10000;
+		uint8_t data[MAX_DATA_LEN];
+		int len;
+		memset(data, 0, MAX_DATA_LEN);
+		data[0] = 1;
+		len = 1;
+		enqueue(&info.thread_queue[DATA_SEND_THREAD], data, len);
+	}
 	return 0;
 }
 
@@ -118,16 +131,6 @@ int fsm_init2off_st(int para)
 */
 int fsm_init2off_ed(int para)
 {
-	/*主机发送信令枪*/
-	if (MY_INDEX == 0)
-	{
-		uint8_t data[MAX_DATA_LEN];
-		int len;
-		memset(data, 0, MAX_DATA_LEN);
-		data[0] = 1;
-		len = 1;
-		enqueue(&info.thread_queue[DATA_SEND_THREAD], data, len);
-	}
 	return 0;
 }
 

@@ -44,7 +44,25 @@ int main()
     /* */
     data_store_init();
 
-  
+    //msg_t msg;
+
+    //msg_t* msg3 = &msg;
+    //msg.head.dst = 17;
+    //msg.len = 100;
+    //generate_packet(17, info.device_info[MY_INDEX].node_id, START_GUN, &msg);
+    //enqueue(&info.thread_queue[MASTER_THREAD_DATA], msg3, msg3->len);
+
+    //printf("%d \n", msg3->head.dst);
+
+
+    //msg_t msg2;
+    //dequeue(&info.thread_queue[MASTER_THREAD_DATA], &msg2, &msg2.len);
+
+    //printf("%d %d \n", msg.head.dst,msg2.head.dst);
+
+
+    //while (1);
+
     sem_init(&info.send_semaphore, 0, 0);
     sem_init(&info.thread_create_semaphore, 0, 0);
 
