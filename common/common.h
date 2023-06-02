@@ -81,7 +81,7 @@ typedef struct _device_info_t
 typedef struct _start_boardcast_t
 {
 	struct timespec base_time;		/*同步系统时间*/
-	int start_time;					/*仿真开始时间(ms)，暂定1000ms后*/
+	int start_time;					/*仿真开始时间(ms)，暂定10000ms后*/
 }start_boardcast_t;
 
 typedef struct _info_t

@@ -108,16 +108,7 @@ int fsm_init2off_st(int para)
 	{
 		info.device_info[i].node_id = (i | 16);
 	}
-	return 0;
-}
 
-/*
-功能：初始状态->未在网状态（之后）
-参数：无
-返回值：0表示成功
-*/
-int fsm_init2off_ed(int para)
-{
 	/*主机发送信令枪*/
 	if (MY_INDEX == 0)
 	{
@@ -130,6 +121,16 @@ int fsm_init2off_ed(int para)
 		len = 1;
 		enqueue(&info.thread_queue[DATA_SEND_THREAD], data, len);
 	}
+	return 0;
+}
+
+/*
+功能：初始状态->未在网状态（之后）
+参数：无
+返回值：0表示成功
+*/
+int fsm_init2off_ed(int para)
+{
 	return 0;
 }
 

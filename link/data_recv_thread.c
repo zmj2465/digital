@@ -68,6 +68,7 @@ int data_recv_proc()
 					/*送往master线程的数据队列*/
 					msg_t* msg = FD[i].recvBuffer;
 					enqueue(&info.thread_queue[MASTER_THREAD_DATA], msg, msg->len);
+					printf("dst = %d\n", msg->head.dst);
 				}
 			}
 		}

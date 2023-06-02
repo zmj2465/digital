@@ -112,7 +112,7 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
     if (type == START_GUN && MY_INDEX == 0)
     {
         msg->head.sbt.base_time = info.str.base_time;
-        msg->head.sbt.start_time = info.str.start_time;/*仿真开始时间(ms)，暂定1000ms后*/
+        msg->head.sbt.start_time = info.str.start_time;/*仿真开始时间(ms)，暂定10000ms后*/
     }
     else
     {
