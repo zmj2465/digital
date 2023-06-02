@@ -38,6 +38,8 @@ int master_proc(void)
     /*½â°ü*/
     msg.len = msg.len - sizeof(head_t) - sizeof(int);
 
+    printf("dst2 = %d\n", msg.head.dst);
+    printf("dst3 = %d\n", info.device_info[MY_INDEX].node_id);
     if (msg.head.dst == info.device_info[MY_INDEX].node_id)
     {
         switch (msg.head.type)

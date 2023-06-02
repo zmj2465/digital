@@ -12,7 +12,7 @@ void* link_control_thread(void* arg)
 
 	init_complete_judge();
 
-	link_complete_boardcast();
+	//link_complete_boardcast();
 
 }
 

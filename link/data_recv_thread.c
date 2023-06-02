@@ -62,12 +62,13 @@ int data_recv_proc()
 				ret = recv(FD[i].fd, FD[i].recvBuffer, MAX_DATA_LEN, 0);
 				if (ret > 0)
 				{
-					start_boardcast_t* time = FD[i].recvBuffer;
-					printf("base time=%lld,%ld start time=%d\n", time->base_time.tv_sec, time->base_time.tv_nsec, time->start_time);
+					msg_t* msg = FD[i].recvBuffer;
+					printf("base time=%lld,%ld start time=%d\n", msg->head.sbt.base_time.tv_sec, msg->head.sbt.base_time.tv_nsec, msg->head.sbt.start_time);
 					
 					/*送往master线程的数据队列*/
-					msg_t* msg = FD[i].recvBuffer;
 					enqueue(&info.thread_queue[MASTER_THREAD_DATA], msg, msg->len);
+
+					printf("dst = %d\n", msg->head.dst);
 				}
 			}
 		}

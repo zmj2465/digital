@@ -112,7 +112,7 @@ void dequeue(msg_queue_t* queue, void** data, int* len)
 		pthread_cond_wait(&queue->cond, &queue->lock);
 	}
 
-	memcpy(data, queue->node[queue->head].data, queue->node[queue->head].len);
+	memcpy(*data, queue->node[queue->head].data, queue->node[queue->head].len);
 	*len = queue->node[queue->head].len;
 
 	queue->head = (queue->head + 1) % queue->max_size;
