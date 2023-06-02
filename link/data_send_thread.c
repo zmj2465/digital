@@ -42,8 +42,8 @@ int data_send_proc(void)
 
             break;
         case FSM_OFF://发送信令枪启动仿真建链
-            clock_gettime(CLOCK_MONOTONIC, &info.str.base_time);
-            info.str.start_time = 10000;
+            //clock_gettime(CLOCK_MONOTONIC, &info.str.base_time);
+            //info.str.start_time = 10000;
 
             for (i = 1; i < FD_NUM; i++)
             {

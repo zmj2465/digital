@@ -121,6 +121,8 @@ int fsm_init2off_ed(int para)
 	/*主机发送信令枪*/
 	if (MY_INDEX == 0)
 	{
+		clock_gettime(CLOCK_MONOTONIC, &info.str.base_time);
+		info.str.start_time = 10000;
 		uint8_t data[MAX_DATA_LEN];
 		int len;
 		memset(data, 0, MAX_DATA_LEN);

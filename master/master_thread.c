@@ -70,7 +70,10 @@ int master_proc(void)
                     {
                         clock_gettime(CLOCK_MONOTONIC, &str_m);
                     }
+                    /*计算建网时间，开始时刻*/
                     fsm_do(EVENT_WAIT_SIMULATE);
+
+                    
                 }
                 else
                 {
