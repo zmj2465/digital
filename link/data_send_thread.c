@@ -17,8 +17,6 @@ void* data_send_thread(void* arg)
         /*组包发送*/
         data_send_proc();
 
-
-
     }
 }
 
@@ -38,12 +36,11 @@ int data_send_proc(void)
     {
         switch (fsm_status)
         {
-        case FSM_INIT://初始化未开始建链，给各个从机发送配置文件
-
+        case FSM_INIT:
             break;
         case FSM_OFF://发送信令枪启动仿真建链
-            //clock_gettime(CLOCK_MONOTONIC, &info.str.base_time);
-            //info.str.start_time = 10000;
+            clock_gettime(CLOCK_MONOTONIC, &info.str.base_time);
+            info.str.start_time = start_gun_time;
 
             for (i = 1; i < FD_NUM; i++)
             {
@@ -67,7 +64,6 @@ int data_send_proc(void)
         switch (fsm_status)
         {
         case FSM_INIT:
-
             break;
         case FSM_OFF:
             generate_packet(info.device_info[0].node_id, info.device_info[MY_INDEX].node_id, START_GUN, &msg);
@@ -88,35 +84,27 @@ int data_send_proc(void)
 }
 
 /*
-功能：组包生成数据帧
+功能：组包添加帧头生成数据帧
 参数：目的地址，源地址，当前系统时间，帧类型，位置信息等
 返回值：无
 */
 void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
 {
-    //msg_t frm;
-    //memset(&frm, 0, sizeof(msg_t));
-    //frm.head.dst = dst;
-    //frm.head.src = src;
-    //frm.head.type = type;
-    //clock_gettime(CLOCK_MONOTONIC, &frm.head.sbt.base_time);
-    //if (type == START_GUN)
-    //{
-    //    frm.head.sbt.start_time = 10; /*仿真开始时间，暂定10s后*/
-    //}
-    //memcpy(frm.data, msg->data, msg->len);
-
     msg->head.dst = dst;
     msg->head.src = src;
     msg->head.type = type;
+
     if (type == START_GUN && MY_INDEX == 0)
     {
-        msg->head.sbt.base_time = info.str.base_time;
-        msg->head.sbt.start_time = info.str.start_time;/*仿真开始时间(ms)，暂定10000ms后*/
+        //msg->head.sbt.base_time = info.str.base_time;
+        //msg->head.sbt.start_time = info.str.start_time;
+        msg->head.send_time = info.str.base_time;
     }
     else
     {
-        clock_gettime(CLOCK_MONOTONIC, &msg->head.sbt.base_time);
+        //clock_gettime(CLOCK_MONOTONIC, &msg->head.sbt.base_time);
+        //msg->head.sbt.start_time = 0;
+        clock_gettime(CLOCK_MONOTONIC, &msg->head.send_time);
     }
 
     msg->len = msg->len + sizeof(head_t) + sizeof(int);//加上帧头长度

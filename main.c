@@ -29,94 +29,76 @@ int main()
 {
     int ret;
 
-    /* */
+    /*链接库初始化*/
     wsa_init();
 
-    /* */
+    /*消息队列初始化*/
     queue_init();
 
-    /* */
+    /*设置进程优先级*/
     set_process_priority();
 
-    /* */
+    /*ip信息配置*/
     load_ip_config();
 
-    /* */
+    /*数据存储初始化*/
     data_store_init();
 
-    //msg_t msg;
-
-    //msg_t* msg3 = &msg;
-    //msg.head.dst = 17;
-    //msg.len = 100;
-    //generate_packet(17, info.device_info[MY_INDEX].node_id, START_GUN, &msg);
-    //enqueue(&info.thread_queue[MASTER_THREAD_DATA], msg3, msg3->len);
-
-    //printf("%d \n", msg3->head.dst);
-
-
-    //msg_t msg2;
-    //dequeue(&info.thread_queue[MASTER_THREAD_DATA], &msg2, &msg2.len);
-
-    //printf("%d %d \n", msg.head.dst,msg2.head.dst);
-
-
-    //while (1);
-
+    /*信号量初始化*/   
     sem_init(&info.send_semaphore, 0, 0);
     sem_init(&info.thread_create_semaphore, 0, 0);
 
 
-    /* */
+    /*线程初始化*/
     ret = pthread_create(&info.rs_485_recv_thread_id, NULL, rs_485_recv_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");
     }
 
-    /* */
+    /**/
     ret = pthread_create(&info.rs_485_send_thread_id, NULL, rs_485_send_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");
     }
 
-    /* */
+    /**/
     ret = pthread_create(&info.fddi_thread_id, NULL, fddi_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");
     }
 
-    /* */
+    /**/
     ret = pthread_create(&info.schedule_thread_id, NULL, schedule_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");
     }
 
-    /* */
+    /**/
     ret = pthread_create(&info.control_recv_thread_id, NULL, control_recv_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");
     }
 
-    /* */
+    /**/
     ret = pthread_create(&info.display_send_thread_id, NULL, display_send_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");
     }
 
-    /* */
+    /**/
     ret = pthread_create(&info.master_thread_id, NULL, master_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");
     }
 
-    /* */
+    /**/
     ret = pthread_create(&info.link_control_thread_id, NULL, link_control_thread, NULL);
     if (ret != 0)
     {
@@ -125,20 +107,21 @@ int main()
 
     sem_wait(&info.thread_create_semaphore);
 
-    /* */
+    /**/
     ret = pthread_create(&info.data_send_thread_id, NULL, data_recv_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");
     }
 
-    /* */
+    /**/
     ret = pthread_create(&info.data_recv_thread_id, NULL, data_send_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");
     }
 
+    /*设置初始状态*/
     fsm_do(EVENT_INIT);
 
     while (1)

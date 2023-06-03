@@ -82,7 +82,6 @@ void fsm_do(int event)
 */
 int fsm_null_cond(int para)
 {
-
 	return 0;
 }
 
@@ -108,19 +107,6 @@ int fsm_init2off_st(int para)
 	{
 		info.device_info[i].node_id = (i | 16);
 	}
-
-	/*主机发送信令枪*/
-	if (MY_INDEX == 0)
-	{
-		clock_gettime(CLOCK_MONOTONIC, &info.str.base_time);
-		info.str.start_time = 10000;
-		uint8_t data[MAX_DATA_LEN];
-		int len;
-		memset(data, 0, MAX_DATA_LEN);
-		data[0] = 1;
-		len = 1;
-		enqueue(&info.thread_queue[DATA_SEND_THREAD], data, len);
-	}
 	return 0;
 }
 
@@ -131,6 +117,17 @@ int fsm_init2off_st(int para)
 */
 int fsm_init2off_ed(int para)
 {
+	/*主机把信令枪帧送入发送队列*/
+	if (MY_INDEX == 0)
+	{
+		uint8_t data[MAX_DATA_LEN];
+		int len;
+		memset(data, 0, MAX_DATA_LEN);
+		data[0] = 1;
+		data[1] = start_gun_time;
+		len = 2;
+		enqueue(&info.thread_queue[DATA_SEND_THREAD], data, len);
+	}
 	return 0;
 }
 
@@ -141,6 +138,13 @@ int fsm_init2off_ed(int para)
 */
 int fsm_off2wsn_st(int para)
 {
+	/*同步仿真建链时间，将自身状态设置为fsm_wsn*/
+	struct timespec str_m;
+	clock_gettime(CLOCK_MONOTONIC, &str_m);
+	while ((str_m.tv_sec + str_m.tv_nsec / 1000000000) < (info.str.base_time.tv_nsec + info.str.base_time.tv_nsec / 1000000000 + info.str.start_time))
+	{
+		clock_gettime(CLOCK_MONOTONIC, &str_m);
+	}
 	return 0;
 }
 
@@ -151,6 +155,8 @@ int fsm_off2wsn_st(int para)
 */
 int fsm_off2wsn_ed(int para)
 {
+	/*计算建网时间，开始时刻*/
+
 	return 0;
 }
 

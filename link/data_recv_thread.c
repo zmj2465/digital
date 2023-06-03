@@ -30,7 +30,7 @@ void* data_recv_thread(void* arg)
 参数：无
 返回值：0表示成功
 */
-int data_recv_proc()
+int data_recv_proc(void)
 {
 	int ret = 0;
 	int maxfd = 0;
@@ -63,12 +63,18 @@ int data_recv_proc()
 				if (ret > 0)
 				{
 					msg_t* msg = FD[i].recvBuffer;
-					printf("base time=%lld,%ld start time=%d\n", msg->head.sbt.base_time.tv_sec, msg->head.sbt.base_time.tv_nsec, msg->head.sbt.start_time);
 					
-					/*送往master线程的数据队列*/
-					enqueue(&info.thread_queue[MASTER_THREAD_DATA], msg, msg->len);
+					printf("base time=%lld,%ld start time=%d\n", msg->head.send_time.tv_sec, msg->head.send_time.tv_nsec, msg->data[1]);
+					
+					/*解包*/
 
-					printf("dst = %d\n", msg->head.dst);
+					/*信道仿真*/
+
+					/*仿真通过，打上实时时间戳，延时相应的时间并送往master线程的数据队列*/
+					enqueue(&info.thread_queue[MASTER_THREAD_DATA], msg, 100);
+
+					/*仿真失败则记录数据*/
+
 				}
 			}
 		}
