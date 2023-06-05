@@ -1,5 +1,9 @@
 cmake_minimum_required (VERSION 3.8)
 
+set(CMAKE_C_STANDARD 11)
+add_compile_options(-std=c11)
+
+
 project(Project)
 
 add_executable(project main.c main.h "rs485/rs485_send_thread.c" "rs485/rs485_send_thread.h" "common/compatible.c" "common/compatible.h" "common/common.c" "common/common.h" "rs485/rs485_recv_thread.c" "rs485/rs485_recv_thread.h" "fddi/fddi_thread.c" "fddi/fddi_thread.h" "schedule/schedule_thread.c" "schedule/schedule_thread.h" "control/control_recv_thread.c" "control/control_recv_thread.h" "display/display_send_thread.c" "display/display_send_thread.h" "master/master_thread.c" "master/master_thread.h" "link/link_control_thread.c" "link/link_control_thread.h" "link/data_send_thread.c" "link/data_send_thread.h" "link/data_recv_thread.c" "link/data_recv_thread.h" "common/queue.c" "common/queue.h" "link/physical_simulation.c" "link/physical_simulation.h" "master/protocol.h" "master/protocol.c")
