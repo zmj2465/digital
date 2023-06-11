@@ -15,11 +15,13 @@ static trans_t fsm_off[] =
 
 static trans_t fsm_wsn[] =
 {
+	{EVENT_WSN, &fsm_null_cond, &fsm_wsn2wsn_st, &fsm_wsn2wsn_ed, FSM_WSN},
 	{EVENT_WSN_SUCC, &fsm_null_cond, &fsm_wsn2on_st, &fsm_wsn2on_ed, FSM_ON}
 };
 
 static trans_t fsm_wan[] =
 {
+	{EVENT_WAN, &fsm_null_cond, &fsm_wan2wan_st, &fsm_wan2wan_ed, FSM_WAN},
 	{EVENT_WAN_SUCC, &fsm_null_cond, &fsm_wan2on_st, &fsm_wan2on_ed, FSM_ON}
 };
 
@@ -32,7 +34,7 @@ static trans_t fsm_on[] =
 static fsm_t fsm[] =
 {
 	{"fsm_init", sizeof(fsm_init) / sizeof(fsm_init[0]), fsm_init},
-	{"fsm_off",  sizeof(fsm_off) / sizeof(fsm_off[0]),  fsm_off},
+	{"fsm_off",  sizeof(fsm_off) / sizeof(fsm_off[0]),   fsm_off},
 	{"fsm_wsn",  sizeof(fsm_wsn) / sizeof(fsm_wsn[0],	 fsm_wsn)},
 	{"fsm_wan",  sizeof(fsm_wan) / sizeof(fsm_wan[0],	 fsm_wan)},
 	{"fsm_on",	 sizeof(fsm_on) / sizeof(fsm_on[0]),	 fsm_on}
@@ -68,10 +70,6 @@ void fsm_do(int event)
 				printf("oprst error,status transition failed\r\n");
 			}
 		}
-		else
-		{
-			continue;
-		}
 	}
 }
 
@@ -86,16 +84,6 @@ int fsm_null_cond(int para)
 }
 
 /*
-功能：状态机初始状态的初始化
-参数：无
-返回值：0表示成功
-*/
-int fsm_init_do(int para)
-{
-	return 0;
-}
-
-/*
 功能：初始状态->未在网状态（之前）
 参数：无
 返回值：0表示成功
@@ -105,8 +93,11 @@ int fsm_init2off_st(int para)
 	int i;
 	for (i = 0; i < FD_NUM; i++)
 	{
-		info.device_info[i].node_id = (i | 16);
+		info.device_info.node_id[i] = (i | 16);
 	}
+	info.device_info.node_num = 1;
+	info.device_info.node_list = 0x21;
+	schedule_slot_init();
 	return 0;
 }
 
@@ -117,16 +108,21 @@ int fsm_init2off_st(int para)
 */
 int fsm_init2off_ed(int para)
 {
-	/*主机把信令枪帧送入发送队列*/
+	/*主机发送信令枪帧*/
 	if (MY_INDEX == 0)
 	{
-		uint8_t data[MAX_DATA_LEN];
-		int len;
-		memset(data, 0, MAX_DATA_LEN);
-		data[0] = 1;
-		data[1] = start_gun_time;
-		len = 2;
-		enqueue(&info.thread_queue[DATA_SEND_THREAD], data, len);
+		msg_t msg;
+		int i;
+		msg.data[0] = START_GUN_REQ;
+		msg.data[1] = START_GUN_TIME;
+		msg.len = 2;
+		clock_gettime(CLOCK_REALTIME, &info.str.base_time);
+		info.str.start_time = START_GUN_TIME;
+		for (i = 1; i < FD_NUM; i++)
+		{
+			generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
+			send(FD[i].fd, &msg, msg.len, 0);
+		}
 	}
 	return 0;
 }
@@ -140,10 +136,10 @@ int fsm_off2wsn_st(int para)
 {
 	/*同步仿真建链时间，将自身状态设置为fsm_wsn*/
 	struct timespec str_m;
-	clock_gettime(CLOCK_MONOTONIC, &str_m);
-	while ((str_m.tv_sec + str_m.tv_nsec / 1000000000) < (info.str.base_time.tv_nsec + info.str.base_time.tv_nsec / 1000000000 + info.str.start_time))
+	clock_gettime(CLOCK_REALTIME, &str_m);
+	while ((str_m.tv_sec * 1000000000 + str_m.tv_nsec) < (info.str.base_time.tv_sec * 1000000000 + info.str.base_time.tv_nsec + info.str.start_time * 1000000000))
 	{
-		clock_gettime(CLOCK_MONOTONIC, &str_m);
+		clock_gettime(CLOCK_REALTIME, &str_m);
 	}
 	return 0;
 }
@@ -157,6 +153,13 @@ int fsm_off2wsn_ed(int para)
 {
 	/*计算建网时间，开始时刻*/
 
+	/*首次扫描询问帧*/
+	//uint8_t data[MAX_DATA_LEN];
+	//int len;
+	//memset(data, 0, MAX_DATA_LEN);
+	//data[0] = SCAN_REQ;
+	//len = 1;
+	//enqueue(&info.thread_queue[DATA_SEND_THREAD_SCAN], data, len);
 	return 0;
 }
 
@@ -176,6 +179,62 @@ int fsm_off2wan_st(int para)
 返回值：0表示成功
 */
 int fsm_off2wan_ed(int para)
+{
+	/*打开扫描询问定时器*/
+	info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_REQ_TIMER, TIME_ONESHOT);
+	return 0;
+}
+
+/*
+功能：等待网络建立状态->等待网络建立状态（只针对终端M）（之前）
+参数：无
+返回值：0表示成功
+*/
+int fsm_wsn2wsn_st(int para)
+{
+	/*扫描询问帧*/
+	//uint8_t data[MAX_DATA_LEN];
+	//int len;
+	//memset(data, 0, MAX_DATA_LEN);
+	//data[0] = SCAN_REQ;
+	//len = 1;
+	//enqueue(&info.thread_queue[DATA_SEND_THREAD_SCAN], data, len);
+	return 0;
+}
+
+/*
+功能：等待网络建立状态->等待网络建立状态（只针对终端M）（之后）
+参数：无
+返回值：0表示成功
+*/
+int fsm_wsn2wsn_ed(int para)
+{
+	return 0;
+}
+
+/*
+功能：等待入网状态->等待入网状态（只针对终端Z）（之前）
+参数：无
+返回值：0表示成功
+*/
+int fsm_wan2wan_st(int para)
+{
+	/*扫描响应帧*/
+	//uint8_t data[MAX_DATA_LEN];
+	//int len;
+	//memset(data, 0, MAX_DATA_LEN);
+	//data[0] = SCAN_RES;
+	//len = 1;
+	//enqueue(&info.thread_queue[DATA_SEND_THREAD_SCAN], data, len);
+	return 0;
+}
+
+/*
+功能：等待入网状态->等待入网状态（只针对终端Z）（之后）
+参数：无
+返回值：0表示成功
+*/
+int fsm_wan2wan_ed(int para)
 {
 	return 0;
 }

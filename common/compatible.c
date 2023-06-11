@@ -95,16 +95,14 @@ void udelay(int us)
 
     uint64_t temp;
     struct timespec t_start, t_end;
-    clock_gettime(CLOCK_MONOTONIC, &t_start);
+    clock_gettime(CLOCK_REALTIME, &t_start);
 
     while (1)
     {
 
-        clock_gettime(CLOCK_MONOTONIC, &t_end);
+        clock_gettime(CLOCK_REALTIME, &t_end);
         temp = (t_end.tv_sec - t_start.tv_sec) * 1000000000 + (t_end.tv_nsec - t_start.tv_nsec);
         if (temp >= us * 1000) break;
 
-
     }
-
 }

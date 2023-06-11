@@ -65,16 +65,13 @@ int data_recv_proc(void)
 					msg_t* msg = FD[i].recvBuffer;
 					
 					printf("base time=%lld,%ld start time=%d\n", msg->head.send_time.tv_sec, msg->head.send_time.tv_nsec, msg->data[1]);
-					
-					/*解包*/
-
-					/*信道仿真*/
-
-					/*仿真通过，打上实时时间戳，延时相应的时间并送往master线程的数据队列*/
-					enqueue(&info.thread_queue[MASTER_THREAD_DATA], msg, 100);
-
+						
+					/*信道仿真,匹配自身波束信息对齐*/
+					/*仿真通过，打上实时时间戳，延时相应的时间并送往master线程数据队列*/
 					/*仿真失败则记录数据*/
 
+					/*若对齐送往master线程数据队列*/
+					enqueue(&info.thread_queue[MASTER_THREAD_DATA], msg, MAX_DATA_LEN);
 				}
 			}
 		}

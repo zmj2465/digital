@@ -5,29 +5,25 @@
 #include <sched.h>
 #include <semaphore.h>
 #include <stdint.h>
-
-
-
 #include "compatible.h"
 #include "queue.h"
 
-
-#define STORE_SIZE  1024
-#define MAX_DEVICE	12
+#define STORE_SIZE		1024
+#define MAX_DEVICE		12
 #define HOST_NAME_LEN	20
 #define IP_LEN			20
-#define MAX_DATA_LEN 1024
-#define MAX_TEST 5000
-#define start_gun_time 10  /*仿真开始时间,暂定10s后*/
+#define MAX_DATA_LEN	128
+#define MAX_TEST		5000
+#define START_GUN_TIME	10		/*仿真开始时间,暂定10s后*/
+#define TIMER_DELAY		300		/*定时器延时：300ms*/
+#define MY_INDEX		info.link_index
+#define FD				info.simulated_link
+#define FD_NUM			info.simulated_link_num
+#define RSET			info.rset
+#define LFD				info.simulated_link[MY_INDEX].fd
 
-#define MY_INDEX info.link_index
-#define FD		info.simulated_link
-#define FD_NUM  info.simulated_link_num
-#define RSET    info.rset
-
-#define LFD  info.simulated_link[MY_INDEX].fd
-
-enum {
+enum 
+{
 	RS485_RECV_THREAD,
 	RS485_SEND_THREAD,
 	FDDI_THREAD,
@@ -39,10 +35,11 @@ enum {
 	DATA_SEND_THREAD,
 	DATA_RECV_THREAD,
 	MASTER_THREAD_DATA,
+	DATA_SEND_THREAD_SCAN,
 	END_THREAD
 };
 
-enum frame_type
+enum FRAME_TYPE
 {
 	SLEF_TEST		 = 0x00, //自检
 	SLEF_TEST_RESULT = 0x10, //自检结果
@@ -50,9 +47,23 @@ enum frame_type
 	SHORT_FRAME		 = 0x30, //短帧
 	LONG_FRAME		 = 0x60, //长帧
 	START_GUN		 = 0x70, //发令枪
-	SCAN_REQ		 = 0x80, //扫描询问
-	SCAN_RES		 = 0x90, //扫描应答
-	SCAN_CON		 = 0xa0  //扫描回复
+	SCAN			 = 0x80, //扫描
+};
+
+enum FRAME_SUBTYPE
+{
+	START_GUN_REQ = 1,
+	START_GUN_RES = 2,
+	SCAN_REQ = 1,
+	SCAN_RES = 2,
+	SCAN_CON = 3,
+};
+
+enum TIMER_ID
+{
+	SCAN_REQ_TIMER,
+	SCAN_RES_TIMER,
+	SCAN_CON_TIMER
 };
 
 typedef struct _link_info_t
@@ -70,12 +81,12 @@ typedef struct _link_info_t
 
 typedef struct _device_info_t
 {
-	uint8_t node_role;	//节点角色（00H：M，01H：Z）
-	uint8_t node_id;	//节点ID（10H：M，11H：Z1，12H：Z2，13H：Z3，14H：Z4）
-	uint8_t node_num;	//网络节点个数（01-05H）
-	uint8_t node_list;	//网络节点ID列表（前3位表示个数，后5位表示网络在网节点，0为不在网，1为在网）
-	uint8_t freqC;		//扩频码组（1-8）
-	uint8_t freqP;		//跳频序列（1-8）
+	uint8_t node_role;				//节点角色（00H：M，01H：Z）
+	uint8_t node_id[MAX_DEVICE];	//节点ID（10H：M，11H：Z1，12H：Z2，13H：Z3，14H：Z4）
+	uint8_t node_num;				//网络节点个数（01-05H）
+	uint8_t node_list;				//网络节点ID列表（前3位表示个数，后5位表示网络在网节点，0为不在网，1为在网）
+	uint8_t freqC;					//扩频码组（1-8）
+	uint8_t freqP;					//跳频序列（1-8）
 }device_info_t;
 
 typedef struct _start_boardcast_t
@@ -132,8 +143,13 @@ typedef struct _info_t
 	int act_prt;
 
 	/*device_info*/
-	device_info_t device_info[MAX_DEVICE];
+	device_info_t device_info;
 	start_boardcast_t str;
+	int current_slot;
+	int current_antenna;
+	uint8_t scan_flag[MAX_DEVICE];
+	UINT timerId;
+	UINT timerId_M[MAX_DEVICE];
 }info_t;
 
 typedef struct _head_t
@@ -142,6 +158,7 @@ typedef struct _head_t
 	uint8_t src;
 	uint8_t type;
 	struct timespec send_time;
+	uint8_t antenna_id;
 	//start_boardcast_t sbt;
 	//位置信息
 }head_t;

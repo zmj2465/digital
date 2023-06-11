@@ -158,7 +158,7 @@ void link_complete_boardcast()
 	int i = 0;
 	start_boardcast_t boardcast_msg;
 
-	clock_gettime(CLOCK_MONOTONIC, &boardcast_msg.base_time);
+	clock_gettime(CLOCK_REALTIME, &boardcast_msg.base_time);
 	boardcast_msg.start_time = 10;
 
 	if (MY_INDEX == 0)

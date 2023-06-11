@@ -10,6 +10,5 @@
 #include "data_send_thread.h"
 
 void* master_thread(void* arg);
-int	  master_proc(void);
-void  master_recv(msg_t* msg);
+int	  master_data_proc(void);
 #endif
