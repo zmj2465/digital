@@ -65,7 +65,7 @@ int master_data_proc(void)
                     info.device_info.node_num++;
                     info.device_info.node_list = info.device_info.node_list | (1 << index);
                     info.scan_flag[index] = 1;
-                    if (info.device_info.node_num == 5)
+                    if (info.device_info.node_num == FD_NUM)
                     {
                         fsm_do(EVENT_WSN_SUCC);
                     }
