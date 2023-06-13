@@ -1,6 +1,9 @@
 #ifndef _PHYSICAL_SIMULATION_H_
 #define _PHYSICAL_SIMULATION_H_
 
+#include "common.h"
+#include <stdbool.h>
+
 /*crc校验*/
 void crc_check();
 
@@ -42,7 +45,7 @@ void synchronous();
 /*信道仿真*/
 void channel_simulation();
 
-
-
+int psy_recv(int len, char* data, char* msg, int index, int role);
+void psy_send(int len, char* data, char* msg, int index, int role);
 
 #endif

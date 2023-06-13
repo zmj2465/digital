@@ -193,6 +193,58 @@ typedef struct _msg_t
 
 extern info_t info;
 
+typedef struct {
+	double x;
+	double y;
+	double z;
+} Point3D;
+
+typedef struct {
+	double q0;
+	double q1;
+	double q2;
+	double q3;
+} Quaternion;
+
+typedef struct {
+	double dx;
+	double dy;
+	double dz;
+	double h[3][3];
+} AntennaTransform;
+
+
+extern AntennaTransform transform[12];
+
+typedef struct _fddi_info_t
+{
+	char a;
+	char b;
+	char ad;  //1
+	int rti;  //4
+	int tf;   //4
+	int rtig; //4
+	Point3D pos;
+	Point3D v;
+	Point3D rv;
+	Quaternion q;
+}fddi_info_t;
+
+
+typedef struct _psy_msg_t
+{
+	Point3D pos;
+	Quaternion q;
+	int role;
+	int index;
+	msg_t msg;
+}psy_msg_t;
+
+
+
+extern fddi_info_t fddi_info;
+
+
 void queue_init();
 
 

@@ -6,6 +6,7 @@
 #include "compatible.h"
 #include <stdlib.h>
 #include "common.h"
+#include "physical_simulation.h"
 
 
 void* data_recv_thread(void* arg);

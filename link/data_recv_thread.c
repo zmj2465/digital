@@ -34,6 +34,7 @@ int data_recv_proc(void)
 {
 	int ret = 0;
 	int maxfd = 0;
+	msg_t msg;
 	FD_ZERO(&RSET);
 	int i = 0;
 	for (i = 0; i < info.simulated_link_num; i++)
@@ -59,19 +60,18 @@ int data_recv_proc(void)
 			if (FD[i].fd == LFD) {}
 			else
 			{
-				ret = recv(FD[i].fd, FD[i].recvBuffer, MAX_DATA_LEN, 0);
+				ret = recv(FD[i].fd, FD[i].recvBuffer, sizeof(psy_msg_t), 0);
 				if (ret > 0)
 				{
-					msg_t* msg = FD[i].recvBuffer;
-					
 
-					
+					psy_msg_t* psy_msg = FD[i].recvBuffer;
+					int len;
 					/*信道仿真,匹配自身波束信息对齐*/
-					/*仿真通过，打上实时时间戳，延时相应的时间并送往master线程数据队列*/
-					/*仿真失败则记录数据*/
-					
-					/*若对齐送往master线程数据队列*/
-					enqueue(&info.thread_queue[MASTER_THREAD_DATA], msg, MAX_DATA_LEN);
+					ret = psy_recv(len, psy_msg, &msg, 0, 0);
+					if (ret == 0)
+						enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
+					else
+						continue;
 
 					
 

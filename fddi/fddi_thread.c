@@ -10,12 +10,24 @@ void* fddi_thread(void* arg)
     char data[MAX_DATA_LEN];
     int len;
 
+    fddi_info_t* p = (fddi_info_t*)data;
+
     while (1)
     {
         /*接收光纤信息*/
-
+        len=recv(info.fddi_system.fd, data, MAX_DATA_LEN, 0);
+        printf("get fddi info len=%d\n", len);
+        fddi_info.pos.x = p->pos.x;
+        fddi_info.pos.y = p->pos.y;
+        fddi_info.pos.z = p->pos.z;
+        fddi_info.q.q0 = p->q.q0;
+        fddi_info.q.q1 = p->q.q1;
+        fddi_info.q.q2 = p->q.q2;
+        fddi_info.q.q3 = p->q.q3;
+        printf("x=%f y=%f z=%f q0=%f q1=%f q2=%f q3=%f\n", p->pos.x, p->pos.y, p->pos.z, p->q.q0, p->q.q1, p->q.q2, p->q.q3);
+        
         /*送往master*/
-        enqueue(&info.thread_queue[MASTER_THREAD], data, len);
+        //enqueue(&info.thread_queue[MASTER_THREAD], data, len);
     }
 }
 
