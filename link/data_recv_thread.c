@@ -63,11 +63,11 @@ int data_recv_proc(void)
 				ret = recv(FD[i].fd, FD[i].recvBuffer, sizeof(psy_msg_t), 0);
 				if (ret > 0)
 				{
-
 					/*×´Ì¬»úÅÐ¶Ï*/
-					if (1)
+					if (fsm_status == FSM_INIT || fsm_status == FSM_OFF)
 					{
-
+						msg_t* rmsg = FD[i].recvBuffer;
+						enqueue(&info.thread_queue[MASTER_THREAD_DATA], rmsg, MAX_DATA_LEN);
 					}
 					else
 					{
