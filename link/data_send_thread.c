@@ -90,8 +90,10 @@ int data_send_proc(void)
                         {
                             /*发送数据帧*/
                             //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-                            //generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SHORT_FRAME, &msg);
-                            //send(FD[index].fd, &msg, msg.len, 0);
+                            msg.data[0] = SCAN_CON;
+                            msg.len = 1;
+                            generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SHORT_FRAME, &msg);
+                            send(FD[index].fd, &msg, msg.len, 0);
                             return 0;
                         }
 
