@@ -37,6 +37,7 @@ void* schedule_thread(void* arg)
         if (fsm_status == FSM_WSN || fsm_status == FSM_WAN || fsm_status == FSM_ON)
         {
             schedule_slot();
+
         }
     }
 }
@@ -65,8 +66,9 @@ int schedule_slot(void)
     /*主机M*/
     if (MY_INDEX == 0)
     {
-        if ( (0 <= info.current_slot <= 28) || (info.current_slot == 61) )
+        if ( (0 <= info.current_slot && info.current_slot <= 28) || (info.current_slot == 61) )
         {
+            //printf("slot = %d\n", info.current_slot);
             antenna_table[info.current_antenna] = 1;
             sem_post(&info.send_semaphore);
             udelay(slot_table[info.current_slot]);
@@ -86,7 +88,7 @@ int schedule_slot(void)
         switch (MY_INDEX)
         {
         case 1:
-            if (30 <= info.current_slot <= 34)
+            if (30 <= info.current_slot && info.current_slot <= 34)
             {
                 sem_post(&info.send_semaphore);
                 udelay(slot_table[info.current_slot]);
@@ -100,7 +102,7 @@ int schedule_slot(void)
             }
             break;
         case 2:
-            if (35 <= info.current_slot <= 39)
+            if (35 <= info.current_slot && info.current_slot <= 39)
             {
                 sem_post(&info.send_semaphore);
                 udelay(slot_table[info.current_slot]);
@@ -113,7 +115,7 @@ int schedule_slot(void)
             }
             break;
         case 3:
-            if ((40 <= info.current_slot <= 43) || (info.current_slot == 30))
+            if ((40 <= info.current_slot && info.current_slot <= 43) || (info.current_slot == 30))
             {
                 sem_post(&info.send_semaphore);
                 udelay(slot_table[info.current_slot]);
@@ -126,7 +128,7 @@ int schedule_slot(void)
             }
             break;
         case 4:
-            if ((44 <= info.current_slot <= 47) || (info.current_slot == 35))
+            if ((44 <= info.current_slot && info.current_slot <= 47) || (info.current_slot == 35))
             {
                 sem_post(&info.send_semaphore);
                 udelay(slot_table[info.current_slot]);
@@ -234,219 +236,3 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         break;
     }
 }
-
-
-//timerId = timeSetEvent(timer, 0, TimerCallback, timer_id, TIME_ONESHOT);
-//timeKillEvent(timerId);
-
-
-
-
-//static slot_event_t m1_send_z1[]    = { {800},{800},{800},{800},{800} };
-//static slot_event_t m1_send_z2[]    = { {800},{800},{800},{800},{800} };
-//static slot_event_t m1_send_z3[]    = { {800},{800},{800},{800} };
-//static slot_event_t m1_send_z4[]    = { {800},{800},{800},{800} };
-//static slot_event_t m1_send_m2[]    = { {800},{800},{800},{800},{800},{800} };
-//static slot_event_t m1_send_z5[]    = { {800},{800},{800},{800},{800} };
-//static slot_event_t protect1[]      = { {4000} };
-//static slot_event_t z1_send_m1[]    = { {2600},{2600},{2600},{2600},{2600} };
-//static slot_event_t z2_send_m1[]    = { {2600},{2600},{2600},{2600},{2600} };
-//static slot_event_t z3_send_m1[]    = { {2600},{2600},{2600},{2600} };
-//static slot_event_t z4_send_m1[]    = { {2600},{2600},{2600},{2600} };
-//static slot_event_t z5_send_m1[]    = { {2600},{2600},{2600},{2600},{2600} };
-//static slot_event_t m2_send_m1[]    = { {800},{800},{800},{800},{800},{800} };
-//static slot_event_t z_distance_m1[] = { {2600} };
-//static slot_event_t protect2[]      = { {4000} };
-//static slot_event_t m1_distance_z[] = { {800} };
-//static slot_event_t reserve[]       = { {800} };
-//
-//static slot_table_t slot_table[SLOT_NUM]=
-//{
-//    {&m1_send_z1,    sizeof(m1_send_z1) / sizeof(m1_send_z1[0]), 0, 0, 0},
-//    {&m1_send_z2,    sizeof(m1_send_z2) / sizeof(m1_send_z2[0]), 0, 0, 0},
-//    {&m1_send_z3,    sizeof(m1_send_z3) / sizeof(m1_send_z3[0]), 0, 0, 0},
-//    {&m1_send_z4,    sizeof(m1_send_z4) / sizeof(m1_send_z4[0]), 0, 0, 0},
-//    {&m1_send_m2,    sizeof(m1_send_m2) / sizeof(m1_send_m2[0]), 0, 0, 0},
-//    {&m1_send_z5,    sizeof(m1_send_z5) / sizeof(m1_send_z5[0]), 0, 0, 0},
-//    {&protect1,      sizeof(protect1) / sizeof(protect1[0]), 0, 0, 0},
-//    {&z1_send_m1,    sizeof(z1_send_m1) / sizeof(z1_send_m1[0]), 0, 0, 0},
-//    {&z2_send_m1,    sizeof(z2_send_m1) / sizeof(z2_send_m1[0]), 0, 0, 0},
-//    {&z3_send_m1,    sizeof(z3_send_m1) / sizeof(z3_send_m1[0]), 0, 0, 0},
-//    {&z4_send_m1,    sizeof(z4_send_m1) / sizeof(z4_send_m1[0]), 0, 0, 0},
-//    {&z5_send_m1,    sizeof(z5_send_m1) / sizeof(z5_send_m1[0]), 0, 0, 0},
-//    {&m2_send_m1,    sizeof(m2_send_m1) / sizeof(m2_send_m1[0]), 0, 0, 0},
-//    {&z_distance_m1, sizeof(z_distance_m1) / sizeof(z_distance_m1[0]), 0, 0, 0},
-//    {&protect2,      sizeof(protect2) / sizeof(protect2[0]), 0, 0, 0},
-//    {&m1_distance_z, sizeof(m1_distance_z) / sizeof(m1_distance_z[0]), 0, 0, 0},
-//    {&reserve,       sizeof(reserve) / sizeof(reserve[0]), 0, 0, 0},
-//};
-//
-//
-//int schedule_slot_init(void)
-//{
-//    memset(slot_table, 0, sizeof(slot_table_t));
-//    slot_table[0].num = 5;
-//    slot_table[1].num = 5;
-//    slot_table[2].num = 4;
-//    slot_table[3].num = 4;
-//    slot_table[4].num = 6;
-//    slot_table[5].num = 5;
-//    slot_table[6].num = 1;
-//    slot_table[7].num = 5;
-//    slot_table[8].num = 5;
-//    slot_table[9].num = 4;
-//    slot_table[10].num = 4;
-//    slot_table[11].num = 5;
-//    slot_table[12].num = 6;
-//    slot_table[13].num = 1;
-//    slot_table[14].num = 1;
-//    slot_table[15].num = 1;
-//    slot_table[16].num = 1; 
-//    int i,j;
-//    for (i = 0; i < SLOT_NUM; i++)
-//    {
-//        if (i == 0 || i == 1 || i == 5 || i == 7 || i == 8 || i == 11)
-//        {
-//            slot_table[i].num = 5;
-//        }
-//        else if (i == 2 || i == 3 || i == 9 || i == 10)
-//        {
-//            slot_table[i].num = 4;
-//        }
-//        else if (i == 4 || i == 12)
-//        {
-//            slot_table[i].num = 6;
-//        }
-//        else
-//        {
-//            slot_table[i].num = 1;
-//        }
-//    }
-//    for (i = 0; i < SLOT_NUM; i++)
-//        for (j = 0; j < slot_table[i].num; j++)
-//        {
-//            if ((0<= i <=5) || i == 12 || i == 15 || i == 16)
-//            {
-//                slot_table[i].slot[j] = 800;
-//            }
-//            else if ((6 < i < 12) || i == 13)
-//            {
-//                slot_table[i].slot[j] = 2600;
-//            }
-//            else
-//            {
-//                slot_table[i].slot[j] = 4000;
-//            }
-//        }
-//    return 0;
-//}
-
-
-        //switch (info.current_slot)
-        //{
-        //case M1_SEND_Z1:
-        //case M1_SEND_Z2:
-        //case M1_SEND_Z3:
-        //case M1_SEND_Z4:
-        //    sem_post(&info.send_semaphore);
-        //    //udelay(slot_table[info.current_slot]);
-        //    break;
-        //case M1_SEND_M2:
-        //case M1_SNED_Z5:
-        //case PROTECT1:
-        //case PROTECT2:            
-        //    //udelay(slot_table[info.current_slot]);
-        //    break;
-        //case Z1_SEND_M1:
-        //case Z2_SEND_M1:
-        //case Z3_SEND_M1:
-        //case Z4_SEND_M1:
-        //case Z5_SEND_M1:
-        //case M2_SEND_M1:           
-        //   // udelay(slot_table[info.current_slot]);
-        //    break;
-        //case Z_DISTANCE_M1:
-        //case M1_DISTANCE_Z:            
-        //   // udelay(slot_table[info.current_slot]);
-        //    break;
-        //case RESERVE:
-        //    //udelay(slot_table[info.current_slot]);
-        //    break;
-        //default:
-        //    return 0;
-        //    break;
-        //}
-
-        //switch (info.current_slot)
-        //{
-        //case M1_SEND_Z1:
-        //case M1_SEND_Z2:
-        //case M1_SEND_Z3:
-        //case M1_SEND_Z4:
-        //case M1_SEND_M2:
-        //case M1_SNED_Z5:
-        //   // udelay(slot_table[info.current_slot]);
-        //    break;
-        //case PROTECT1:
-        //case PROTECT2:
-        //   // udelay(slot_table[info.current_slot]);
-        //    break;
-        //case Z1_SEND_M1:
-        //    if ((MY_INDEX + 6) == Z1_SEND_M1)
-        //    {
-        //        sem_post(&info.send_semaphore);
-        //        //udelay(slot_table[info.current_slot]);
-        //    }
-        //    else
-        //    {
-        //       // udelay(slot_table[info.current_slot]);
-        //    }
-        //    break;
-        //case Z2_SEND_M1:
-        //    if ((MY_INDEX + 6) == Z2_SEND_M1)
-        //    {
-        //        sem_post(&info.send_semaphore);
-        //       //udelay(slot_table[info.current_slot]);
-        //    }
-        //    else
-        //    {
-        //       // udelay(slot_table[info.current_slot]);
-        //    }
-        //    break;
-        //case Z3_SEND_M1:
-        //    if ((MY_INDEX + 6) == Z3_SEND_M1)
-        //    {
-        //        sem_post(&info.send_semaphore);
-        //        //udelay(slot_table[info.current_slot]);
-        //    }
-        //    else
-        //    {
-        //       // udelay(slot_table[info.current_slot]);
-        //    }
-        //    break;
-        //case Z4_SEND_M1:
-        //    if ((MY_INDEX + 6) == Z4_SEND_M1)
-        //    {
-        //        sem_post(&info.send_semaphore);
-        //        //udelay(slot_table[info.current_slot]);
-        //    }
-        //    else
-        //    {
-        //       // udelay(slot_table[info.current_slot]);
-        //    }
-        //    break;
-        //case Z5_SEND_M1:
-        //case M2_SEND_M1:
-        //    //udelay(slot_table[info.current_slot]);
-        //    break;
-        //case Z_DISTANCE_M1:
-        //case M1_DISTANCE_Z:
-        //    //udelay(slot_table[info.current_slot]);
-        //    break;
-        //case RESERVE:
-        //    //udelay(slot_table[info.current_slot]);
-        //    break;
-        //default:
-        //    return 0;
-        //    break;
-        //}

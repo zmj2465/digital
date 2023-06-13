@@ -65,10 +65,11 @@ int master_data_proc(void)
                     info.device_info.node_num++;
                     info.device_info.node_list = info.device_info.node_list | (1 << index);
                     info.scan_flag[index] = 1;
-                    if (info.device_info.node_num == FD_NUM)
-                    {
-                        fsm_do(EVENT_WSN_SUCC);
-                    }
+                    printf("list =  %d\n", info.device_info.node_list);
+                    //if (info.device_info.node_num == FD_NUM)
+                    //{
+                    //    fsm_do(EVENT_WSN_SUCC);
+                    //}
                     ///*扫描回复帧*/
                     //msg.data[0] = 3;
                     //msg.len = 1;
@@ -92,6 +93,7 @@ int master_data_proc(void)
                     if (msg.data[0] == START_GUN_REQ)
                     {
                         info.str.start_time = msg.data[1];
+                        printf("Z base time=%lld, %ld, start_time = %d\n", msg.head.send_time.tv_sec, msg.head.send_time.tv_nsec, info.str.start_time);
                         /*响应主机的发令枪帧*/
                         msg.data[0] = START_GUN_RES;
                         msg.len = 1;

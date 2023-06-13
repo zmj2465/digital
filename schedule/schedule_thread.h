@@ -44,21 +44,3 @@ int inquire_slot(int current_slot);
 void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
 
 #endif
-
-
-
-//typedef struct _slot_event_t
-//{
-//	int slot;
-//}slot_event_t;
-//
-//typedef struct _slot_table_t
-//{
-//	slot_event_t* ptr;
-//	int num;			//指示SLOT_NUM_J的长度
-//	int antenna_id;
-//	int antenna_status; //0接收1发送
-//	int current_slot_i;
-//	int slot[SLOT_NUM_J];
-//	int current_slot;
-//}slot_table_t;

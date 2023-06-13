@@ -30,7 +30,7 @@ int data_send_proc(void)
     msg_t msg;
     int i;
     int index;
-
+    memset(&msg, 0, sizeof(msg_t));
     /*主机M*/
     if (MY_INDEX == 0)
     {
@@ -58,20 +58,24 @@ int data_send_proc(void)
             else if (info.current_slot == 61)
             {
                 /*测距时隙*/
+                
             }
-            else if(17 < info.current_slot < 29)
+            else if(17 < info.current_slot && info.current_slot < 29)
             {
                 /*M1_SEND_M2，M1_SNED_Z5*/
+              
             }
             else
             {
                 for (i = 1; i < FD_NUM; i++)
                 {
+                    
                     index = schedule_inquire_index(i, info.current_slot);
                     if (index)
                     {
                         if (info.scan_flag[index])
                         {
+                            printf("M send Z%d scan_con success\n" , index);
                             msg.data[0] = SCAN_CON;
                             msg.len = 1;
                             /*发送扫描回复帧*/
@@ -85,9 +89,9 @@ int data_send_proc(void)
                         else
                         {
                             /*发送数据帧*/
-                            dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-                            generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SHORT_FRAME, &msg);
-                            send(FD[index].fd, &msg, msg.len, 0);
+                            //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
+                            //generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SHORT_FRAME, &msg);
+                            //send(FD[index].fd, &msg, msg.len, 0);
                             return 0;
                         }
 

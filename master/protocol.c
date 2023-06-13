@@ -35,8 +35,8 @@ static fsm_t fsm[] =
 {
 	{"fsm_init", sizeof(fsm_init) / sizeof(fsm_init[0]), fsm_init},
 	{"fsm_off",  sizeof(fsm_off) / sizeof(fsm_off[0]),   fsm_off},
-	{"fsm_wsn",  sizeof(fsm_wsn) / sizeof(fsm_wsn[0],	 fsm_wsn)},
-	{"fsm_wan",  sizeof(fsm_wan) / sizeof(fsm_wan[0],	 fsm_wan)},
+	{"fsm_wsn",  sizeof(fsm_wsn) / sizeof(fsm_wsn[0]),	 fsm_wsn},
+	{"fsm_wan",  sizeof(fsm_wan) / sizeof(fsm_wan[0]),	 fsm_wan},
 	{"fsm_on",	 sizeof(fsm_on) / sizeof(fsm_on[0]),	 fsm_on}
 };
 
@@ -123,6 +123,7 @@ int fsm_init2off_ed(int para)
 			generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
 			send(FD[i].fd, &msg, msg.len, 0);
 		}
+		printf("base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
 	}
 	return 0;
 }

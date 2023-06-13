@@ -13,7 +13,6 @@ include_directories(${PROJECT_SOURCE_DIR}/master)
 include_directories(${PROJECT_SOURCE_DIR}/link)
 include_directories(${PROJECT_SOURCE_DIR}/common)
 
-
 #pthread兼容
 #target_link_libraries(project ${PTHREAD_LIBRARIES})
 #set(CMAKE_C_STANDARD 11)
