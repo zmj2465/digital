@@ -63,18 +63,18 @@ int data_recv_proc(void)
 				ret = recv(FD[i].fd, FD[i].recvBuffer, sizeof(psy_msg_t), 0);
 				if (ret > 0)
 				{
-
 					/*状态机判断*/
-					if (1)
+					if (fsm_status == FSM_INIT || fsm_status == FSM_OFF)
 					{
-
+						msg_t* rmsg = FD[i].recvBuffer;
+						enqueue(&info.thread_queue[MASTER_THREAD_DATA], rmsg, MAX_DATA_LEN);
 					}
 					else
 					{
 						psy_msg_t* psy_msg = FD[i].recvBuffer;
 						int len;
 						/*信道仿真,匹配自身波束信息对齐*/
-						ret = psy_recv(len, psy_msg, &msg, 0, 0);
+						ret = psy_recv(len, psy_msg, &msg, 0, MY_INDEX);
 						if (ret == 0)
 							enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
 						else
