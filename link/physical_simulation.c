@@ -90,6 +90,8 @@ bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Poi
     double alpha2 = calculateAlpha(p13);
     double beta2 = calculateBeta(p13);
 
+    printf("%f %f %f %f\n", alpha1, beta1, alpha2, beta2);
+
     return true;
 }
 
