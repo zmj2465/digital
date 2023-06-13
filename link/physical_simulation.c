@@ -90,7 +90,7 @@ bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Poi
     double alpha2 = calculateAlpha(p13);
     double beta2 = calculateBeta(p13);
 
-    printf("%f %f %f %f\n", alpha1, beta1, alpha2, beta2);
+    printf("checkAngles:%f %f %f %f\n", alpha1, beta1, alpha2, beta2);
 
     return true;
 }
@@ -193,7 +193,7 @@ int psy_recv(int len,char* data, char* msg, int index, int role)
 {
     bool ret;
     psy_msg_t* p = (psy_msg_t*)data;
-    printf("x=%f y=%f z=%f q0=%f q1=%f q2=%f q3=%f\n", p->pos.x, p->pos.y, p->pos.z, p->q.q0, p->q.q1, p->q.q2, p->q.q3);
+    printf("psy_recv:x=%f y=%f z=%f q0=%f q1=%f q2=%f q3=%f\n", p->pos.x, p->pos.y, p->pos.z, p->q.q0, p->q.q1, p->q.q2, p->q.q3);
     ret=checkAngles(p->pos,p->q,p->index,p->role,fddi_info.pos,fddi_info.q,index,role);
     if (ret == false) return 1;
     memcpy(msg, (char*)(&p->msg), sizeof(msg_t));
