@@ -92,8 +92,6 @@ int data_recv_proc(void)
 
 					}
 					
-
-			
 				}
 			}
 		}

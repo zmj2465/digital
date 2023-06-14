@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include <stdbool.h>
+#include "angle.h"
 
 /*crc–£—È*/
 void crc_check();
