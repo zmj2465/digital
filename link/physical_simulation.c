@@ -168,6 +168,7 @@ double calculateBeta(Point3D point) {
 //p11∑¢…‰£¨p21Ω” ’
 bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Point3D p21, Quaternion quaternion2, int index2, int role2)
 {
+    int i;
     Point3D p12, p13, p22, p23;
     double distance = sqrt(pow(p11.x - p21.x, 2) + pow(p11.y - p21.y, 2) + pow(p11.z - p21.z, 2));
     double anglem;
@@ -225,7 +226,7 @@ bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Poi
     convertCoordinates(&p11, &quaternion2, &p12);
     if (role2 == 0)
     {
-        for (int i = 0; i < 6; i++)
+        for (i = 0; i < 6; i++)
         {
             convertCoordinates2(&p12, &transform[i], &p13);
             alpha2 = calculateAlpha(p13);

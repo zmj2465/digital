@@ -12,8 +12,7 @@
 #define MAX_DEVICE		12
 #define HOST_NAME_LEN	20
 #define IP_LEN			20
-#define MAX_DATA_LEN	128
-#define MAX_TEST		5000
+#define MAX_DATA_LEN	1024
 #define START_GUN_TIME	10		/*仿真开始时间,暂定10s后*/
 #define TIMER_DELAY		300		/*定时器延时：300ms*/
 #define MY_INDEX		info.link_index
@@ -249,7 +248,6 @@ extern fddi_info_t fddi_info;
 
 
 void queue_init();
-
 
 
 #endif

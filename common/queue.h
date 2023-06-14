@@ -7,7 +7,7 @@
 
 #include "compatible.h"
 
-#define MAX_DATA_LEN 1024
+#define MAX_DATA_LEN_QUEUE 1024
 
 //typedef struct _msg_node_t {
 //	char data[MAX_DATA_LEN];
@@ -26,7 +26,7 @@
 //
 
 typedef struct _msg_node_t {
-	char data[MAX_DATA_LEN];
+	char data[MAX_DATA_LEN_QUEUE];
 	int len;
 }msg_node_t;
 
