@@ -194,23 +194,23 @@ typedef struct _msg_t
 extern info_t info;
 
 typedef struct {
-	double x;
-	double y;
-	double z;
+	float x;
+	float y;
+	float z;
 } Point3D;
 
 typedef struct {
-	double q0;
-	double q1;
-	double q2;
-	double q3;
+	float q0;
+	float q1;
+	float q2;
+	float q3;
 } Quaternion;
 
 typedef struct {
-	double dx;
-	double dy;
-	double dz;
-	double h[3][3];
+	float dx;
+	float dy;
+	float dz;
+	float h[3][3];
 } AntennaTransform;
 
 
@@ -221,8 +221,8 @@ typedef struct _fddi_info_t
 	char a;
 	char b;
 	char c;
-
 	char ad;  //1
+
 	int rti;  //4
 	int tf;   //4
 	int rtig; //4
