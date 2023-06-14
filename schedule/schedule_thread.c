@@ -154,19 +154,19 @@ int schedule_slot(void)
 */
 int schedule_inquire_index(int index, int current_slot)
 {
-    if ((inquire_index(index) == 1) && (0 < current_slot < 5))
+    if ((inquire_index(index) == 1) && (0 < current_slot && current_slot < 5))
     {
         return 1;
     }
-    if ((inquire_index(index) == 2) && (5 < current_slot < 10))
+    if ((inquire_index(index) == 2) && (5 < current_slot && current_slot < 10))
     {
         return 2;
     }
-    if ((inquire_index(index) == 3) && (9 < current_slot < 14))
+    if ((inquire_index(index) == 3) && (9 < current_slot && current_slot < 14))
     {
         return 3;
     }
-    if ((inquire_index(index) == 4) && (13 < current_slot < 18))
+    if ((inquire_index(index) == 4) && (13 < current_slot && current_slot < 18))
     {
         return 4;
     }
@@ -195,21 +195,59 @@ int inquire_index(int node_index)
 */
 int inquire_slot(int current_slot)
 {
-    if (29 < current_slot < 35)
+    if (29 < current_slot && current_slot < 35)
     {
         return 1;
     }
-    if (34 < current_slot < 40)
+    if (34 < current_slot && current_slot < 40)
     {
         return 2;
     }
-    if (39 < current_slot < 44)
+    if (39 < current_slot && current_slot < 44)
     {
         return 3;
     }
-    if (43 < current_slot < 48)
+    if (43 < current_slot && current_slot < 48)
     {
         return 4;
+    }
+    return -1;
+}
+
+/*
+功能：判断当前接收时隙属于终端Z的哪个天线
+参数：当前时隙
+返回值：天线索引
+*/
+int inquire_antenna(int current_slot)
+{
+    if ((0 <= current_slot && current_slot <= 6) || (49 <= current_slot && current_slot <= 55))
+    {
+        return 0;
+    }
+    if ((7 <= current_slot && current_slot <= 13) || (56 <= current_slot && current_slot <= 62))
+    {
+        return 1;
+    }
+    if (14 <= current_slot && current_slot <= 20)
+    {
+        return 2;
+    }
+    if (21 <= current_slot && current_slot <= 27)
+    {
+        return 3;
+    }
+    if (28 <= current_slot && current_slot <= 29)
+    {
+        return 4;
+    }
+    if (35 <= current_slot && current_slot <= 41)
+    {
+        return 5;
+    }
+    if (42 <= current_slot && current_slot <= 48)
+    {
+        return 6;
     }
     return -1;
 }

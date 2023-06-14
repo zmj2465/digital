@@ -8,6 +8,7 @@
 #include "common.h"
 #include "protocol.h"
 #include "schedule_thread.h"
+#include "physical_simulation.h"
 
 void* data_send_thread(void* arg);
 int   data_send_proc(void);

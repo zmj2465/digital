@@ -74,8 +74,8 @@ typedef struct _link_info_t
 	char				host_name[HOST_NAME_LEN];  //设备名
 	char				ip[IP_LEN];				//设备ip
 	socklen_t			addr_len;
-	uint8_t				recvBuffer[MAX_DATA_LEN];
-	char				sendBuffer[MAX_DATA_LEN];
+	uint8_t				recvBuffer[MAX_DATA_LEN*2];
+	char				sendBuffer[MAX_DATA_LEN*2];
 }link_info_t;
 
 
@@ -239,6 +239,7 @@ typedef struct _psy_msg_t
 	Quaternion q;
 	int role;
 	int index;
+
 	msg_t msg;
 }psy_msg_t;
 

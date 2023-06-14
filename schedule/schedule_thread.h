@@ -41,6 +41,7 @@ int schedule_slot(void);
 int schedule_inquire_index(int index, int current_slot);
 int inquire_index(int node_index);
 int inquire_slot(int current_slot);
+int inquire_antenna(int current_slot);
 void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
 
 #endif

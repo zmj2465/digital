@@ -27,6 +27,7 @@ void* data_send_thread(void* arg)
 */
 int data_send_proc(void)
 {
+    psy_msg_t pmsg;
     msg_t msg;
     int i;
     int index;
@@ -48,7 +49,8 @@ int data_send_proc(void)
                         msg.len = 1;
                         /*发送扫描询问帧*/
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                        send(FD[i].fd, &msg, msg.len, 0);
+                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+                        send(FD[i].fd, &pmsg, msg.len, 0);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
@@ -81,7 +83,8 @@ int data_send_proc(void)
                             /*发送扫描回复帧*/
                             //dequeue(&info.thread_queue[DATA_SEND_THREAD_SCAN_CON], msg.data, &msg.len);
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                            send(FD[index].fd, &msg, msg.len, 0);
+                            psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+                            send(FD[index].fd, &pmsg, msg.len, 0);
                             info.scan_flag[index] = 0;
                             return 0;
                             
@@ -90,8 +93,11 @@ int data_send_proc(void)
                         {
                             /*发送数据帧*/
                             //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-                            //generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SHORT_FRAME, &msg);
-                            //send(FD[index].fd, &msg, msg.len, 0);
+                            msg.data[0] = 5;
+                            msg.len = 1;
+                            generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SHORT_FRAME, &msg);
+                            psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+                            send(FD[index].fd, &pmsg, msg.len, 0);
                             return 0;
                         }
 
@@ -106,7 +112,8 @@ int data_send_proc(void)
                         msg.len = 1;
                         /*发送扫描询问帧*/
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                        send(FD[i].fd, &msg, msg.len, 0);
+                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+                        send(FD[i].fd, &pmsg, msg.len, 0);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
