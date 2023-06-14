@@ -24,8 +24,9 @@ void* fddi_thread(void* arg)
         fddi_info.q.q1 = p->q.q1;
         fddi_info.q.q2 = p->q.q2;
         fddi_info.q.q3 = p->q.q3;
-        printf("x=%f y=%f z=%f q0=%f q1=%f q2=%f q3=%f\n", p->pos.x, p->pos.y, p->pos.z, p->q.q0, p->q.q1, p->q.q2, p->q.q3);
-        
+        printf("a=%x,b=%x,d=%x\n", data[0], data[1], data[2]);
+        printf("x=%g\ny=%g\nz=%g\nq0=%g\nq1=%g\nq2=%g\nq3=%g\n", p->pos.x, p->pos.y, p->pos.z, p->q.q0, p->q.q1, p->q.q2, p->q.q3);
+
         /*ËÍÍùmaster*/
         //enqueue(&info.thread_queue[MASTER_THREAD], data, len);
     }

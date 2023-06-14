@@ -58,42 +58,196 @@ double calculateBeta(Point3D point) {
     return rad2deg(beta);
 }
 
+////天线对齐
+////p11发射，p21接收
+//bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Point3D p21, Quaternion quaternion2, int index2, int role2)
+//{
+//    Point3D p12, p13, p22, p23;
+//    double alpha1;
+//    double beta1;
+//    double alpha2;
+//    double beta2;
+//
+//    double distance = sqrt(pow(p11.x - p21.x, 2) + pow(p11.y - p21.y, 2) + pow(p11.z - p21.z, 2));
+//    double anglem;
+//    double anglez;
+//
+//    bool ret = false;
+//
+//    if (distance < 500)
+//    {
+//        anglem = 60;
+//        anglez = 60;
+//    }
+//    else if (distance < 5000)
+//    {
+//        anglem = 25;
+//        anglez = 60;
+//    }
+//    else if (distance < 15000)
+//    {
+//        anglem = 25;
+//        anglez = 50;
+//    }
+//    else if (distance < 30000)
+//    {
+//        anglem = 25;
+//        anglez = 25;
+//    }
+//    else if (distance < 500000)
+//    {
+//        anglem = 8.5;
+//        anglez = 19;
+//    }
+//
+//    //发射天线为原点
+//    convertCoordinates(&p21, &quaternion2, &p22);
+//    if (role2 == 0)
+//    {
+//        for (int i = 0; i < 6; i++)
+//        {
+//            convertCoordinates2(&p22, &transform[i], &p23);
+//            alpha1 = calculateAlpha(p23);
+//            beta1 = calculateBeta(p23);
+//            if (beta1 < anglem)
+//            {
+//                ret = true;
+//                break;
+//            }
+//        }
+//    }
+//    else
+//    {
+//        convertCoordinates2(&p22, &transform[index2+6], &p23);
+//        alpha1 = calculateAlpha(p23);
+//        beta1 = calculateBeta(p23);
+//        if (beta1 < anglem)
+//        {
+//            if (ret == true)
+//                ret = true;
+//        }
+//    }
+//
+//    if (ret == false) return false;
+//    ret = false;
+//
+//    //接收天线为原点
+//    convertCoordinates(&p11, &quaternion1, &p12);
+//    if (role1 == 0)
+//    {
+//        for (int i = 0; i < 6; i++)
+//        {
+//            convertCoordinates2(&p12, &transform[i], &p13);
+//            alpha2 = calculateAlpha(p13);
+//            beta2 = calculateBeta(p13);
+//            if (beta2 < anglem)
+//            {
+//                ret = true;
+//                break;
+//            }
+//        }
+//    }
+//    else
+//    {
+//        convertCoordinates2(&p12, &transform[index1+6], &p13);
+//        alpha2 = calculateAlpha(p13);
+//        beta2 = calculateBeta(p13);
+//        if (beta2 < anglez)
+//        {
+//            if (ret == true)
+//                ret = true;
+//        }
+//    }
+//
+//    printf("checkAngles:%f %f %f %f\n", alpha1, beta1, alpha2, beta2);
+//
+//    return ret;
+//}
+
 //天线对齐
 //p11发射，p21接收
 bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Point3D p21, Quaternion quaternion2, int index2, int role2)
 {
     Point3D p12, p13, p22, p23;
+    double distance = sqrt(pow(p11.x - p21.x, 2) + pow(p11.y - p21.y, 2) + pow(p11.z - p21.z, 2));
+    double anglem;
+    double anglez;
+    double alpha1;
+    double beta1;
+    double alpha2;
+    double beta2;
+
+    bool ret_send = false;
+    bool ret_recv = false;
+
+    if (distance < 500)
+    {
+        anglem = 60;
+        anglez = 60;
+    }
+    else if (distance < 5000)
+    {
+        anglem = 25;
+        anglez = 60;
+    }
+    else if (distance < 15000)
+    {
+        anglem = 25;
+        anglez = 50;
+    }
+    else if (distance < 30000)
+    {
+        anglem = 25;
+        anglez = 25;
+    }
+    else if (distance < 500000)
+    {
+        anglem = 8.5;
+        anglez = 19;
+    }
 
     //发射天线为原点
-    convertCoordinates(&p21, &quaternion2, &p22);
-    if (role2 == 0)
-    {
-        convertCoordinates2(&p22, &transform[index2], &p23);
-    }
-    else
-    {
-        convertCoordinates2(&p22, &transform[index2+6], &p23);
-    }
-    double alpha1 = calculateAlpha(p23);
-    double beta1 = calculateBeta(p23);
-
-    //接收天线为原点
-    convertCoordinates(&p11, &quaternion1, &p12);
+    convertCoordinates(&p21, &quaternion1, &p22);
+    if (role1 == 0)convertCoordinates2(&p22, &transform[index1], &p23);
+    else convertCoordinates2(&p22, &transform[index1 + 6], &p23);
+    alpha1 = calculateAlpha(p23);
+    beta1 = calculateBeta(p23);
     if (role1 == 0)
     {
-        convertCoordinates2(&p12, &transform[index1], &p13);
+        if (beta1 < anglem) ret_send = true;
     }
     else
     {
-        convertCoordinates2(&p12, &transform[index1+6], &p13);
+        if (beta1 < anglez) ret_send = true;
     }
-    double alpha2 = calculateAlpha(p13);
-    double beta2 = calculateBeta(p13);
 
-    printf("checkAngles:%f %f %f %f\n", alpha1, beta1, alpha2, beta2);
-
-    return true;
+    //接收天线为原点
+    convertCoordinates(&p11, &quaternion2, &p12);
+    if (role2 == 0)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            convertCoordinates2(&p12, &transform[i], &p13);
+            alpha2 = calculateAlpha(p13);
+            beta2 = calculateBeta(p13);
+            if (beta2 < anglem)
+            {
+                ret_recv = true;
+                break;
+            }
+        }
+    }
+    else
+    {
+        convertCoordinates2(&p12, &transform[index2 + 6], &p13);
+        alpha2 = calculateAlpha(p13);
+        beta2 = calculateBeta(p13);
+        if (beta2 < anglez) ret_recv = true;
+    }
+    printf("checkAngles:%g %g %g %g %d\n", alpha1, beta1, alpha2, beta2, ret_send & ret_recv);
+    return ret_send & ret_recv;
 }
+
 
 
 
