@@ -8,6 +8,7 @@
 #include "common.h"
 #include "physical_simulation.h"
 #include "protocol.h"
+#include "schedule_thread.h"
 
 void* data_recv_thread(void* arg);
 int   data_recv_proc(void);

@@ -42,7 +42,7 @@ void synchronous();
 
 /* */
 
-/*ÐÅµÀ·ÂÕæ*/
+
 void channel_simulation();
 
 int psy_recv(int len, char* data, char* msg, int index, int role);

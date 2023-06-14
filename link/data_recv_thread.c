@@ -71,14 +71,25 @@ int data_recv_proc(void)
 					}
 					else
 					{
-						psy_msg_t* psy_msg = FD[i].recvBuffer;
-						int len;
-						/*信道仿真,匹配自身波束信息对齐*/
-						ret = psy_recv(len, psy_msg, &msg, 0, MY_INDEX);
-						if (ret == 0)
-							enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
-						else
-							continue;
+						if (MY_INDEX != 0)
+						{
+							psy_msg_t* psy_msg = FD[i].recvBuffer;
+							int len;
+							int antenna_recv;
+							antenna_recv = inquire_antenna(info.current_slot);
+							/*信道仿真,匹配自身波束信息对齐*/
+							ret = psy_recv(len, psy_msg, &msg, antenna_recv, MY_INDEX);
+							if (ret == 0)
+							{
+								enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
+							}
+							else
+							{
+								continue;
+							}
+
+						}
+
 					}
 					
 
