@@ -47,6 +47,13 @@ int master_data_proc(void)
             case SHORT_FRAME:
                 break;
             case LONG_FRAME:
+                //index = inquire_timerid(info.current_slot);
+                ///*关闭数据帧定时器*/
+                //timeKillEvent(info.timerId_M[index]);
+                //if (index != -1)
+                //{
+                //    info.timerId_M[index] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, DATA_TIMER, TIME_ONESHOT);
+                //}
                 break;
             case START_GUN:
                 if (msg.data[0] == START_GUN_RES)
@@ -61,7 +68,7 @@ int master_data_proc(void)
             case SCAN:
                 if (msg.data[0] == SCAN_RES)
                 {
-                    index = inquire_slot(info.current_slot);
+                    index = inquire_address(msg.head.src);
                     info.device_info.node_num++;
                     info.device_info.node_list = info.device_info.node_list | (1 << index);
                     info.scan_flag[index] = 1;
@@ -70,10 +77,6 @@ int master_data_proc(void)
                     //{
                     //    fsm_do(EVENT_WSN_SUCC);
                     //}
-                    ///*扫描回复帧*/
-                    //msg.data[0] = 3;
-                    //msg.len = 1;
-                    //enqueue(&info.thread_queue[DATA_SEND_THREAD_SCAN_CON], msg.data, msg.len);
                 }
                 else
                 {

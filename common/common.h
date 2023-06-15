@@ -62,7 +62,8 @@ enum TIMER_ID
 {
 	SCAN_REQ_TIMER,
 	SCAN_RES_TIMER,
-	SCAN_CON_TIMER
+	SCAN_CON_TIMER,
+	DATA_TIMER
 };
 
 typedef struct _link_info_t
@@ -238,7 +239,7 @@ typedef struct _psy_msg_t
 	Quaternion q;
 	int role;
 	int index;
-
+	int flag;
 	msg_t msg;
 }psy_msg_t;
 

@@ -7,23 +7,24 @@
 static int antenna_table[ANTENNA_NUM] = { 0, 0, 0, 0, 0, 0 };      //0接收1发送
 
 static int slot_table[SLOT_NUM] = 
-{800, 800, 800, 800, 800,        //0-4       M1_SEND_Z1
- 800, 800, 800, 800, 800,        //5-9       M1_SEND_Z2
- 800, 800, 800, 800,             //10-13     M1_SEND_Z3
- 800, 800, 800, 800,             //14-17     M1_SEND_Z4   
- 800, 800, 800, 800, 800, 800,   //18-23     M1_SEND_M2
- 800, 800, 800, 800, 800,        //24-28     M1_SNED_Z5
- 4000,                           //29        PROTECT1  
- 2600, 2600, 2600, 2600, 2600,   //30-34     Z1_SEND_M1
- 2600, 2600, 2600, 2600, 2600,   //35-39     Z2_SEND_M1
- 2600, 2600, 2600, 2600,         //40-43     Z3_SEND_M1
- 2600, 2600, 2600, 2600,         //44-47     Z4_SEND_M1
- 2600, 2600, 2600, 2600, 2600,   //48-52     Z5_SEND_M1
- 800, 800, 800, 800, 800, 800,   //53-58     M2_SEND_M1
- 2600,                           //59        Z_DISTANCE_M1
- 4000,                           //60        PROTECT2
- 800,                            //61        M1_DISTANCE_Z
- 800                             //62        RESERVE
+{
+800, 800, 800, 800, 800,        //0-4       M1_SEND_Z1
+800, 800, 800, 800, 800,        //5-9       M1_SEND_Z2
+800, 800, 800, 800,             //10-13     M1_SEND_Z3
+800, 800, 800, 800,             //14-17     M1_SEND_Z4   
+800, 800, 800, 800, 800, 800,   //18-23     M1_SEND_M2
+800, 800, 800, 800, 800,        //24-28     M1_SNED_Z5
+4000,                           //29        PROTECT1  
+2600, 2600, 2600, 2600, 2600,   //30-34     Z1_SEND_M1
+2600, 2600, 2600, 2600, 2600,   //35-39     Z2_SEND_M1
+2600, 2600, 2600, 2600,         //40-43     Z3_SEND_M1
+2600, 2600, 2600, 2600,         //44-47     Z4_SEND_M1
+2600, 2600, 2600, 2600, 2600,   //48-52     Z5_SEND_M1
+800, 800, 800, 800, 800, 800,   //53-58     M2_SEND_M1
+2600,                           //59        Z_DISTANCE_M1
+4000,                           //60        PROTECT2
+800,                            //61        M1_DISTANCE_Z
+800                             //62        RESERVE
  };
 
 
@@ -68,7 +69,6 @@ int schedule_slot(void)
     {
         if ( (0 <= info.current_slot && info.current_slot <= 28) || (info.current_slot == 61) )
         {
-            //printf("slot = %d\n", info.current_slot);
             antenna_table[info.current_antenna] = 1;
             sem_post(&info.send_semaphore);
             udelay(slot_table[info.current_slot]);
@@ -154,19 +154,19 @@ int schedule_slot(void)
 */
 int schedule_inquire_index(int index, int current_slot)
 {
-    if ((inquire_index(index) == 1) && (0 < current_slot && current_slot < 5))
+    if ((inquire_index(index) == 1) && (1 <= current_slot && current_slot <= 4))
     {
         return 1;
     }
-    if ((inquire_index(index) == 2) && (5 < current_slot && current_slot < 10))
+    if ((inquire_index(index) == 2) && (6 <= current_slot && current_slot <= 9))
     {
         return 2;
     }
-    if ((inquire_index(index) == 3) && (9 < current_slot && current_slot < 14))
+    if ((inquire_index(index) == 3) && (10 <= current_slot && current_slot <= 13))
     {
         return 3;
     }
-    if ((inquire_index(index) == 4) && (13 < current_slot && current_slot < 18))
+    if ((inquire_index(index) == 4) && (14 <= current_slot && current_slot <= 17))
     {
         return 4;
     }
@@ -180,8 +180,8 @@ int schedule_inquire_index(int index, int current_slot)
 */
 int inquire_index(int node_index)
 {
-    int i = info.device_info.node_list & 30;
-    if (i & (1 << node_index))
+    int i = info.device_info.node_list & (1 << node_index);
+    if (i != 0)
     {
         return node_index;
     }
@@ -195,19 +195,19 @@ int inquire_index(int node_index)
 */
 int inquire_slot(int current_slot)
 {
-    if (29 < current_slot && current_slot < 35)
+    if (31 <= current_slot && current_slot <= 34)
     {
         return 1;
     }
-    if (34 < current_slot && current_slot < 40)
+    if (36 <= current_slot && current_slot <= 39)
     {
         return 2;
     }
-    if (39 < current_slot && current_slot < 44)
+    if (40 <= current_slot && current_slot <= 43)
     {
         return 3;
     }
-    if (43 < current_slot && current_slot < 48)
+    if (44 <= current_slot && current_slot <= 47)
     {
         return 4;
     }
@@ -221,15 +221,15 @@ int inquire_slot(int current_slot)
 */
 int inquire_antenna(int current_slot)
 {
-    if ((0 <= current_slot && current_slot <= 6) || (49 <= current_slot && current_slot <= 55))
+    if ((0 <= current_slot && current_slot <= 6) || (42 <= current_slot && current_slot <= 48))
     {
         return 0;
     }
-    if ((7 <= current_slot && current_slot <= 13) || (56 <= current_slot && current_slot <= 62))
+    if ((7 <= current_slot && current_slot <= 13) || (49 <= current_slot && current_slot <= 55))
     {
         return 1;
     }
-    if (14 <= current_slot && current_slot <= 20)
+    if ((14 <= current_slot && current_slot <= 20) || (56 <= current_slot && current_slot <= 62))
     {
         return 2;
     }
@@ -245,11 +245,20 @@ int inquire_antenna(int current_slot)
     {
         return 5;
     }
-    if (42 <= current_slot && current_slot <= 48)
-    {
-        return 6;
-    }
+
     return -1;
+}
+
+/*
+功能：根据节点地址判断节点索引
+参数：节点地址
+返回值：节点索引
+*/
+int inquire_address(int node_id)
+{
+    int index;
+    index = node_id & 15;
+    return index;
 }
 
 /*
@@ -269,6 +278,9 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         break;
     case SCAN_CON_TIMER:
         printf("Z not receive scan confirm in 300ms\n");
+        break;
+    case DATA_TIMER:
+        printf("M not receive Z message in 300ms\n");
         break;
     default:
         break;

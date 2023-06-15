@@ -1,5 +1,6 @@
 #include "physical_simulation.h"
 
+int prepare_simulation = 0;
 
 void convertCoordinates(const Point3D* p1, const Quaternion* quaternion,
     Point3D* p2)
@@ -252,7 +253,7 @@ bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Poi
     convertCoordinates(&p11, &quaternion2, &p12);
 
     //printf("[start] %g\n", distance);
-    for (int i = 0; i < 6; i++)
+    for (i = 0; i < 6; i++)
     {
         if (role1 == 0)
         {
@@ -290,7 +291,7 @@ bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Poi
     {
         if (beta1[index1] < anglez) //z俯仰角满足时 遍历m接收天线
         {
-            for (int i = 0; i < 6; i++) //m只要有一个天线能收到就满足
+            for (i = 0; i < 6; i++) //m只要有一个天线能收到就满足
             {
                 if (beta2[i] < anglem)
                 {
@@ -403,6 +404,7 @@ int psy_recv(int len,char* data, char* msg, int index, int role)
     bool ret;
     psy_msg_t* p = (psy_msg_t*)data;
     //printf("psy_recv:x=%f y=%f z=%f q0=%f q1=%f q2=%f q3=%f\n", p->pos.x, p->pos.y, p->pos.z, p->q.q0, p->q.q1, p->q.q2, p->q.q3);
+    if (p->flag == 0 || prepare_simulation == 0) return 1;
     ret=checkAngles(p->pos,p->q,p->index,p->role,fddi_info.pos,fddi_info.q,index,role);
     if (ret == false) return 1;
     memcpy(msg, (char*)(&p->msg), sizeof(msg_t));
@@ -423,5 +425,6 @@ void psy_send(int len, char* data, char* msg, int index, int role)
     p->q.q3 = fddi_info.q.q3;
     p->index = index;
     p->role = role;
+    p->flag = prepare_simulation;
 }
 

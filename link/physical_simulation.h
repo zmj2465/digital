@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include "angle.h"
 
+extern int prepare_simulation;
+
 /*crc–£—È*/
 void crc_check();
 

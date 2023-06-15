@@ -95,6 +95,14 @@ int fsm_init2off_st(int para)
 	{
 		info.device_info.node_id[i] = (i | 16);
 	}
+	if (MY_INDEX == 0)
+	{
+		info.device_info.node_role = 0;
+	}
+	else
+	{
+		info.device_info.node_role = 1;
+	}
 	info.device_info.node_num = 1;
 	info.device_info.node_list = 0x21;
 	schedule_slot_init();
@@ -153,14 +161,6 @@ int fsm_off2wsn_st(int para)
 int fsm_off2wsn_ed(int para)
 {
 	/*计算建网时间，开始时刻*/
-
-	/*首次扫描询问帧*/
-	//uint8_t data[MAX_DATA_LEN];
-	//int len;
-	//memset(data, 0, MAX_DATA_LEN);
-	//data[0] = SCAN_REQ;
-	//len = 1;
-	//enqueue(&info.thread_queue[DATA_SEND_THREAD_SCAN], data, len);
 	return 0;
 }
 
@@ -193,13 +193,6 @@ int fsm_off2wan_ed(int para)
 */
 int fsm_wsn2wsn_st(int para)
 {
-	/*扫描询问帧*/
-	//uint8_t data[MAX_DATA_LEN];
-	//int len;
-	//memset(data, 0, MAX_DATA_LEN);
-	//data[0] = SCAN_REQ;
-	//len = 1;
-	//enqueue(&info.thread_queue[DATA_SEND_THREAD_SCAN], data, len);
 	return 0;
 }
 
@@ -220,13 +213,6 @@ int fsm_wsn2wsn_ed(int para)
 */
 int fsm_wan2wan_st(int para)
 {
-	/*扫描响应帧*/
-	//uint8_t data[MAX_DATA_LEN];
-	//int len;
-	//memset(data, 0, MAX_DATA_LEN);
-	//data[0] = SCAN_RES;
-	//len = 1;
-	//enqueue(&info.thread_queue[DATA_SEND_THREAD_SCAN], data, len);
 	return 0;
 }
 

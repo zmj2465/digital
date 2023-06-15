@@ -40,7 +40,6 @@ int data_send_proc(void)
         case FSM_WSN://正在建链状态，按时隙进行扫描询问和数据发送
             if (info.current_slot == 0 || info.current_slot == 5)//信令时隙
             {
-                //dequeue(&info.thread_queue[DATA_SEND_THREAD_SCAN], msg.data, &msg.len);
                 for (i = 1; i < FD_NUM; i++)
                 {
                     if (inquire_index(i) == -1)//对应终端Z不在网
@@ -50,12 +49,13 @@ int data_send_proc(void)
                         /*发送扫描询问帧*/
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+                        printf("dst1 = %d\n", msg.head.dst);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
+                        //printf("M send scan require successfully, current slot = %d\n", info.current_slot);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
                 }
-                //fsm_do(EVENT_WSN);
             }
             else if (info.current_slot == 61)
             {
@@ -73,7 +73,7 @@ int data_send_proc(void)
                 {
                     
                     index = schedule_inquire_index(i, info.current_slot);
-                    if (index)
+                    if (index != -1)
                     {
                         if (info.scan_flag[index])
                         {
@@ -81,11 +81,11 @@ int data_send_proc(void)
                             msg.data[0] = SCAN_CON;
                             msg.len = 1;
                             /*发送扫描回复帧*/
-                            //dequeue(&info.thread_queue[DATA_SEND_THREAD_SCAN_CON], msg.data, &msg.len);
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
                             send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
                             info.scan_flag[index] = 0;
+                            printf("M send scan confirm successfully, current slot = %d\n", info.current_slot);
                             return 0;
                             
                         }
@@ -95,7 +95,7 @@ int data_send_proc(void)
                             //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
                             msg.data[0] = 5;
                             msg.len = 1;
-                            generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SHORT_FRAME, &msg);
+                            generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
                             send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
                             return 0;
@@ -103,7 +103,6 @@ int data_send_proc(void)
 
                     }
                 }
-                //dequeue(&info.thread_queue[DATA_SEND_THREAD_SCAN], msg.data, &msg.len);
                 for (i = 1; i < FD_NUM; i++)
                 {
                     if (inquire_index(i) == -1)//对应终端Z不在网
@@ -114,11 +113,13 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
+                        printf("dst1 = %d\n", pmsg.msg.head.dst);
+                        //printf("dst1 = %d\n", msg.head.dst);
+                        //printf("M send scan require successfully, current slot = %d\n", info.current_slot);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
-                }
-                //fsm_do(EVENT_WSN);
+                }                
             }
             break;
         case FSM_ON://建链完成状态，判断当前时隙给哪个Z发数据
@@ -136,7 +137,7 @@ int data_send_proc(void)
             break;
         case FSM_OFF:
             break;
-        case FSM_WAN://处于正在建链状态，按照自行规划的时隙响应M的扫描询问
+        case FSM_WAN://正在建链状态，按照自行规划的时隙响应M的扫描询问
             /*发送扫描响应帧*/
             dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
             generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], SCAN, &msg);
@@ -145,8 +146,14 @@ int data_send_proc(void)
             /*打开扫描回复定时器*/
             info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_CON_TIMER, TIME_ONESHOT);
             break;
-        case FSM_ON://处于建链完成状态，判断当前时隙是给Z或M发数据
-
+        case FSM_ON://建链完成状态，发送数据帧
+            if ((31 <= info.current_slot && info.current_slot <= 34) && MY_INDEX == 1)
+            {
+                dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
+                generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
+                psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+                send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+            }
             break;
         default:
             break;

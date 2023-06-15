@@ -1,5 +1,5 @@
 #include "fddi_thread.h"
-
+#include "physical_simulation.h"
 
 void* fddi_thread(void* arg)
 {
@@ -16,6 +16,7 @@ void* fddi_thread(void* arg)
     {
         /*接收光纤信息*/
         len=recv(info.fddi_system.fd, data, MAX_DATA_LEN, 0);
+        prepare_simulation = 1;
         printf("get fddi info len=%d\n", len);
         fddi_info.pos.x = p->pos.x;
         fddi_info.pos.y = p->pos.y;
