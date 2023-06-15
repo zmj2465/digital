@@ -95,13 +95,15 @@ int master_data_proc(void)
                 case START_GUN:
                     if (msg.data[0] == START_GUN_REQ)
                     {
+                        psy_msg_t pmsg;
                         info.str.start_time = msg.data[1];
                         printf("Z base time=%lld, %ld, start_time = %d\n", msg.head.send_time.tv_sec, msg.head.send_time.tv_nsec, info.str.start_time);
                         /*响应主机的发令枪帧*/
                         msg.data[0] = START_GUN_RES;
                         msg.len = 1;
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
-                        send(FD[0].fd, &msg, msg.len, 0);
+                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
 
                         /*同步仿真建链时间，将自身状态设置为fsm_wan*/
                         clock_gettime(CLOCK_REALTIME, &info.str.base_time);

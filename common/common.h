@@ -159,7 +159,6 @@ typedef struct _head_t
 	uint8_t type;
 	struct timespec send_time;
 	uint8_t antenna_id;
-	//start_boardcast_t sbt;
 	//位置信息
 }head_t;
 

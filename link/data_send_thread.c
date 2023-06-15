@@ -32,6 +32,7 @@ int data_send_proc(void)
     int i;
     int index;
     memset(&msg, 0, sizeof(msg_t));
+    memset(&pmsg, 0, sizeof(psy_msg_t));
     /*主机M*/
     if (MY_INDEX == 0)
     {
@@ -48,7 +49,7 @@ int data_send_proc(void)
                         msg.len = 1;
                         /*发送扫描询问帧*/
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         printf("dst1 = %d\n", msg.head.dst);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
                         //printf("M send scan require successfully, current slot = %d\n", info.current_slot);
@@ -82,7 +83,7 @@ int data_send_proc(void)
                             msg.len = 1;
                             /*发送扫描回复帧*/
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                            psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+                            psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
                             info.scan_flag[index] = 0;
                             printf("M send scan confirm successfully, current slot = %d\n", info.current_slot);
@@ -96,7 +97,7 @@ int data_send_proc(void)
                             msg.data[0] = 5;
                             msg.len = 1;
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-                            psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+                            psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
                             return 0;
                         }
@@ -111,7 +112,7 @@ int data_send_proc(void)
                         msg.len = 1;
                         /*发送扫描询问帧*/
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
                         printf("dst1 = %d\n", pmsg.msg.head.dst);
                         //printf("dst1 = %d\n", msg.head.dst);
@@ -141,7 +142,7 @@ int data_send_proc(void)
             /*发送扫描响应帧*/
             dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
             generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-            psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+            psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
             send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
             /*打开扫描回复定时器*/
             info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_CON_TIMER, TIME_ONESHOT);
@@ -151,7 +152,7 @@ int data_send_proc(void)
             {
                 dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
                 generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-                psy_send(msg.len, &pmsg, &msg, info.current_antenna, MY_INDEX);
+                psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                 send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
             }
             break;

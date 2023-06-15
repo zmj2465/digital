@@ -62,17 +62,15 @@ int data_recv_proc(void)
 				ret = recv(FD[i].fd, FD[i].recvBuffer, sizeof(psy_msg_t), 0);
 				if (ret > 0)
 				{
-					/*状态机判断*/
-					if (fsm_status == FSM_INIT || fsm_status == FSM_OFF)
-					{
-						psy_msg_t* psy_msg = FD[i].recvBuffer;
+					psy_msg_t* psy_msg = FD[i].recvBuffer;
+					if (psy_msg->msg.head.type == START_GUN)
+					{	
 						msg_t* rmsg = FD[i].recvBuffer;
 						printf("no sim get %d %d:\n", rmsg->head.dst, psy_msg->msg.head.dst);
 						enqueue(&info.thread_queue[MASTER_THREAD_DATA], rmsg, MAX_DATA_LEN);
 					}
 					else
 					{
-						psy_msg_t* psy_msg = FD[i].recvBuffer;
 						msg_t msg;
 						memset(&msg, 0, sizeof(msg_t));
 						int len;
@@ -90,6 +88,36 @@ int data_recv_proc(void)
 							continue;
 						}
 					}
+
+
+					///*状态机判断*/
+					//if (fsm_status == FSM_INIT || fsm_status == FSM_OFF)
+					//{
+					//	psy_msg_t* psy_msg = FD[i].recvBuffer;
+					//	msg_t* rmsg = FD[i].recvBuffer;
+					//	printf("no sim get %d %d:\n", rmsg->head.dst, psy_msg->msg.head.dst);
+					//	enqueue(&info.thread_queue[MASTER_THREAD_DATA], rmsg, MAX_DATA_LEN);
+					//}
+					//else
+					//{
+					//	psy_msg_t* psy_msg = FD[i].recvBuffer;
+					//	msg_t msg;
+					//	memset(&msg, 0, sizeof(msg_t));
+					//	int len;
+					//	int antenna_recv;
+					//	antenna_recv = inquire_antenna(info.current_slot);
+					//	/*信道仿真,匹配自身波束信息对齐*/
+					//	ret = psy_recv(len, psy_msg, &msg, antenna_recv, info.device_info.node_role);
+					//	if (ret == 0)
+					//	{
+					//		enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
+					//	}
+					//	else
+					//	{
+					//		printf("sim fail throw\n");
+					//		continue;
+					//	}
+					//}
 					
 				}
 			}
