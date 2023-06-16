@@ -173,6 +173,13 @@ int fsm_off2wsn_ed(int para)
 */
 int fsm_off2wan_st(int para)
 {
+	/*同步仿真建链时间，将自身状态设置为fsm_wan*/
+	struct timespec str_m;
+	clock_gettime(CLOCK_REALTIME, &str_m);
+	while ((str_m.tv_sec * 1000000000 + str_m.tv_nsec) < (info.str.base_time.tv_sec * 1000000000 + info.str.base_time.tv_nsec + info.str.start_time * 1000000000))
+	{
+		clock_gettime(CLOCK_REALTIME, &str_m);
+	}
 	return 0;
 }
 
