@@ -17,14 +17,11 @@ void* master_thread(void* arg)
         /*数据队列处理*/
         master_data_proc();
 
-        Sleep(3);
-
-        /*下发*/
     }
 }
 
 /*
-功能：主控线程数据队列的数据处理
+功能：主控线程数据队列的处理
 参数：无
 返回值：无
 */
@@ -73,10 +70,6 @@ int master_data_proc(void)
                     info.device_info.node_list = info.device_info.node_list | (1 << index);
                     info.scan_flag[index] = 1;
                     printf("list =  %d\n", info.device_info.node_list);
-                    //if (info.device_info.node_num == FD_NUM)
-                    //{
-                    //    fsm_do(EVENT_WSN_SUCC);
-                    //}
                 }
                 else
                 {
@@ -128,7 +121,7 @@ int master_data_proc(void)
                     }
                     else
                     {
-                        printf("Z not receive scan require\n");
+                        printf("Z not receive scan\n");
                     }
                     break;
                 default:
@@ -145,3 +138,13 @@ int master_data_proc(void)
     return 0;
 }
 
+/*
+功能：主控线程控制队列的处理
+参数：无
+返回值：无
+*/
+int master_control_proc(void)
+{
+
+    return 0;
+}

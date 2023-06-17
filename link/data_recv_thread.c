@@ -67,7 +67,7 @@ int data_recv_proc(void)
 					{
 						psy_msg_t* psy_msg = FD[i].recvBuffer;
 						msg_t* rmsg = FD[i].recvBuffer;
-						printf("no sim get %d %d:\n", rmsg->head.dst, psy_msg->msg.head.dst);
+						printf("no sim get, msg = %d psy_msg = %d msg_type = %d psy_type = %d\n", rmsg->head.dst, psy_msg->msg.head.dst, rmsg->head.type, psy_msg->msg.head.type);
 						if (rmsg->head.type == START_GUN)
 						{
 							enqueue(&info.thread_queue[MASTER_THREAD_DATA], rmsg, MAX_DATA_LEN);

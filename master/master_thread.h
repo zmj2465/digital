@@ -11,4 +11,5 @@
 
 void* master_thread(void* arg);
 int	  master_data_proc(void);
+int	  master_control_proc(void);
 #endif

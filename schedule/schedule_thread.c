@@ -88,7 +88,7 @@ int schedule_slot(void)
         switch (MY_INDEX)
         {
         case 1:
-            if (30 <= info.current_slot && info.current_slot <= 34)
+            if ((30 <= info.current_slot && info.current_slot <= 34) || (info.current_slot == 59))
             {
                 sem_post(&info.send_semaphore);
                 udelay(slot_table[info.current_slot]);
@@ -102,7 +102,7 @@ int schedule_slot(void)
             }
             break;
         case 2:
-            if (35 <= info.current_slot && info.current_slot <= 39)
+            if ((35 <= info.current_slot && info.current_slot <= 39) || (info.current_slot == 59))
             {
                 sem_post(&info.send_semaphore);
                 udelay(slot_table[info.current_slot]);
@@ -115,7 +115,7 @@ int schedule_slot(void)
             }
             break;
         case 3:
-            if ((40 <= info.current_slot && info.current_slot <= 43) || (info.current_slot == 30))
+            if ((40 <= info.current_slot && info.current_slot <= 43) || (info.current_slot == 30) || (info.current_slot == 59))
             {
                 sem_post(&info.send_semaphore);
                 udelay(slot_table[info.current_slot]);
@@ -128,7 +128,7 @@ int schedule_slot(void)
             }
             break;
         case 4:
-            if ((44 <= info.current_slot && info.current_slot <= 47) || (info.current_slot == 35))
+            if ((44 <= info.current_slot && info.current_slot <= 47) || (info.current_slot == 35) || (info.current_slot == 59))
             {
                 sem_post(&info.send_semaphore);
                 udelay(slot_table[info.current_slot]);
@@ -191,7 +191,7 @@ int inquire_index(int node_index)
 /*
 功能：判断当前时隙属于哪个终端Z的发送时隙
 参数：节点索引
-返回值：在网则返回对应节点索引，不在网则返回-1
+返回值：成功则返回对应节点索引，否则返回-1
 */
 int inquire_slot(int current_slot)
 {

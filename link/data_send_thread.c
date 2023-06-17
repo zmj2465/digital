@@ -50,7 +50,6 @@ int data_send_proc(void)
                         /*发送扫描询问帧*/
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                        printf("dst1 = %d\n", msg.head.dst);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
                         //printf("M send scan require successfully, current slot = %d\n", info.current_slot);
                         ///*打开扫描响应定时器*/
@@ -63,7 +62,7 @@ int data_send_proc(void)
                 /*测距时隙*/
                 
             }
-            else if(17 < info.current_slot && info.current_slot < 29)
+            else if(18 <= info.current_slot && info.current_slot <= 28)
             {
                 /*M1_SEND_M2，M1_SNED_Z5*/
               
@@ -76,9 +75,8 @@ int data_send_proc(void)
                     index = schedule_inquire_index(i, info.current_slot);
                     if (index != -1)
                     {
-                        if (info.scan_flag[index])
+                        if (info.scan_flag[index] == 1)
                         {
-                            printf("M send Z%d scan_con success\n" , index);
                             msg.data[0] = SCAN_CON;
                             msg.len = 1;
                             /*发送扫描回复帧*/
@@ -86,9 +84,12 @@ int data_send_proc(void)
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
                             info.scan_flag[index] = 0;
-                            printf("M send scan confirm successfully, current slot = %d\n", info.current_slot);
+                            printf("M send Z%d scan confirm successfully, current slot = %d\n", index, info.current_slot);
+                            //if (info.device_info.node_num == FD_NUM)
+                            //{
+                                //fsm_do(EVENT_WSN_SUCC);
+                            //}
                             return 0;
-                            
                         }
                         else
                         {
@@ -101,7 +102,6 @@ int data_send_proc(void)
                             send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
                             return 0;
                         }
-
                     }
                 }
                 for (i = 1; i < FD_NUM; i++)
@@ -124,6 +124,38 @@ int data_send_proc(void)
             }
             break;
         case FSM_ON://建链完成状态，判断当前时隙给哪个Z发数据
+            if (info.current_slot == 0 || info.current_slot == 5)
+            {
+                /*信令时隙*/
+            }
+            else if (info.current_slot == 61)
+            {
+                /*测距时隙*/
+
+            }
+            else if (18 <= info.current_slot && info.current_slot <= 28)
+            {
+                /*M1_SEND_M2，M1_SNED_Z5*/
+            }
+            else
+            {
+                for (i = 1; i < FD_NUM; i++)
+                {
+
+                    index = schedule_inquire_index(i, info.current_slot);
+                    if (index != -1)
+                    {
+                        /*发送数据帧*/
+                        //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
+                        msg.data[0] = 5;
+                        msg.len = 1;
+                        generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
+                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
+                        return 0;    
+                    }
+                }
+            }
             break;
         default:
             break;
@@ -138,14 +170,18 @@ int data_send_proc(void)
             break;
         case FSM_OFF:
             break;
-        case FSM_WAN://正在建链状态，按照自行规划的时隙响应M的扫描询问
-            /*发送扫描响应帧*/
-            dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-            generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-            psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-            send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
-            /*打开扫描回复定时器*/
-            info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_CON_TIMER, TIME_ONESHOT);
+        case FSM_WAN://正在建链状态，响应M的扫描询问帧
+            if (info.current_slot != 59)
+            {
+                /*发送扫描响应帧*/
+                dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
+                generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], SCAN, &msg);
+                psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+                /*打开扫描回复定时器*/
+                info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_CON_TIMER, TIME_ONESHOT);
+            }
+
             break;
         case FSM_ON://建链完成状态，发送数据帧
             if ((31 <= info.current_slot && info.current_slot <= 34) && MY_INDEX == 1)

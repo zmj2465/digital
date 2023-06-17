@@ -120,7 +120,6 @@ int fsm_init2off_ed(int para)
 	if (MY_INDEX == 0)
 	{
 		msg_t msg;
-		psy_msg_t pmsg;
 		int i;
 		msg.data[0] = START_GUN_REQ;
 		msg.data[1] = START_GUN_TIME;
@@ -130,10 +129,9 @@ int fsm_init2off_ed(int para)
 		for (i = 1; i < FD_NUM; i++)
 		{
 			generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
-			psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-			send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
+			send(FD[i].fd, &msg, msg.len, 0);
 		}
-		printf("base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
+		printf("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
 	}
 	return 0;
 }
