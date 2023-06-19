@@ -372,7 +372,7 @@ int load_config(char* filename)
     printf("%d %s\n", ret, buff[i]);
     info.display_port = atoi(buff[i]);
 
-    //for()
+    for ();
 
 
 
