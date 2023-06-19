@@ -7,6 +7,13 @@
 
 extern int prepare_simulation;
 
+struct antenna_info_t {
+    Point3D point_to;
+};
+
+extern struct antenna_info_t antenna_info[6];
+
+
 /*crc–£—È*/
 void crc_check();
 

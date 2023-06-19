@@ -235,6 +235,7 @@ typedef struct _fddi_info_t
 typedef struct _psy_msg_t
 {
 	Point3D pos;
+	Point3D p_to;
 	Quaternion q;
 	int role;
 	int index;

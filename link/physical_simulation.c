@@ -1,6 +1,90 @@
 #include "physical_simulation.h"
 
 int prepare_simulation = 0;
+struct antenna_info_t antenna_info[6];
+
+double calculateAngle(const Point3D* a, const Point3D* b)
+{
+    double absxk;
+    double b_scale;
+    double b_y;
+    double scale;
+    double t;
+    double y;
+
+    /*  计算向量A和向量B的模长 */
+    /*  计算夹角（以弧度为单位） */
+    /*  将弧度转换为角度 */
+    scale = 3.3121686421112381E-170;
+    b_scale = 3.3121686421112381E-170;
+    absxk = fabs(a->x);
+    if (absxk > 3.3121686421112381E-170) {
+        y = 1.0;
+        scale = absxk;
+    }
+    else {
+        t = absxk / 3.3121686421112381E-170;
+        y = t * t;
+    }
+
+    absxk = fabs(b->x);
+    if (absxk > 3.3121686421112381E-170) {
+        b_y = 1.0;
+        b_scale = absxk;
+    }
+    else {
+        t = absxk / 3.3121686421112381E-170;
+        b_y = t * t;
+    }
+
+    absxk = fabs(a->y);
+    if (absxk > scale) {
+        t = scale / absxk;
+        y = y * t * t + 1.0;
+        scale = absxk;
+    }
+    else {
+        t = absxk / scale;
+        y += t * t;
+    }
+
+    absxk = fabs(b->y);
+    if (absxk > b_scale) {
+        t = b_scale / absxk;
+        b_y = b_y * t * t + 1.0;
+        b_scale = absxk;
+    }
+    else {
+        t = absxk / b_scale;
+        b_y += t * t;
+    }
+
+    absxk = fabs(a->z);
+    if (absxk > scale) {
+        t = scale / absxk;
+        y = y * t * t + 1.0;
+        scale = absxk;
+    }
+    else {
+        t = absxk / scale;
+        y += t * t;
+    }
+
+    absxk = fabs(b->z);
+    if (absxk > b_scale) {
+        t = b_scale / absxk;
+        b_y = b_y * t * t + 1.0;
+        b_scale = absxk;
+    }
+    else {
+        t = absxk / b_scale;
+        b_y += t * t;
+    }
+
+    y = scale * sqrt(y);
+    b_y = b_scale * sqrt(b_y);
+    return 57.295779513082323 * acos(((a->x * b->x + a->y * b->y) + a->z * b->z) / (y * b_y));
+}
 
 void convertCoordinates(const Point3D* p1, const Quaternion* quaternion,
     Point3D* p2)
@@ -195,7 +279,166 @@ void convertCoordinates2(const Point3D* p1, const AntennaTransform* transform, P
 //    return ret_send & ret_recv;
 //}
 
-bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Point3D p21, Quaternion quaternion2, int index2, int role2)
+//bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Point3D p21, Quaternion quaternion2, int index2, int role2)
+//{
+//    int i;
+//    Point3D p12, p13, p22, p23;
+//    double distance = 0;
+//    double anglem;
+//    double anglez;
+//    double alpha1[6];
+//    double beta1[6];
+//    double alpha2[6];
+//    double beta2[6];
+//
+//    //if (p11.x < 0.1 && p11.x>-0.1) p11.x = 0;
+//    //if (p11.y < 0.1 && p11.y>-0.1) p11.y = 0;
+//    //if (p11.z < 0.1 && p11.z>-0.1) p11.z = 0;
+//    //if (p21.x < 0.1 && p21.x>-0.1) p21.x = 0;
+//    //if (p21.y < 0.1 && p21.y>-0.1) p21.y = 0;
+//    //if (p21.z < 0.1 && p21.z>-0.1) p21.z = 0;
+//
+//    double distancex = p11.x - p21.x;
+//    double distancey = p11.y - p21.y;
+//    double distancez = p11.z - p21.z;
+//    distance = sqrt(distancex * distancex + distancey * distancey + distancez * distancez);
+//
+//    bool ret = false;
+//    bool ret_send = false;
+//    bool ret_recv = false;
+//
+//    if (distance < 500)
+//    {
+//        anglem = 60;
+//        anglez = 60;
+//    }
+//    else if (distance < 5000)
+//    {
+//        anglem = 25;
+//        anglez = 60;
+//    }
+//    else if (distance < 15000)
+//    {
+//        anglem = 25;
+//        anglez = 50;
+//    }
+//    else if (distance < 30000)
+//    {
+//        anglem = 25;
+//        anglez = 25;
+//    }
+//    else if (distance < 500000)
+//    {
+//        anglem = 8.5;
+//        anglez = 19;
+//    }
+//
+//    convertCoordinates(&p21, &quaternion1, &p22);
+//    convertCoordinates(&p11, &quaternion2, &p12);
+//
+//    //printf("[start] %g\n", distance);
+//    for (i = 0; i < 6; i++)
+//    {
+//        if (role1 == 0)
+//        {
+//            convertCoordinates2(&p22, &transform[i], &p23);
+//            calculateAngles(&p23, &alpha1[i], &beta1[i]);
+//        }
+//        else if (role1 == 1)
+//        {
+//            convertCoordinates2(&p22, &transform[i + 6], &p23);
+//            calculateAngles(&p23, &alpha1[i], &beta1[i]);
+//        }
+//        if (role2 == 0)
+//        {
+//            convertCoordinates2(&p12, &transform[i], &p13);
+//            calculateAngles(&p13, &alpha2[i], &beta2[i]);
+//        }
+//        else if (role2 == 1)
+//        {
+//            convertCoordinates2(&p12, &transform[i + 6], &p13);
+//            calculateAngles(&p13, &alpha2[i], &beta2[i]);
+//        }
+//        //printf("x2=%g y2=%g z2=%g x1=%g y1=%g z1=%g\n", p23.x, p23.y, p23.z, p13.x, p13.y, p13.z);
+//        //printf("a1=%g b1=%g a2=%g b2=%g\n", alpha1[i], beta1[i], alpha2[i], beta2[i]);
+//    }
+//    //printf("[end]\n");
+//
+//    if (role1 == 0 && role2 == 1)  //M发 Z收
+//    {
+//        if (beta1[index1] < anglem && beta2[index2] < anglez) //m俯仰角满足且z俯仰角满足
+//        {
+//            ret = true;
+//        }
+//    }
+//    else if (role1 == 1 && role2 == 0) //Z发 M收
+//    {
+//        if (beta1[index1] < anglez) //z俯仰角满足时 遍历m接收天线
+//        {
+//            for (i = 0; i < 6; i++) //m只要有一个天线能收到就满足
+//            {
+//                if (beta2[i] < anglem)
+//                {
+//                    ret = true;
+//                }
+//            }
+//        }
+//    }
+//    return ret;
+//
+//}
+
+#define ALPHA_MAX   360
+#define ALPHA_MIN   0
+
+#define BETA_MAX    60
+#define BETA_MIN    0
+
+/*
+* 选择天线:
+* my_role:自己节点角色
+* my_quaternion:自己四元数
+* pos:对方位置
+* 返回
+* index:选择的天线号
+* 天线指向存在数组中
+*/
+void select_antenna(int my_role, Quaternion my_quaternion, Point3D pos, int* index)
+{
+    Point3D pos2, pos3;
+    double a, b;
+    int add = (my_role == 0) ? 0 : 6;
+
+    convertCoordinates(&pos, &my_quaternion, &pos2);
+    for (int i = 0; i < 6; i++)
+    {
+        convertCoordinates2(&pos2, &transform[i + add], &pos3);
+        calculateAngles(&pos3, &a, &b);
+        if (a<ALPHA_MAX && a>ALPHA_MIN && b<BETA_MAX && b>BETA_MIN)
+        {
+            antenna_info[i].point_to.x = pos3.x;
+            antenna_info[i].point_to.y = pos3.y;
+            antenna_info[i].point_to.z = pos3.z;
+            return i;
+        }
+    }
+    return -1;
+}
+
+/*
+* p11:发射方所在位置
+* quaternion1:发射方四元数
+* p1_to:发射方天线指向
+* index1:发射方所用天线
+* role1:发射方角色
+* 
+* p21:接收方所在位置
+* p2_to:接收方天线指向
+* quaternion2:接收方四元数
+* index2:接收方所用天线
+* role2:接收方角色
+*/
+bool checkAngles(Point3D p11, Point3D p1_to, Quaternion quaternion1, int index1, int role1, Point3D p21, Point3D p2_to, Quaternion quaternion2, int index2, int role2)
 {
     int i;
     Point3D p12, p13, p22, p23;
@@ -206,13 +449,6 @@ bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Poi
     double beta1[6];
     double alpha2[6];
     double beta2[6];
-
-    //if (p11.x < 0.1 && p11.x>-0.1) p11.x = 0;
-    //if (p11.y < 0.1 && p11.y>-0.1) p11.y = 0;
-    //if (p11.z < 0.1 && p11.z>-0.1) p11.z = 0;
-    //if (p21.x < 0.1 && p21.x>-0.1) p21.x = 0;
-    //if (p21.y < 0.1 && p21.y>-0.1) p21.y = 0;
-    //if (p21.z < 0.1 && p21.z>-0.1) p21.z = 0;
 
     double distancex = p11.x - p21.x;
     double distancey = p11.y - p21.y;
@@ -252,56 +488,21 @@ bool checkAngles(Point3D p11, Quaternion quaternion1, int index1, int role1, Poi
     convertCoordinates(&p21, &quaternion1, &p22);
     convertCoordinates(&p11, &quaternion2, &p12);
 
-    //printf("[start] %g\n", distance);
-    for (i = 0; i < 6; i++)
-    {
-        if (role1 == 0)
-        {
-            convertCoordinates2(&p22, &transform[i], &p23);
-            calculateAngles(&p23, &alpha1[i], &beta1[i]);
-        }
-        else if (role1 == 1)
-        {
-            convertCoordinates2(&p22, &transform[i + 6], &p23);
-            calculateAngles(&p23, &alpha1[i], &beta1[i]);
-        }
-        if (role2 == 0)
-        {
-            convertCoordinates2(&p12, &transform[i], &p13);
-            calculateAngles(&p13, &alpha2[i], &beta2[i]);
-        }
-        else if (role2 == 1)
-        {
-            convertCoordinates2(&p12, &transform[i + 6], &p13);
-            calculateAngles(&p13, &alpha2[i], &beta2[i]);
-        }
-        //printf("x2=%g y2=%g z2=%g x1=%g y1=%g z1=%g\n", p23.x, p23.y, p23.z, p13.x, p13.y, p13.z);
-        //printf("a1=%g b1=%g a2=%g b2=%g\n", alpha1[i], beta1[i], alpha2[i], beta2[i]);
-    }
-    //printf("[end]\n");
+    //发射方判断 p1_to天线指向，p23所在位置夹角 小于波束宽度
+    int add = role1 == 0 ? 0 : 6;
+    double cmp = role1 == 0 ? anglem : anglez;
+    convertCoordinates2(&p22, &transform[index1 + add], &p23);
+    double angle = calculateAngle(&p23, &p1_to);
+    if (angle < cmp) ret_send = true;
 
-    if (role1 == 0 && role2 == 1)  //M发 Z收
-    {
-        if (beta1[index1] < anglem && beta2[index2] < anglez) //m俯仰角满足且z俯仰角满足
-        {
-            ret = true;
-        }
-    }
-    else if (role1 == 1 && role2 == 0) //Z发 M收
-    {
-        if (beta1[index1] < anglez) //z俯仰角满足时 遍历m接收天线
-        {
-            for (i = 0; i < 6; i++) //m只要有一个天线能收到就满足
-            {
-                if (beta2[i] < anglem)
-                {
-                    ret = true;
-                }
-            }
-        }
-    }
-    return ret;
+    //接收方判断 p2_to天线指向，p13所在位置夹角 小于波束宽度
+    add = role2 == 0 ? 0 : 6;
+    cmp = role2 == 0 ? anglem : anglez;
+    convertCoordinates2(&p12, &transform[index2 + add], &p13);
+    angle = calculateAngle(&p13, &p2_to);
+    if (angle < cmp) ret_recv = true;
 
+    return ret_send & ret_recv;
 }
 
 
@@ -405,7 +606,7 @@ int psy_recv(int len,char* data, char* msg, int index, int role)
     psy_msg_t* p = (psy_msg_t*)data;
     //printf("psy_recv:x=%f y=%f z=%f q0=%f q1=%f q2=%f q3=%f\n", p->pos.x, p->pos.y, p->pos.z, p->q.q0, p->q.q1, p->q.q2, p->q.q3);
     if (p->flag == 0 || prepare_simulation == 0) return 1;
-    ret=checkAngles(p->pos,p->q,p->index,p->role,fddi_info.pos,fddi_info.q,index,role);
+    ret = checkAngles(p->pos, p->p_to, p->q, p->index, p->role, fddi_info.pos, antenna_info[index].point_to, fddi_info.q, index, role);
     if (ret == false) return 1;
     memcpy(msg, (char*)(&p->msg), sizeof(msg_t));
     return 0;
@@ -423,6 +624,7 @@ void psy_send(int len, char* data, char* msg, int index, int role)
     p->q.q1 = fddi_info.q.q1;
     p->q.q2 = fddi_info.q.q2;
     p->q.q3 = fddi_info.q.q3;
+    p->p_to = antenna_info[index].point_to;
     p->index = index;
     p->role = role;
     p->flag = prepare_simulation;
