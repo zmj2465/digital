@@ -338,6 +338,7 @@ int load_config(char* filename)
     fgets(id, 20, fp);
     int len = strlen(id);
     id[len - 1] = 0;
+    MY_INDEX = atoi(&id[len - 2]);
 
     GetIniKeyString(id, "ip", filename, &buff[++i]);
     printf("%d %s\n", ret, buff[i]);
@@ -345,7 +346,7 @@ int load_config(char* filename)
 
     ret = GetIniKeyString(id, "port", filename, &buff[++i]);
     printf("%d %s\n", ret, buff[i]);
-
+    info.port = atoi(buff[i]);
 
     ret = GetIniKeyString(id, "fddi_ip", filename, &buff[++i]);
     printf("%d %s\n", ret, buff[i]);
@@ -353,26 +354,26 @@ int load_config(char* filename)
 
     ret = GetIniKeyString(id, "fddi_port", filename, &buff[++i]);
     printf("%d %s\n", ret, buff[i]);
-
-    //ret = GetIniKeyString(id, "communication_ip", filename, &buff[++i]);
-    //printf("%d %s\n", ret, buff[i]);
-    //memcpy(&info, &buff[i], sizeof(buff[i]));
-
-    //ret = GetIniKeyString(id, "communication_port", filename, &buff[++i]);
-    //printf("%d %s\n", ret, buff[i]);
+    info.fddi_port = atoi(buff[i]);
 
     ret = GetIniKeyString(id, "control_ip", filename, &buff[++i]);
     printf("%d %s\n", ret, buff[i]);
-    memcpy(&info.ip, &buff[i], sizeof(buff[i]));
+    memcpy(&info.control_ip, &buff[i], sizeof(buff[i]));
 
     ret = GetIniKeyString(id, "control_port", filename, &buff[++i]);
     printf("%d %s\n", ret, buff[i]);
+    info.control_port = atoi(buff[i]);
 
     ret = GetIniKeyString(id, "display_ip", filename, &buff[++i]);
     printf("%d %s\n", ret, buff[i]);
-    memcpy(&info.ip, &buff[i], sizeof(buff[i]));
+    memcpy(&info.display_ip, &buff[i], sizeof(buff[i]));
 
     ret = GetIniKeyString(id, "display_port", filename, &buff[++i]);
     printf("%d %s\n", ret, buff[i]);
+    info.display_port = atoi(buff[i]);
+
+    //for()
+
+
 
 }
