@@ -150,6 +150,8 @@ typedef struct _info_t
 	uint8_t scan_flag[MAX_DEVICE];
 	UINT timerId;
 	UINT timerId_M[MAX_DEVICE];
+	int antenna_M[MAX_DEVICE];
+	int antenna_Z;
 }info_t;
 
 typedef struct _head_t

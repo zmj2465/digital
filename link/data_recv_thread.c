@@ -80,18 +80,27 @@ int data_recv_proc(void)
 						memset(&msg, 0, sizeof(msg_t));
 						int len;
 						int antenna_recv;
-						antenna_recv = inquire_antenna(info.current_slot);
-						/*信道仿真,匹配自身波束信息对齐*/
-						ret = psy_recv(len, psy_msg, &msg, antenna_recv, info.device_info.node_role);
-						if (ret == 0)
+
+						ret = antenna_match(psy_msg, &msg, info.device_info.node_role);
+						if (ret == 1)
 						{
 							enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
 						}
 						else
 						{
-							printf("sim fail throw\n");
-							continue;
+							printf("match fail throw\n");
 						}
+						///*信道仿真,匹配自身波束信息对齐*/
+						//ret = psy_recv(len, psy_msg, &msg, antenna_recv, info.device_info.node_role);
+						//if (ret == 0)
+						//{
+						//	enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
+						//}
+						//else
+						//{
+						//	printf("sim fail throw\n");
+						//	continue;
+						//}
 					}
 				}
 			}
@@ -99,4 +108,46 @@ int data_recv_proc(void)
 	}
 
 	return ret;
+}
+
+
+int antenna_match(char* data, msg_t* msg, int role)
+{
+	int antenna_recv;
+	int index;
+	psy_msg_t* ptr = (psy_msg_t*)data;
+
+	if(role == 0)//M
+	{
+		if (ptr->msg.head.type == SCAN && ptr->msg.data[0] == SCAN_RES)
+		{
+			index = inquire_address(ptr->msg.head.src);
+			info.antenna_M[index] = ptr->msg.head.antenna_id;
+		}
+		memcpy(msg, (msg_t*)(&ptr->msg), sizeof(msg_t));
+		return 1;
+	}
+	else//Z
+	{
+		if (ptr->msg.head.type == SCAN && ptr->msg.data[0] == SCAN_REQ)
+		{
+			antenna_recv = inquire_antenna(info.current_slot);
+		}
+		else
+		{
+			antenna_recv = info.antenna_Z;
+		}
+
+		if (ptr->msg.head.antenna_id == antenna_recv)
+		{
+			memcpy(msg, (msg_t*)(&ptr->msg), sizeof(msg_t));
+			info.antenna_Z = antenna_recv;
+			
+			return 1;
+		}
+	}
+	
+	
+
+	return 0;
 }

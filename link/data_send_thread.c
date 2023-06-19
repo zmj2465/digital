@@ -207,10 +207,11 @@ int data_send_proc(void)
 */
 void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
 {
+    int index;
     msg->head.dst = dst;
     msg->head.src = src;
     msg->head.type = type;
-    msg->head.antenna_id = info.current_antenna;
+    
 
     if (type == START_GUN && MY_INDEX == 0)
     {
@@ -219,6 +220,23 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
     else
     {
         clock_gettime(CLOCK_REALTIME, &msg->head.send_time);
+    }
+
+    if (MY_INDEX == 0)//M
+    {
+        if (type == SCAN && msg->data[0] == SCAN_REQ)
+        {
+            msg->head.antenna_id = info.current_antenna;
+        }
+        else
+        {
+            index = inquire_address(msg->head.dst);
+            msg->head.antenna_id = info.antenna_M[index];
+        }
+    }
+    else//Z
+    {
+        msg->head.antenna_id = info.antenna_Z;
     }
 
     msg->len = msg->len + sizeof(head_t) + sizeof(int);//加上帧头长度
