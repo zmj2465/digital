@@ -51,7 +51,7 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
-                        //printf("M send scan require successfully, current slot = %d\n", info.current_slot);
+                        printf("dst1 = %d\n", pmsg.msg.head.dst);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
@@ -100,6 +100,7 @@ int data_send_proc(void)
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
+                            printf("M send Z%d successfully, current slot = %d\n", index, info.current_slot);
                             return 0;
                         }
                     }
@@ -114,11 +115,15 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
-                        printf("dst1 = %d\n", pmsg.msg.head.dst);
+                        printf("dst2 = %d\n", pmsg.msg.head.dst);
                         //printf("dst1 = %d\n", msg.head.dst);
                         //printf("M send scan require successfully, current slot = %d\n", info.current_slot);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
+                    }
+                    else
+                    {
+                        continue;
                     }
                 }                
             }
