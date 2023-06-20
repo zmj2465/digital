@@ -38,8 +38,12 @@ int main()
     /*设置进程优先级*/
     set_process_priority();
 
-    /*ip信息配置*/
-    load_ip_config();
+    ///*ip信息配置*/
+    //load_ip_config();
+
+    load_config(INFO_SET_FILE);
+
+    //while (1);
 
     /*数据存储初始化*/
     data_store_init();
@@ -176,7 +180,7 @@ void load_ip_config()
             // 读取下一行的端口号
             fgets(line, sizeof(line), file);
             line[strcspn(line, END_FLAG)] = '\0';
-            sscanf(line, "communication_port %d", &info.communication_port);
+            //sscanf(line, "communication_port %d", &info.communication_port);
             fgets(line, sizeof(line), file);
             sscanf(line, "fddi_port %d", &info.fddi_port);
             fgets(line, sizeof(line), file);
@@ -230,12 +234,13 @@ void load_ip_config()
     {
         printf("IP地址: %s\n", FD[i].ip);
     }
-    printf("communication_port: %d %s\n", info.communication_port,info.ip);
+    //printf("communication_port: %d %s\n", info.communication_port,info.ip);
     printf("fddi_port: %d %s\n", info.fddi_port, info.fddi_ip);
     printf("control_port: %d %s\n", info.control_port, info.control_ip);
     printf("display_port: %d %s\n", info.display_port, info.display_ip);
     printf("MY_INDEX=%d\n", MY_INDEX);
 }
+
 
 void load_simulation_config()
 {
@@ -271,4 +276,150 @@ void data_store_init()
         CloseHandle(hFile);
         return 1;
     }
+}
+
+
+/*
+    * 函数名：         GetIniKeyString
+    * 入口参数：        title
+    *                      配置文件中一组数据的标识
+    *                  key
+    *                      这组数据中要读出的值的标识
+    *                  filename
+    *                      要读取的文件路径
+    * 返回值：         找到需要查的值则返回正确结果 0
+    *                  否则返回-1
+    */
+int GetIniKeyString(char* title, char* key, char* filename, char* buf)
+{
+
+    FILE* fp;
+    int  flag = 0;
+    char sTitle[64], * wTmp;
+    char sLine[1024];
+    sprintf(sTitle, "[%s]", title);
+
+    if (NULL == (fp = fopen(filename, "r"))) {
+        perror("fopen");
+        return -1;
+    }
+    while (NULL != fgets(sLine, 1024, fp)) {
+        // 这是注释行  
+        if (0 == strncmp("//", sLine, 2)) continue;
+        if ('#' == sLine[0])              continue;
+        wTmp = strchr(sLine, '=');
+        if ((NULL != wTmp) && (1 == flag)) {
+            if (0 == strncmp(key, sLine, strlen(key))) { // 长度依文件读取的为准  
+                sLine[strlen(sLine) - 1] = '\0';
+                fclose(fp);
+                while (*(wTmp + 1) == ' ') {
+                    wTmp++;
+                }
+                strcpy(buf, wTmp + 1);
+                return 0;
+            }
+        }
+        else {
+            if (0 == strncmp(sTitle, sLine, strlen(sTitle))) { // 长度依文件读取的为准  
+                flag = 1; // 找到标题位置  
+            }
+        }
+    }
+    fclose(fp);
+    return -1;
+}
+
+int load_config(char* filename)
+{
+    char name[20];
+    char num[20];
+    char key[20];
+    char buff[100][20];
+    int ret = 0;
+    int i = 0;
+    MY_INDEX = -1;
+
+    //仿真节点数量
+    ret = GetIniKeyString("NUM", "num", filename, num);
+    //printf("%d %s\n", ret, num);
+    FD_NUM = atoi(num);
+
+    printf("SIM_NUM:%d\n", FD_NUM);
+
+    //本节点信息
+    ret = GetIniKeyString("MY_NAME", "name", filename, name);
+    printf("My Real Name:%s\n", name);
+
+
+    ret = GetIniKeyString(name, "ip", filename, &buff[++i]);
+    strcpy(info.ip, buff[i]);
+
+    ret = GetIniKeyString(name, "port", filename, &buff[++i]);
+    info.port = atoi(buff[i]);
+
+    ret = GetIniKeyString(name, "fddi_ip", filename, &buff[++i]);
+    strcpy(info.fddi_ip, buff[i]);
+
+    ret = GetIniKeyString(name, "fddi_port", filename, &buff[++i]);
+    info.fddi_port = atoi(buff[i]);
+
+    ret = GetIniKeyString(name, "control_ip", filename, &buff[++i]);
+    strcpy(info.control_ip, buff[i]);
+
+    ret = GetIniKeyString(name, "control_port", filename, &buff[++i]);
+    info.control_port = atoi(buff[i]);
+
+    ret = GetIniKeyString(name, "display_ip", filename, &buff[++i]);
+    strcpy(info.display_ip, buff[i]);
+
+    ret = GetIniKeyString(name, "display_port", filename, &buff[++i]);
+    info.display_port = atoi(buff[i]);
+
+    printf("[My Info]\n");
+    printf("ip : %s\n", info.ip);
+    printf("port : %d\n", info.port);
+
+    printf("fddi_ip : %s\n", info.fddi_ip);
+    printf("fddi_port : %d\n", info.fddi_port);
+
+    printf("control_ip : %s\n", info.control_ip);
+    printf("control_port : %d\n", info.control_port);
+
+    printf("display_ip : %s\n", info.display_ip);
+    printf("display_port : %d\n", info.display_port);
+
+
+    //所有节点信息
+    for (int j = 0; j < atoi(num); j++)
+    {
+        char value[20];
+        int ip_index;
+        int port_index;
+        sprintf(key, "L%d", j);
+        ret = GetIniKeyString("NUM", key, filename, value);
+        //printf("%d %s\n", ret, value);
+
+        ret = GetIniKeyString(value, "ip", filename, &buff[++i]);
+        //printf("%d %s\n", ret, buff[i]);
+        ip_index = i;
+
+        ret = GetIniKeyString(value, "port", filename, &buff[++i]);
+        //printf("%d %s\n", ret, buff[i]);
+        port_index = i;
+
+        if (strcmp(value, name) == 0)
+        {
+            MY_INDEX = j;
+        }
+
+        strcpy(FD[j].ip, buff[ip_index]);
+        FD[j].port = atoi(buff[port_index]);
+        printf("[%s] [%s] ", key, value);
+        if (MY_INDEX == j) printf(" <----\n");
+        else printf("\n");
+        printf("ip : %s\n", FD[j].ip);
+        printf("port : %d\n", FD[j].port);
+    }
+
+
 }

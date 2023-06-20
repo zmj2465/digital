@@ -73,6 +73,7 @@ typedef struct _link_info_t
 	struct sockaddr_in  addr;
 	char				host_name[HOST_NAME_LEN];  //设备名
 	char				ip[IP_LEN];				//设备ip
+	int                 port;
 	socklen_t			addr_len;
 	uint8_t				recvBuffer[MAX_DATA_LEN*2];
 	char				sendBuffer[MAX_DATA_LEN*2];
@@ -123,6 +124,7 @@ typedef struct _info_t
 	int simulated_link_num;
 	int link_index;
 	char ip[IP_LEN];				//样机设备ip
+	int port;
 	
 	/*external_interface*/
 	link_info_t control_system;
@@ -131,7 +133,7 @@ typedef struct _info_t
 	char control_ip[IP_LEN];
 	char fddi_ip[IP_LEN];
 	char display_ip[IP_LEN];
-	int communication_port;
+	//int communication_port;
 	int fddi_port;
 	int control_port;
 	int display_port;
