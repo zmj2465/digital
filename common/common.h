@@ -124,7 +124,7 @@ typedef struct _info_t
 	int simulated_link_num;
 	int link_index;
 	char ip[IP_LEN];				//样机设备ip
-	char port;
+	int port;
 	
 	/*external_interface*/
 	link_info_t control_system;
@@ -133,7 +133,7 @@ typedef struct _info_t
 	char control_ip[IP_LEN];
 	char fddi_ip[IP_LEN];
 	char display_ip[IP_LEN];
-	int communication_port;
+	//int communication_port;
 	int fddi_port;
 	int control_port;
 	int display_port;

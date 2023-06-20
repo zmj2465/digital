@@ -101,7 +101,7 @@ void link_init()
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	inet_pton(AF_INET, info.ip, (void*)&addr.sin_addr);
-	addr.sin_port = htons(info.communication_port);
+	addr.sin_port = htons(info.port);
 	ret = bind(LFD, (struct sockaddr*)&addr, sizeof addr);
 
 	//开始监听
@@ -117,6 +117,18 @@ void link_init()
 		FD[i].addr_len = sizeof(FD[i].addr);
 		int fd= accept(LFD, (struct sockaddr*)&temp_addr, &(FD[i].addr_len));
 		int j;
+
+		char buff[1024];
+		recv(fd, buff, 1024, 0);
+		int x = *(int*)buff;
+		printf("%d\n");
+
+		FD[x].fd = fd;
+		memcpy(&FD[x].addr, &temp_addr, sizeof(struct sockaddr_in));
+		printf("(device)%d (ip)%s (fd)%d is connected\n", x, inet_ntoa(FD[x].addr.sin_addr), FD[x].fd);
+
+
+
 		for (j = 0; j < info.simulated_link_num; j++)
 		{
 			if (strcmp(FD[j].ip, inet_ntoa(temp_addr.sin_addr)) == 0)
@@ -135,14 +147,17 @@ void link_init()
 		FD[i].fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		memset(&FD[i].addr, 0, sizeof(FD[i].addr));
 		FD[i].addr.sin_family = AF_INET;
-		FD[i].addr.sin_port = htons(info.communication_port);
+		FD[i].addr.sin_port = htons(FD[i].port);
 		inet_pton(AF_INET, FD[i].ip, (void*)&FD[i].addr.sin_addr);
 
-		printf("is connecting to (device)%d (ip)%s (fd)%d\n", i, FD[i].ip,FD[i].fd);
+		printf("is connecting to (device)%d (ip)%s (fd)%d (port)%d\n", i, FD[i].ip, FD[i].fd, FD[i].port);
 		while (0 != connect(FD[i].fd, (struct sockaddr*)&FD[i].addr, sizeof(FD[i].addr)))
 		{
 			perror("link connect");
 		}
+
+		send(FD[i].fd, &MY_INDEX, sizeof(int), 0);
+		printf("send: %d\n", MY_INDEX);
 
 		printf("connect device %d ip %s succeed\n", i, inet_ntoa(FD[i].addr.sin_addr));
 	}
