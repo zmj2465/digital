@@ -127,18 +127,16 @@ void link_init()
 		memcpy(&FD[x].addr, &temp_addr, sizeof(struct sockaddr_in));
 		printf("(device)%d (ip)%s (fd)%d is connected\n", x, inet_ntoa(FD[x].addr.sin_addr), FD[x].fd);
 
-
-
-		for (j = 0; j < info.simulated_link_num; j++)
-		{
-			if (strcmp(FD[j].ip, inet_ntoa(temp_addr.sin_addr)) == 0)
-			{
-				FD[j].fd = fd;
-				memcpy(&FD[j].addr, &temp_addr, sizeof(struct sockaddr_in));
-				printf("(device)%d (ip)%s (fd)%d is connected\n", j, inet_ntoa(FD[j].addr.sin_addr), FD[j].fd);
-				break;
-			}
-		}
+		//for (j = 0; j < info.simulated_link_num; j++)
+		//{
+		//	if (strcmp(FD[j].ip, inet_ntoa(temp_addr.sin_addr)) == 0)
+		//	{
+		//		FD[j].fd = fd;
+		//		memcpy(&FD[j].addr, &temp_addr, sizeof(struct sockaddr_in));
+		//		printf("(device)%d (ip)%s (fd)%d is connected\n", j, inet_ntoa(FD[j].addr.sin_addr), FD[j].fd);
+		//		break;
+		//	}
+		//}
 	}
 
 	/*本机作为客户端 连上比自身索引号小的设备*/
