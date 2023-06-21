@@ -9,7 +9,7 @@
 void* data_send_thread(void* arg)
 {
     pthread_detach(pthread_self());
-
+    set_thread_priority();
     while (1)
     {
         sem_wait(&info.send_semaphore);
@@ -51,7 +51,7 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
-                        printf("dst1 = %d\n", pmsg.msg.head.dst);
+                        printf("dst1 = %d, current slot = %d.%d\n", pmsg.msg.head.dst, info.current_time_frame, info.current_slot);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
@@ -75,7 +75,7 @@ int data_send_proc(void)
                     index = schedule_inquire_index(i, info.current_slot);
                     if (index != -1)
                     {
-                        if (info.scan_flag[index] == 1)
+                        if (info.scan_flag_M[index] == 1)
                         {
                             msg.data[0] = SCAN_CON;
                             msg.len = 1;
@@ -83,8 +83,8 @@ int data_send_proc(void)
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
-                            info.scan_flag[index] = 0;
-                            printf("M send Z%d scan confirm successfully, current slot = %d\n", index, info.current_slot);
+                            info.scan_flag_M[index] = 0;
+                            printf("M send Z%d scan confirm successfully, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
                             //if (info.device_info.node_num == FD_NUM)
                             //{
                                 //fsm_do(EVENT_WSN_SUCC);
@@ -100,7 +100,7 @@ int data_send_proc(void)
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
-                            printf("M send Z%d successfully, current slot = %d\n", index, info.current_slot);
+                            printf("M send Z%d successfully, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
                             return 0;
                         }
                     }
@@ -115,9 +115,8 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
-                        printf("dst2 = %d\n", pmsg.msg.head.dst);
-                        //printf("dst1 = %d\n", msg.head.dst);
-                        //printf("M send scan require successfully, current slot = %d\n", info.current_slot);
+                        printf("dst2 = %d, current slot = %d.%d\n", pmsg.msg.head.dst, info.current_time_frame, info.current_slot);
+                       
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
@@ -179,22 +178,30 @@ int data_send_proc(void)
             if (info.current_slot != 59)
             {
                 /*发送扫描响应帧*/
-                dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-                generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
-                /*打开扫描回复定时器*/
-                info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_CON_TIMER, TIME_ONESHOT);
+                if (info.scan_flag_Z == 1)
+                {
+                    msg.data[0] = SCAN_RES;
+                    msg.len = 1;
+                    generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], SCAN, &msg);
+                    psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                    send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+                    printf("Z%d send scan response, current slot = %d.%d\n", inquire_address(info.device_info.node_id[MY_INDEX]), info.current_time_frame, info.current_slot);
+                    /*打开扫描回复定时器*/
+                    info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_CON_TIMER, TIME_ONESHOT);
+                    info.scan_flag_Z = 0;
+                }
             }
-
             break;
         case FSM_ON://建链完成状态，发送数据帧
             if ((31 <= info.current_slot && info.current_slot <= 34) && MY_INDEX == 1)
             {
-                dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
+                //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
+                msg.data[0] = 5;
+                msg.len = 1;
                 generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                 psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                 send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+                printf("Z%d send data frame, current slot = %d.%d\n", inquire_address(info.device_info.node_id[MY_INDEX]), info.current_time_frame, info.current_slot);
             }
             break;
         default:

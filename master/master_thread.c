@@ -51,6 +51,7 @@ int master_data_proc(void)
                 //{
                 //    info.timerId_M[index] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, DATA_TIMER, TIME_ONESHOT);
                 //}
+                printf("M receive data frame, current slot = %d.%d\n", info.current_time_frame, info.current_slot);
                 break;
             case START_GUN:
                 if (msg.data[0] == START_GUN_RES)
@@ -59,7 +60,7 @@ int master_data_proc(void)
                 }
                 else
                 {
-                    printf("M not receive start_gun response\n");
+                    printf("M not receive start-gun response\n");
                 }
                 break;
             case SCAN:
@@ -68,8 +69,8 @@ int master_data_proc(void)
                     index = inquire_address(msg.head.src);
                     info.device_info.node_num++;
                     info.device_info.node_list = info.device_info.node_list | (1 << index);
-                    info.scan_flag[index] = 1;
-                    printf("list =  %d\n", info.device_info.node_list);
+                    info.scan_flag_M[index] = 1;
+                    printf("M receive Z%d scan response, list = %d, current slot = %d.%d\n", index, info.device_info.node_list, info.current_time_frame, info.current_slot);
                 }
                 else
                 {
@@ -100,7 +101,7 @@ int master_data_proc(void)
                     }
                     else
                     {
-                        printf("Z not receive start_gun require\n");
+                        printf("Z not receive start-gun require\n");
                     }
                     break;
                 case SCAN:
@@ -109,9 +110,7 @@ int master_data_proc(void)
                         /*¹Ø±ÕÉ¨ÃèÑ¯ÎÊ¶¨Ê±Æ÷*/
                         timeKillEvent(info.timerId);
                         /*É¨ÃèÏìÓ¦Ö¡*/
-                        msg.data[0] = SCAN_RES;
-                        msg.len = 1;
-                        enqueue(&info.thread_queue[DATA_SEND_THREAD], msg.data, msg.len);
+                        info.scan_flag_Z = 1;
                     }
                     else if (msg.data[0] == SCAN_CON)
                     {
@@ -123,6 +122,9 @@ int master_data_proc(void)
                     {
                         printf("Z not receive scan\n");
                     }
+                    break;
+                case LONG_FRAME:
+                    printf("Z receive data frame, current slot = %d.%d\n", info.current_time_frame, info.current_slot);
                     break;
                 default:
                     break;

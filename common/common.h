@@ -149,7 +149,9 @@ typedef struct _info_t
 	start_boardcast_t str;
 	int current_slot;
 	int current_antenna;
-	uint8_t scan_flag[MAX_DEVICE];
+	int current_time_frame;       //当前时帧号
+	int scan_flag_M[MAX_DEVICE];
+	int scan_flag_Z;
 	UINT timerId;
 	UINT timerId_M[MAX_DEVICE];
 	int antenna_M[MAX_DEVICE];

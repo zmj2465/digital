@@ -337,6 +337,7 @@ int load_config(char* filename)
     char buff[100][20];
     int ret = 0;
     int i = 0;
+    int j;
     MY_INDEX = -1;
 
     //仿真节点数量
@@ -390,7 +391,7 @@ int load_config(char* filename)
 
 
     //所有节点信息
-    for (int j = 0; j < atoi(num); j++)
+    for (j = 0; j < atoi(num); j++)
     {
         char value[20];
         int ip_index;

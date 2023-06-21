@@ -38,7 +38,6 @@ void* schedule_thread(void* arg)
         if (fsm_status == FSM_WSN || fsm_status == FSM_WAN || fsm_status == FSM_ON)
         {
             schedule_slot();
-
         }
     }
 }
@@ -51,8 +50,10 @@ void* schedule_thread(void* arg)
 void schedule_slot_init(void)
 {
     info.current_slot    = 0;
-    info.current_antenna = 0;
-    memset(info.scan_flag, 0, sizeof(info.scan_flag));
+    info.current_antenna = 1;
+    info.current_time_frame = 1;
+    info.scan_flag_Z = 0;
+    memset(info.scan_flag_M, 0, sizeof(info.scan_flag_M));
     memset(antenna_table, 0, sizeof(antenna_table));
 }
 
@@ -80,7 +81,11 @@ int schedule_slot(void)
         {
             udelay(slot_table[info.current_slot]);
             info.current_slot = (info.current_slot + 1) % SLOT_NUM;
-        } 
+        }
+        if (info.current_slot == 0)
+        {
+            info.current_time_frame = info.current_time_frame + 1;
+        }
     }
     /*从机Z*/
     else
@@ -100,6 +105,10 @@ int schedule_slot(void)
                 udelay(slot_table[info.current_slot]);
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
+            if (info.current_slot == 0)
+            {
+                info.current_time_frame = info.current_time_frame + 1;
+            }
             break;
         case 2:
             if ((35 <= info.current_slot && info.current_slot <= 39) || (info.current_slot == 59))
@@ -112,6 +121,10 @@ int schedule_slot(void)
             {
                 udelay(slot_table[info.current_slot]);
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
+            }
+            if (info.current_slot == 0)
+            {
+                info.current_time_frame = info.current_time_frame + 1;
             }
             break;
         case 3:
@@ -126,6 +139,10 @@ int schedule_slot(void)
                 udelay(slot_table[info.current_slot]);
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
+            if (info.current_slot == 0)
+            {
+                info.current_time_frame = info.current_time_frame + 1;
+            }
             break;
         case 4:
             if ((44 <= info.current_slot && info.current_slot <= 47) || (info.current_slot == 35) || (info.current_slot == 59))
@@ -138,6 +155,10 @@ int schedule_slot(void)
             {
                 udelay(slot_table[info.current_slot]);
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
+            }
+            if (info.current_slot == 0)
+            {
+                info.current_time_frame = info.current_time_frame + 1;
             }
             break;
         default:
