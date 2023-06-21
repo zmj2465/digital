@@ -9,7 +9,6 @@
 void* data_send_thread(void* arg)
 {
     pthread_detach(pthread_self());
-    set_thread_priority();
     while (1)
     {
         sem_wait(&info.send_semaphore);
@@ -51,7 +50,7 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
-                        printf("dst1 = %d, current slot = %d.%d\n", pmsg.msg.head.dst, info.current_time_frame, info.current_slot);
+                        printf("M send Z%d scan require, current slot = %d.%d\n", i, info.current_time_frame, info.current_slot);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
@@ -100,7 +99,7 @@ int data_send_proc(void)
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
-                            printf("M send Z%d successfully, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
+                            printf("M send Z%d data, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
                             return 0;
                         }
                     }
@@ -115,8 +114,7 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
-                        printf("dst2 = %d, current slot = %d.%d\n", pmsg.msg.head.dst, info.current_time_frame, info.current_slot);
-                       
+                        printf("M send Z%d scan require, current slot = %d.%d\n", i, info.current_time_frame, info.current_slot);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
@@ -185,7 +183,7 @@ int data_send_proc(void)
                     generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                     psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                     send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
-                    printf("Z%d send scan response, current slot = %d.%d\n", inquire_address(info.device_info.node_id[MY_INDEX]), info.current_time_frame, info.current_slot);
+                    printf("Z%d send scan response, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
                     /*打开扫描回复定时器*/
                     info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_CON_TIMER, TIME_ONESHOT);
                     info.scan_flag_Z = 0;
@@ -201,7 +199,7 @@ int data_send_proc(void)
                 generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                 psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                 send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
-                printf("Z%d send data frame, current slot = %d.%d\n", inquire_address(info.device_info.node_id[MY_INDEX]), info.current_time_frame, info.current_slot);
+                printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
             }
             break;
         default:

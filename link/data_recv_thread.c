@@ -88,7 +88,7 @@ int data_recv_proc(void)
 						}
 						else
 						{
-							printf("match fail throw, M send antenna = %d, Z receive antenna = %d, current slot = %d.%d\n", psy_msg->msg.head.antenna_id, inquire_antenna(info.current_slot), info.current_time_frame, info.current_slot);
+							printf("match fail throw, M send antenna = %d, Z%d receive antenna = %d, current slot = %d.%d\n", psy_msg->msg.head.antenna_id, MY_INDEX, inquire_antenna(info.current_slot), info.current_time_frame, info.current_slot);
 						}
 						///*信道仿真,匹配自身波束信息对齐*/
 						//ret = psy_recv(len, psy_msg, &msg, antenna_recv, info.device_info.node_role);
@@ -142,7 +142,7 @@ int antenna_match(char* data, msg_t* msg, int role)
 		{
 			memcpy(msg, (msg_t*)(&ptr->msg), sizeof(msg_t));
 			info.antenna_Z = antenna_recv;
-			printf("match successfully, M send antenna = %d, Z receive antenna = %d, current slot = %d.%d\n", ptr->msg.head.antenna_id, info.antenna_Z, info.current_time_frame, info.current_slot);
+			printf("match successfully, M send antenna = %d, Z%d receive antenna = %d, current slot = %d.%d\n", ptr->msg.head.antenna_id, MY_INDEX, info.antenna_Z, info.current_time_frame, info.current_slot);
 			return 1;
 		}
 	}

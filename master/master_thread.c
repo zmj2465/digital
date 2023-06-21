@@ -51,7 +51,8 @@ int master_data_proc(void)
                 //{
                 //    info.timerId_M[index] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, DATA_TIMER, TIME_ONESHOT);
                 //}
-                printf("M receive data frame, current slot = %d.%d\n", info.current_time_frame, info.current_slot);
+                index = inquire_address(msg.head.src);
+                printf("M receive Z%d data frame, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
                 break;
             case START_GUN:
                 if (msg.data[0] == START_GUN_RES)
@@ -91,7 +92,7 @@ int master_data_proc(void)
                     {
                         info.str.base_time = msg.head.send_time;
                         info.str.start_time = msg.data[1];
-                        printf("Z base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
+                        printf("Z%d base time=%lld, %ld, start_time = %d\n", MY_INDEX, info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
                         /*响应主机的发令枪帧*/
                         msg.data[0] = START_GUN_RES;
                         msg.len = 1;
@@ -124,7 +125,7 @@ int master_data_proc(void)
                     }
                     break;
                 case LONG_FRAME:
-                    printf("Z receive data frame, current slot = %d.%d\n", info.current_time_frame, info.current_slot);
+                    //printf("Z receive data frame, current slot = %d.%d\n", info.current_time_frame, info.current_slot);
                     break;
                 default:
                     break;
