@@ -119,6 +119,7 @@ int fsm_init2off_ed(int para)
 	/*主机发送信令枪帧*/
 	if (MY_INDEX == 0)
 	{
+		Sleep(1);
 		msg_t msg;
 		int i;
 		msg.data[0] = START_GUN_REQ;
