@@ -201,6 +201,36 @@ int data_send_proc(void)
                 send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
                 printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
             }
+            if ((36 <= info.current_slot && info.current_slot <= 39) && MY_INDEX == 2)
+            {
+                //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
+                msg.data[0] = 5;
+                msg.len = 1;
+                generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
+                psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+                printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
+            }
+            if ((40 <= info.current_slot && info.current_slot <= 43) && MY_INDEX == 3)
+            {
+                //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
+                msg.data[0] = 5;
+                msg.len = 1;
+                generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
+                psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+                printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
+            }
+            if ((44 <= info.current_slot && info.current_slot <= 47) && MY_INDEX == 4)
+            {
+                //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
+                msg.data[0] = 5;
+                msg.len = 1;
+                generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
+                psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+                printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
+            }
             break;
         default:
             break;
