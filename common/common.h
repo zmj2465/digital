@@ -60,10 +60,10 @@ enum FRAME_SUBTYPE
 
 enum TIMER_ID
 {
-	SCAN_REQ_TIMER,
+	SCAN_REQ_TIMER = 5,
 	SCAN_RES_TIMER,
 	SCAN_CON_TIMER,
-	DATA_TIMER
+	Z_DATA_TIMER
 };
 
 typedef struct _link_info_t
@@ -145,17 +145,22 @@ typedef struct _info_t
 	int act_prt;
 
 	/*device_info*/
-	device_info_t device_info;
-	start_boardcast_t str;
-	int current_slot;
-	int current_antenna;
-	int current_time_frame;       //当前时帧号
-	int scan_flag_M[MAX_DEVICE];
-	int scan_flag_Z;
-	UINT timerId;
-	UINT timerId_M[MAX_DEVICE];
-	int antenna_M[MAX_DEVICE];
-	int antenna_Z;
+	device_info_t device_info;		//节点信息
+	start_boardcast_t str;			//仿真开始时间
+	int current_slot;				//当前时隙号
+	int current_antenna;			//当前发射天线号
+	int current_time_frame;			//当前时帧号
+	int scan_flag_M[MAX_DEVICE];	//扫描标志位M
+	int scan_flag_Z;				//扫描标志位Z
+	UINT timerId;					//扫描询问扫描回复定时器
+	UINT timerId_Z;					//数据帧定时器Z
+	UINT timerId_M[MAX_DEVICE];		//数据帧定时器M
+	int antenna_M[MAX_DEVICE];		//天线匹配表M
+	int antenna_Z;					//天线匹配表Z
+	struct timespec set_network_st; //建网开始时刻
+	struct timespec set_network_ed; //建网结束时刻
+	int set_network_time;			//建网时间
+	int test_lost;					//丢失再建链测试	
 }info_t;
 
 typedef struct _head_t

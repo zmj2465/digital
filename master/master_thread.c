@@ -44,14 +44,11 @@ int master_data_proc(void)
             case SHORT_FRAME:
                 break;
             case LONG_FRAME:
-                //index = inquire_timerid(info.current_slot);
-                ///*关闭数据帧定时器*/
-                //timeKillEvent(info.timerId_M[index]);
-                //if (index != -1)
-                //{
-                //    info.timerId_M[index] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, DATA_TIMER, TIME_ONESHOT);
-                //}
                 index = inquire_address(msg.head.src);
+                /*M的数据帧定时器*/
+                timeKillEvent(info.timerId_M[index]);
+                info.timerId_M[index] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, index, TIME_ONESHOT);
+                
                 printf("M receive Z%d data frame, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
                 break;
             case START_GUN:
@@ -125,7 +122,10 @@ int master_data_proc(void)
                     }
                     break;
                 case LONG_FRAME:
-                    //printf("Z receive data frame, current slot = %d.%d\n", info.current_time_frame, info.current_slot);
+                    /*Z的数据帧定时器*/
+                    timeKillEvent(info.timerId_Z);
+                    info.timerId_Z = timeSetEvent(TIMER_DELAY, 0, TimerCallback, Z_DATA_TIMER, TIME_ONESHOT);
+                    //printf("Z%d receive M data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);       
                     break;
                 default:
                     break;

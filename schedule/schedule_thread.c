@@ -101,7 +101,6 @@ int schedule_slot(void)
             }
             else
             {
-
                 udelay(slot_table[info.current_slot]);
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
@@ -291,6 +290,19 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
 {
     switch (dwUser)
     {
+    case 1:
+        printf("M not receive Z1 message in 300ms\n");
+        info.device_info.node_num--;
+        info.device_info.node_list = info.device_info.node_list ^ (1 << 1);
+        printf("M lost Z1 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
+        fsm_do(EVENT_LOST_Z);
+        break;
+    case 2:
+        break;
+    case 3:
+        break;
+    case 4:
+        break;
     case SCAN_REQ_TIMER:
         printf("Z not receive scan require in 300ms\n");
         break;
@@ -300,8 +312,9 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
     case SCAN_CON_TIMER:
         printf("Z not receive scan confirm in 300ms\n");
         break;
-    case DATA_TIMER:
-        printf("M not receive Z message in 300ms\n");
+    case Z_DATA_TIMER:
+        printf("Z not receive M message in 300ms\n");
+        fsm_do(EVENT_LOST_M);
         break;
     default:
         break;

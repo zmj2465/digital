@@ -15,13 +15,11 @@ static trans_t fsm_off[] =
 
 static trans_t fsm_wsn[] =
 {
-	{EVENT_WSN, &fsm_null_cond, &fsm_wsn2wsn_st, &fsm_wsn2wsn_ed, FSM_WSN},
 	{EVENT_WSN_SUCC, &fsm_null_cond, &fsm_wsn2on_st, &fsm_wsn2on_ed, FSM_ON}
 };
 
 static trans_t fsm_wan[] =
 {
-	{EVENT_WAN, &fsm_null_cond, &fsm_wan2wan_st, &fsm_wan2wan_ed, FSM_WAN},
 	{EVENT_WAN_SUCC, &fsm_null_cond, &fsm_wan2on_st, &fsm_wan2on_ed, FSM_ON}
 };
 
@@ -106,6 +104,7 @@ int fsm_init2off_st(int para)
 	info.device_info.node_num = 1;
 	info.device_info.node_list = 0x21;
 	schedule_slot_init();
+	info.test_lost = 0;
 	return 0;
 }
 
@@ -162,6 +161,7 @@ int fsm_off2wsn_st(int para)
 int fsm_off2wsn_ed(int para)
 {
 	/*计算建网时间，开始时刻*/
+	clock_gettime(CLOCK_REALTIME, &info.set_network_st);
 	return 0;
 }
 
@@ -195,52 +195,18 @@ int fsm_off2wan_ed(int para)
 }
 
 /*
-功能：等待网络建立状态->等待网络建立状态（只针对终端M）（之前）
-参数：无
-返回值：0表示成功
-*/
-int fsm_wsn2wsn_st(int para)
-{
-	return 0;
-}
-
-/*
-功能：等待网络建立状态->等待网络建立状态（只针对终端M）（之后）
-参数：无
-返回值：0表示成功
-*/
-int fsm_wsn2wsn_ed(int para)
-{
-	return 0;
-}
-
-/*
-功能：等待入网状态->等待入网状态（只针对终端Z）（之前）
-参数：无
-返回值：0表示成功
-*/
-int fsm_wan2wan_st(int para)
-{
-	return 0;
-}
-
-/*
-功能：等待入网状态->等待入网状态（只针对终端Z）（之后）
-参数：无
-返回值：0表示成功
-*/
-int fsm_wan2wan_ed(int para)
-{
-	return 0;
-}
-
-/*
 功能：等待网络建立状态->网络建立完成状态（只针对终端M）（之前）
 参数：无
 返回值：0表示成功
 */
 int fsm_wsn2on_st(int para)
 {
+	/*计算建网时间，结束时刻*/
+	clock_gettime(CLOCK_REALTIME, &info.set_network_ed);
+	uint64_t sub;
+	sub = (info.set_network_ed.tv_sec - info.set_network_st.tv_sec) * 1000000000 + (info.set_network_ed.tv_nsec - info.set_network_st.tv_nsec);
+	info.set_network_time = sub / 1000000;
+	printf("set network time = %d ms\n", info.set_network_time);
 	return 0;
 }
 

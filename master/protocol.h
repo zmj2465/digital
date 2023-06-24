@@ -20,9 +20,7 @@ typedef enum _EVENT_TYPE
 	EVENT_INIT,
 	EVENT_WAIT_SIMULATE,
 	EVENT_WAIT_ACCESS,
-	EVENT_WSN,
 	EVENT_WSN_SUCC,
-	EVENT_WAN,
 	EVENT_WAN_SUCC,
 	EVENT_LOST_Z,
 	EVENT_LOST_M
@@ -54,10 +52,6 @@ int fsm_off2wsn_st(int para);
 int fsm_off2wsn_ed(int para);
 int fsm_off2wan_st(int para);
 int fsm_off2wan_ed(int para);
-int fsm_wsn2wsn_st(int para);
-int fsm_wsn2wsn_ed(int para);
-int fsm_wan2wan_st(int para);
-int fsm_wan2wan_ed(int para);
 int fsm_wsn2on_st(int para);
 int fsm_wsn2on_ed(int para);
 int fsm_wan2on_st(int para);

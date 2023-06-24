@@ -125,7 +125,7 @@ int data_send_proc(void)
                 }                
             }
             break;
-        case FSM_ON://建链完成状态，判断当前时隙给哪个Z发数据
+        case FSM_ON://建链完成
             if (info.current_slot == 0 || info.current_slot == 5)
             {
                 /*信令时隙*/
@@ -149,11 +149,16 @@ int data_send_proc(void)
                     {
                         /*发送数据帧*/
                         //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-                        msg.data[0] = 5;
-                        msg.len = 1;
-                        generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                        send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
+                        if (info.test_lost < 40)
+                        {
+                            msg.data[0] = 5;
+                            msg.len = 1;
+                            generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
+                            psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                            send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
+                            printf("M send Z%d data, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
+                            info.test_lost++;
+                        }
                         return 0;    
                     }
                 }
@@ -168,10 +173,6 @@ int data_send_proc(void)
     {
         switch (fsm_status)
         {
-        case FSM_INIT:
-            break;
-        case FSM_OFF:
-            break;
         case FSM_WAN://正在建链状态，响应M的扫描询问帧
             if (info.current_slot != 59)
             {
@@ -194,12 +195,16 @@ int data_send_proc(void)
             if ((31 <= info.current_slot && info.current_slot <= 34) && MY_INDEX == 1)
             {
                 //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-                msg.data[0] = 5;
-                msg.len = 1;
-                generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-                psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
-                printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
+                if (info.test_lost < 40)
+                {
+                    msg.data[0] = 5;
+                    msg.len = 1;
+                    generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
+                    psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                    send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+                    printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
+                    info.test_lost++;
+                }
             }
             if ((36 <= info.current_slot && info.current_slot <= 39) && MY_INDEX == 2)
             {
