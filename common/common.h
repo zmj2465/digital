@@ -153,6 +153,7 @@ typedef struct _info_t
 	int current_slot;				//当前时隙号
 	int current_antenna;			//当前发射天线号
 	int current_time_frame;			//当前时帧号
+	int distance_flag_M[MAX_DEVICE];//测距标志位M
 	int scan_flag_M[MAX_DEVICE];	//扫描标志位M
 	int scan_flag_Z;				//扫描标志位Z
 	UINT timerId;					//扫描询问扫描回复定时器

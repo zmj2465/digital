@@ -133,6 +133,19 @@ int data_send_proc(void)
             else if (info.current_slot == 61)
             {
                 /*测距时隙*/
+                for (i = 1; i < FD_NUM; i++)
+                {
+                    if (info.distance_flag_M[i] == 1)
+                    {
+                        msg.data[0] = DISTANCE_M;
+                        msg.len = 1;
+                        generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], DISTANCE, &msg);
+                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
+                        printf("M send Z%d scan require, current slot = %d.%d\n", i, info.current_time_frame, info.current_slot);
+                        info.distance_flag_M[i] = 0;
+                    }
+                }
 
             }
             else if (18 <= info.current_slot && info.current_slot <= 28)
@@ -211,54 +224,16 @@ int data_send_proc(void)
             }
             else//测距时隙
             {
-
+                if ((info.current_time_frame % 4) + 1 == MY_INDEX)
+                {
+                    msg.data[0] = DISTANCE_Z;
+                    msg.len = 1;
+                    generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], DISTANCE, &msg);
+                    psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                    send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+                    printf("Z%d send distance frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
+                }
             }
-            
-            
-            //if ((31 <= info.current_slot && info.current_slot <= 34) && MY_INDEX == 1)
-            //{
-            //    //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-            //    if (info.test_lost < 40)
-            //    {
-            //        msg.data[0] = 5;
-            //        msg.len = 1;
-            //        generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-            //        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-            //        send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
-            //        printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
-            //        info.test_lost++;
-            //    }
-            //}
-            //if ((36 <= info.current_slot && info.current_slot <= 39) && MY_INDEX == 2)
-            //{
-            //    //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-            //    msg.data[0] = 5;
-            //    msg.len = 1;
-            //    generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-            //    psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-            //    send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
-            //    printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
-            //}
-            //if ((40 <= info.current_slot && info.current_slot <= 43) && MY_INDEX == 3)
-            //{
-            //    //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-            //    msg.data[0] = 5;
-            //    msg.len = 1;
-            //    generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-            //    psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-            //    send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
-            //    printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
-            //}
-            //if ((44 <= info.current_slot && info.current_slot <= 47) && MY_INDEX == 4)
-            //{
-            //    //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-            //    msg.data[0] = 5;
-            //    msg.len = 1;
-            //    generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-            //    psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-            //    send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
-            //    printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
-            //}
             break;
         default:
             break;

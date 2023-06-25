@@ -53,6 +53,7 @@ void schedule_slot_init(void)
     info.current_antenna = 1;
     info.current_time_frame = 1;
     info.scan_flag_Z = 0;
+    memset(info.distance_flag_M, 0, sizeof(info.distance_flag_M));
     memset(info.scan_flag_M, 0, sizeof(info.scan_flag_M));
     memset(antenna_table, 0, sizeof(antenna_table));
 }

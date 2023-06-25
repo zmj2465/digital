@@ -75,6 +75,17 @@ int master_data_proc(void)
                     printf("M not receive scan response\n");
                 }
                 break;
+            case DISTANCE:
+                if (msg.data[0] == DISTANCE_Z)
+                {
+                    index = inquire_address(msg.head.src);
+                    info.distance_flag_M[index] = 1;
+                    printf("M receive Z%d distance frame, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
+                }
+                else
+                {
+                    printf("M not receive Z distance frame\n");
+                }
             default:
                 break;
             }
