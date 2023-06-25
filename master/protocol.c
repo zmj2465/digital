@@ -257,6 +257,8 @@ int fsm_on2wsn_st(int para)
 */
 int fsm_on2wsn_ed(int para)
 {
+	/*丢失再建链，计算建网时间，开始时刻*/
+	clock_gettime(CLOCK_REALTIME, &info.set_network_st);
 	return 0;
 }
 

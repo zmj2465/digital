@@ -209,6 +209,32 @@ int inquire_index(int node_index)
 }
 
 /*
+功能：判断当前时隙是哪个Z的发送时隙
+参数：索引号，当前数据时隙
+返回值：成功则返回对应索引号，失败返回-1
+*/
+int inquire_node_index(int index, int current_slot)
+{
+    if ((index == 1) && (31 <= current_slot && current_slot <= 34))
+    {
+        return 1;
+    }
+    if ((index == 2) && (36 <= current_slot && current_slot <= 39))
+    {
+        return 2;
+    }
+    if ((index == 3) && (40 <= current_slot && current_slot <= 43))
+    {
+        return 3;
+    }
+    if ((index == 4) && (44 <= current_slot && current_slot <= 47))
+    {
+        return 4;
+    }
+    return -1;
+}
+
+/*
 功能：判断当前时隙属于哪个终端Z的发送时隙
 参数：节点索引
 返回值：成功则返回对应节点索引，否则返回-1

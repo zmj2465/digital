@@ -47,6 +47,7 @@ enum FRAME_TYPE
 	LONG_FRAME		 = 0x60, //长帧
 	START_GUN		 = 0x70, //发令枪
 	SCAN			 = 0x80, //扫描
+	DISTANCE		 = 0x90, //测距
 };
 
 enum FRAME_SUBTYPE
@@ -56,6 +57,8 @@ enum FRAME_SUBTYPE
 	SCAN_REQ = 1,
 	SCAN_RES = 2,
 	SCAN_CON = 3,
+	DISTANCE_M = 1,
+	DISTANCE_Z = 2,
 };
 
 enum TIMER_ID
