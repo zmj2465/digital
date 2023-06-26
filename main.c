@@ -32,7 +32,6 @@ int main()
     struct timespec test;
 
 
-
     /*链接库初始化*/
     wsa_init();
 
@@ -47,8 +46,6 @@ int main()
 
     load_config(INFO_SET_FILE);
 
-    //while (1);
-    //while (1);
 
     /*数据存储初始化*/
     data_store_init();
