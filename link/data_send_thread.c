@@ -199,7 +199,9 @@ int data_send_proc(void)
                     send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
                     printf("Z%d send scan response, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
                     /*打开扫描回复定时器*/
+#ifdef _WIN32
                     info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_CON_TIMER, TIME_ONESHOT);
+#endif
                     info.scan_flag_Z = 0;
                 }
             }

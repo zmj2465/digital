@@ -313,6 +313,7 @@ int inquire_address(int node_id)
 参数：
 返回值：无
 */
+#ifdef _WIN32
 void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
     switch (dwUser)
@@ -374,3 +375,4 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         break;
     }
 }
+#endif
