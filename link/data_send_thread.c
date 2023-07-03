@@ -142,7 +142,7 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], DISTANCE, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
-                        printf("M send Z%d scan require, current slot = %d.%d\n", i, info.current_time_frame, info.current_slot);
+                        printf("M send Z%d distance frame, current slot = %d.%d\n", i, info.current_time_frame, info.current_slot);
                         info.distance_flag_M[i] = 0;
                     }
                 }
@@ -199,7 +199,9 @@ int data_send_proc(void)
                     send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
                     printf("Z%d send scan response, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
                     /*打开扫描回复定时器*/
+#ifdef _WIN32
                     info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_CON_TIMER, TIME_ONESHOT);
+#endif
                     info.scan_flag_Z = 0;
                 }
             }

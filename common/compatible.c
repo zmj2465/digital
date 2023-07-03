@@ -90,6 +90,8 @@ void set_thread_priority()
 #endif
 }
 
+#define CLOCK_REALTIME 0
+
 void udelay(int us)
 {
 

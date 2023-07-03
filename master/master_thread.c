@@ -45,10 +45,13 @@ int master_data_proc(void)
                 break;
             case LONG_FRAME:
                 index = inquire_address(msg.head.src);
+
+#ifdef _WIN32
                 /*M的数据帧定时器*/
                 timeKillEvent(info.timerId_M[index]);
                 info.timerId_M[index] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, index, TIME_ONESHOT);
-                
+#endif
+
                 printf("M receive Z%d data frame, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
                 break;
             case START_GUN:
@@ -116,15 +119,19 @@ int master_data_proc(void)
                 case SCAN:
                     if (msg.data[0] == SCAN_REQ)
                     {
+#ifdef _WIN32
                         /*关闭扫描询问定时器*/
                         timeKillEvent(info.timerId);
+#endif
                         /*扫描响应帧*/
                         info.scan_flag_Z = 1;
                     }
                     else if (msg.data[0] == SCAN_CON)
                     {
+#ifdef _WIN32
                         /*关闭扫描回复定时器*/
                         timeKillEvent(info.timerId);
+#endif
                         fsm_do(EVENT_WAN_SUCC);
                     }
                     else
@@ -133,9 +140,11 @@ int master_data_proc(void)
                     }
                     break;
                 case LONG_FRAME:
+#ifdef _WIN32
                     /*Z的数据帧定时器*/
                     timeKillEvent(info.timerId_Z);
                     info.timerId_Z = timeSetEvent(TIMER_DELAY, 0, TimerCallback, Z_DATA_TIMER, TIME_ONESHOT);
+#endif
                     //printf("Z%d receive M data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);       
                     break;
                 default:
