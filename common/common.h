@@ -21,6 +21,7 @@
 #define FD_NUM			info.simulated_link_num
 #define RSET			info.rset
 #define LFD				info.simulated_link[MY_INDEX].fd
+#define CLOCK_REALTIME 0
 
 enum 
 {
@@ -143,8 +144,8 @@ typedef struct _info_t
 	int display_port;
 
 	/*simulation_replay*/
-	HANDLE hSharedMem;
-	LPVOID lpSharedMem;
+	//HANDLE hSharedMem;
+	//LPVOID lpSharedMem;
 	int mem_ptr;
 	int act_prt;
 
@@ -157,9 +158,13 @@ typedef struct _info_t
 	int distance_flag_M[MAX_DEVICE];//测距标志位M
 	int scan_flag_M[MAX_DEVICE];	//扫描标志位M
 	int scan_flag_Z;				//扫描标志位Z
+
+#ifdef _WIN32
 	UINT timerId;					//扫描询问扫描回复定时器
 	UINT timerId_Z;					//数据帧定时器Z
 	UINT timerId_M[MAX_DEVICE];		//数据帧定时器M
+#endif
+
 	int antenna_M[MAX_DEVICE];		//天线匹配表M
 	int antenna_Z;					//天线匹配表Z
 	struct timespec set_network_st; //建网开始时刻
@@ -265,7 +270,6 @@ extern fddi_info_t fddi_info;
 
 
 void queue_init();
-
 
 #endif
 

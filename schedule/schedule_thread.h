@@ -44,6 +44,9 @@ int inquire_node_index(int index, int current_slot);
 int inquire_slot(int current_slot);
 int inquire_antenna(int current_slot);
 int inquire_address(int node_id);
+
+#ifdef _WIN32
 void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
+#endif
 
 #endif

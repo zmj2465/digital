@@ -118,7 +118,9 @@ int fsm_init2off_ed(int para)
 	/*主机发送信令枪帧*/
 	if (MY_INDEX == 0)
 	{
+#ifdef _WIN32
 		Sleep(1);
+#endif
 		msg_t msg;
 		int i;
 		msg.data[0] = START_GUN_REQ;
@@ -190,7 +192,9 @@ int fsm_off2wan_st(int para)
 int fsm_off2wan_ed(int para)
 {
 	/*打开扫描询问定时器*/
+#ifdef _WIN32
 	info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_REQ_TIMER, TIME_ONESHOT);
+#endif
 	return 0;
 }
 

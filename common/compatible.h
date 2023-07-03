@@ -48,6 +48,7 @@
 #define OVERALL_FILE "../info set/ipinfo.txt"
 #define PRIVATE_FILE "../info set/base_info.txt"
 #define SIMULATE_FILE "../info set/simulation_config.txt"
+#define INFO_SET_FILE "../info set/info_set.ini"
 #define END_FLAG "\r"
 #endif
 

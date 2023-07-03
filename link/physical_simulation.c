@@ -600,7 +600,7 @@ void path_loss() {}
 
 
 
-int psy_recv(int len,char* data, char* msg, int index, int role)
+int psy_recv(int len,char* data, msg_t* msg, int index, int role)
 {
     bool ret;
     psy_msg_t* p = (psy_msg_t*)data;
@@ -613,7 +613,7 @@ int psy_recv(int len,char* data, char* msg, int index, int role)
 }
 
 
-void psy_send(int len, char* data, char* msg, int index, int role)
+void psy_send(int len, char* data, msg_t* msg, int index, int role)
 {
     psy_msg_t* p= (psy_msg_t*)data;
     memcpy((char*)(&p->msg), msg, sizeof(msg_t));

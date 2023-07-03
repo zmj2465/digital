@@ -55,7 +55,7 @@ void synchronous();
 
 void channel_simulation();
 
-int psy_recv(int len, char* data, char* msg, int index, int role);
-void psy_send(int len, char* data, char* msg, int index, int role);
+int psy_recv(int len, char* data, msg_t* msg, int index, int role);
+void psy_send(int len, char* data, msg_t* msg, int index, int role);
 
 #endif
