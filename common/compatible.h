@@ -7,6 +7,8 @@
 #include <ws2tcpip.h>
 #include <time.h>
 #pragma comment(lib, "kernel32.lib")
+//#pragma comment(lib, "pcieapi.lib")
+
 #else
 #include <unistd.h>
 #include <sys/types.h>

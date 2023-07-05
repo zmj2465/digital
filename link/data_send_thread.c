@@ -162,8 +162,8 @@ int data_send_proc(void)
                     {
                         /*发送数据帧*/
                         //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-                        //if (info.test_lost < 40)
-                        //{
+                        if (info.test_lost < 40)
+                        {
                             msg.data[0] = 5;
                             msg.len = 1;
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
@@ -171,7 +171,7 @@ int data_send_proc(void)
                             send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
                             printf("M send Z%d data, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
                             info.test_lost++;
-                        //}
+                        }
                         return 0;    
                     }
                 }
@@ -212,8 +212,8 @@ int data_send_proc(void)
                 index = inquire_node_index(MY_INDEX, info.current_slot);
                 if (index != -1)
                 {
-                    //if (info.test_lost < 40)
-                    //{
+                    if (info.test_lost < 40)
+                    {
                         msg.data[0] = 5;
                         msg.len = 1;
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
@@ -221,7 +221,7 @@ int data_send_proc(void)
                         send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
                         printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
                         info.test_lost++;
-                    //}
+                    }
                 }
             }
             else//测距时隙
@@ -260,11 +260,13 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
 
     if (type == START_GUN && MY_INDEX == 0)
     {
-        msg->head.send_time = info.str.base_time;
+        //msg->head.send_time = info.str.base_time;
+        msg->head.send_t = info.str.base_t;
     }
     else
     {
-        clock_gettime(CLOCK_REALTIME, &msg->head.send_time);
+        //clock_gettime(CLOCK_REALTIME, &msg->head.send_time);
+        msg->head.send_t = my_get_time();
     }
 
     if (MY_INDEX == 0)//M

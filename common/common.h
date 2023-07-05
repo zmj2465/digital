@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include "compatible.h"
 #include "queue.h"
+#include "mytime.h"
 
 #define STORE_SIZE		1024
 #define MAX_DEVICE		12
@@ -97,7 +98,8 @@ typedef struct _device_info_t
 typedef struct _start_boardcast_t
 {
 	struct timespec base_time;		/*同步系统时间*/
-	uint8_t start_time;				/*仿真开始时间*/
+	uint64_t base_t;
+	uint64_t start_time;				/*仿真开始时间*/
 }start_boardcast_t;
 
 typedef struct _info_t
@@ -168,6 +170,8 @@ typedef struct _info_t
 	int antenna_Z;					//天线匹配表Z
 	struct timespec set_network_st; //建网开始时刻
 	struct timespec set_network_ed; //建网结束时刻
+	uint64_t network_st;
+	uint64_t network_ed;
 	int set_network_time;			//建网时间
 	int test_lost;					//丢失再建链测试	
 }info_t;
@@ -178,6 +182,7 @@ typedef struct _head_t
 	uint8_t src;
 	uint8_t type;
 	struct timespec send_time;
+	uint64_t send_t;
 	uint8_t antenna_id;
 	//位置信息
 }head_t;

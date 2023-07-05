@@ -20,16 +20,23 @@
 #include "protocol.h"
 #include "main.h"
 
+#include "mytime.h"
+
 sem_t semaphore;
 pthread_mutex_t lock;
 
-static int temp = 0;
-
-
 int main()
-{
+{  
+    time_init();
+
+    //while (1)
+    //{
+    //    printf("%lld\n", my_get_time());
+    //    Sleep(1000);
+    //}
+    //while (1);
+
     int ret;
-    struct timespec test;
 
 
     /*¡¥Ω”ø‚≥ı ºªØ*/
@@ -305,11 +312,11 @@ int load_config(char* filename)
         ret = GetIniKeyString("NUM", key, filename, value);
         //printf("%d %s\n", ret, value);
 
-        ret = GetIniKeyString(value, "ip", filename, &buff[++i]);
+        ret = GetIniKeyString(value, "ip", filename, (char*)&buff[++i]);
         //printf("%d %s\n", ret, buff[i]);
         ip_index = i;
 
-        ret = GetIniKeyString(value, "port", filename, &buff[++i]);
+        ret = GetIniKeyString(value, "port", filename, (char*)&buff[++i]);
         //printf("%d %s\n", ret, buff[i]);
         port_index = i;
 
