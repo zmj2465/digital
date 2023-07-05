@@ -1,6 +1,7 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
+
 #include <pthread.h>
 #include <sched.h>
 #include <semaphore.h>
@@ -274,7 +275,6 @@ extern fddi_info_t fddi_info;
 
 
 void queue_init();
-
 
 #endif
 
