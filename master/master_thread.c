@@ -101,9 +101,11 @@ int master_data_proc(void)
                 case START_GUN:
                     if (msg.data[0] == START_GUN_REQ)
                     {
-                        info.str.base_time = msg.head.send_time;
+                        //info.str.base_time = msg.head.send_time;
+                        info.str.base_t = msg.head.send_t;
                         info.str.start_time = msg.data[1];
-                        printf("Z%d base time=%lld, %ld, start_time = %d\n", MY_INDEX, info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
+                        //printf("Z%d base time=%lld, %ld, start_time = %d\n", MY_INDEX, info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
+                        printf("Z%d base time=%lld, start_time = %d\n", MY_INDEX, info.str.base_t, info.str.start_time);
                         /*响应主机的发令枪帧*/
                         msg.data[0] = START_GUN_RES;
                         msg.len = 1;
