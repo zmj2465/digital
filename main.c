@@ -32,6 +32,8 @@ int main()
     struct timespec test;
 
 
+
+
     /*¡¥Ω”ø‚≥ı ºªØ*/
     wsa_init();
 
