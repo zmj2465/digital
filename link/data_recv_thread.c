@@ -84,6 +84,7 @@ int data_recv_proc(void)
 						ret = antenna_match(psy_msg, &msg, info.device_info.node_role);
 						if (ret == 1)
 						{
+
 							enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
 						}
 						else
@@ -140,8 +141,15 @@ int antenna_match(char* data, msg_t* msg, int role)
 
 		if (ptr->msg.head.antenna_id == antenna_recv)
 		{
+			uint64_t recv;
+			int sub;
 			memcpy(msg, (msg_t*)(&ptr->msg), sizeof(msg_t));
 			info.antenna_Z = antenna_recv;
+
+			recv = my_get_time();
+			sub = recv - msg->head.send_t;
+
+			printf("temp = %d ns\n", sub/1000);
 			printf("match successfully, M send antenna = %d, Z%d receive antenna = %d, current slot = %d.%d\n", ptr->msg.head.antenna_id, MY_INDEX, info.antenna_Z, info.current_time_frame, info.current_slot);
 			return 1;
 		}

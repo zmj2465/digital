@@ -135,7 +135,7 @@ int fsm_init2off_ed(int para)
 			send(FD[i].fd, &msg, msg.len, 0);
 		}
 		//printf("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
-		printf("M base time=%lld, start_time = %d\n", info.str.base_t, info.str.start_time);
+		printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
 	}
 	return 0;
 }
