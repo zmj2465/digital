@@ -408,9 +408,9 @@ void select_antenna(int my_role, Quaternion my_quaternion, Point3D pos, int* ind
     Point3D pos2, pos3;
     double a, b;
     int add = (my_role == 0) ? 0 : 6;
-
+    int i;
     convertCoordinates(&pos, &my_quaternion, &pos2);
-    for (int i = 0; i < 6; i++)
+    for (i = 0; i < 6; i++)
     {
         convertCoordinates2(&pos2, &transform[i + add], &pos3);
         calculateAngles(&pos3, &a, &b);
