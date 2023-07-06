@@ -147,7 +147,7 @@ int master_data_proc(void)
                     timeKillEvent(info.timerId_Z);
                     info.timerId_Z = timeSetEvent(TIMER_DELAY, 0, TimerCallback, Z_DATA_TIMER, TIME_ONESHOT);
 #endif
-                    //printf("Z%d receive M data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);       
+                    printf("Z%d receive M data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);       
                     break;
                 default:
                     break;

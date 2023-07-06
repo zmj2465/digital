@@ -49,7 +49,7 @@ int data_send_proc(void)
                         /*发送扫描询问帧*/
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                        send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
+                        send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
                         printf("M send Z%d scan require, current slot = %d.%d\n", i, info.current_time_frame, info.current_slot);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
@@ -81,7 +81,7 @@ int data_send_proc(void)
                             /*发送扫描回复帧*/
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                            send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
+                            send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
                             info.scan_flag_M[index] = 0;
                             printf("M send Z%d scan confirm successfully, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
                             if (info.device_info.node_num == FD_NUM)
@@ -98,7 +98,7 @@ int data_send_proc(void)
                             msg.len = 1;
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                            send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
+                            send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
                             printf("M send Z%d data, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
                             return 0;
                         }
@@ -113,7 +113,7 @@ int data_send_proc(void)
                         /*发送扫描询问帧*/
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                        send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
+                        send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
                         printf("M send Z%d scan require, current slot = %d.%d\n", i, info.current_time_frame, info.current_slot);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
@@ -141,7 +141,7 @@ int data_send_proc(void)
                         msg.len = 1;
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], DISTANCE, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                        send(FD[i].fd, &pmsg, MAX_DATA_LEN, 0);
+                        send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
                         printf("M send Z%d distance frame, current slot = %d.%d\n", i, info.current_time_frame, info.current_slot);
                         info.distance_flag_M[i] = 0;
                     }
@@ -162,16 +162,16 @@ int data_send_proc(void)
                     {
                         /*发送数据帧*/
                         //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-                        if (info.test_lost < 40)
-                        {
+                        //if (info.test_lost < 40)
+                        //{
                             msg.data[0] = 5;
                             msg.len = 1;
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                            send(FD[index].fd, &pmsg, MAX_DATA_LEN, 0);
+                            send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
                             printf("M send Z%d data, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
                             info.test_lost++;
-                        }
+                        //}
                         return 0;    
                     }
                 }
@@ -196,7 +196,7 @@ int data_send_proc(void)
                     msg.len = 1;
                     generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                     psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                    send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+                    send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
                     printf("Z%d send scan response, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
                     /*打开扫描回复定时器*/
 #ifdef _WIN32
@@ -212,16 +212,16 @@ int data_send_proc(void)
                 index = inquire_node_index(MY_INDEX, info.current_slot);
                 if (index != -1)
                 {
-                    if (info.test_lost < 40)
-                    {
+                    //if (info.test_lost < 40)
+                    //{
                         msg.data[0] = 5;
                         msg.len = 1;
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                        send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+                        send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
                         printf("Z%d send data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
                         info.test_lost++;
-                    }
+                   //}
                 }
             }
             else//测距时隙
@@ -232,7 +232,7 @@ int data_send_proc(void)
                     msg.len = 1;
                     generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], DISTANCE, &msg);
                     psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
-                    send(FD[0].fd, &pmsg, MAX_DATA_LEN, 0);
+                    send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
                     printf("Z%d send distance frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);
                 }
             }

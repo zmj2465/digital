@@ -228,6 +228,7 @@ int fsm_wsn2on_st(int para)
 	//clock_gettime(CLOCK_REALTIME, &info.set_network_ed);
 	//sub = (info.set_network_ed.tv_sec - info.set_network_st.tv_sec) * 1000000000 + (info.set_network_ed.tv_nsec - info.set_network_st.tv_nsec);
 	info.network_ed = my_get_time();
+	sub = info.network_ed - info.network_st;
 	info.set_network_time = sub / 1000000;
 	printf("set network time = %d ms\n", info.set_network_time);
 	return 0;
