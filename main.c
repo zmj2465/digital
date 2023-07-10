@@ -54,6 +54,7 @@ int main()
     //load_ip_config();
 
     load_config(INFO_SET_FILE);
+    load_config(INFO_SET_DESK_FILE);
 
 
     /*数据存储初始化*/
@@ -245,6 +246,12 @@ int GetIniKeyString(char* title, char* key, char* filename, char* buf)
 
 int load_config(char* filename)
 {
+
+    FILE* fp;
+    if (NULL == (fp = fopen(filename, "r"))) {
+        return -1;
+    }
+
     char name[20];
     char num[20];
     char key[20];

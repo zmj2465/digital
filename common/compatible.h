@@ -45,6 +45,7 @@
 #define SIMULATE_FILE "../../../info set/simulation_config.txt"
 #define OUTPUT_FILE_NAME "../../../aaa.txt"
 #define INFO_SET_FILE "../../../info set/info_set.ini"
+#define INFO_SET_DESK_FILE "C:/Users/xykc/Desktop"
 #define END_FLAG "\n"
 #else
 #define OVERALL_FILE "../info set/ipinfo.txt"
