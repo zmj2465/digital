@@ -54,7 +54,12 @@ int main()
     //load_ip_config();
 
     load_config(INFO_SET_FILE);
-    load_config(INFO_SET_DESK_FILE);
+    ret=load_config(INFO_SET_DESK_FILE);
+    if (ret == -1)
+    {
+        printf("error\n");
+    }
+
 
 
     /*数据存储初始化*/
