@@ -36,7 +36,7 @@ int data_recv_proc(void)
 	int maxfd = 0;
 	FD_ZERO(&RSET);
 	int i = 0;
-	for (i = 0; i < info.simulated_link_num; i++)
+	for (i = 0; i < info.simulated_link_num && FD[i].fd != 0; i++)
 	{
 		maxfd = FD[i].fd > maxfd ? FD[i].fd : maxfd;
 		FD_SET(FD[i].fd, &RSET);
@@ -55,56 +55,59 @@ int data_recv_proc(void)
 	{
 		if (FD_ISSET(FD[i].fd, &RSET))
 		{
-			ret--;
-			//if (FD[i].fd == LFD) {}
-			//else
-			//{
-				ret = recv(FD[i].fd, FD[i].recvBuffer, sizeof(psy_msg_t), 0);
-				if (ret > 0)
+			ret = recv(FD[i].fd, FD[i].recvBuffer, sizeof(psy_msg_t), 0);
+			if (ret > 0)
+			{
+				/*状态机判断*/
+				if (fsm_status == FSM_INIT || fsm_status == FSM_OFF)
 				{
-					/*状态机判断*/
-					if (fsm_status == FSM_INIT || fsm_status == FSM_OFF)
+					psy_msg_t* psy_msg = FD[i].recvBuffer;
+					msg_t* rmsg = FD[i].recvBuffer;
+					printf("no sim get, msg = %d psy_msg = %d msg_type = %d psy_type = %d\n", rmsg->head.dst, psy_msg->msg.head.dst, rmsg->head.type, psy_msg->msg.head.type);
+					if (rmsg->head.type == START_GUN)
 					{
-						psy_msg_t* psy_msg = FD[i].recvBuffer;
-						msg_t* rmsg = FD[i].recvBuffer;
-						printf("no sim get, msg = %d psy_msg = %d msg_type = %d psy_type = %d\n", rmsg->head.dst, psy_msg->msg.head.dst, rmsg->head.type, psy_msg->msg.head.type);
-						if (rmsg->head.type == START_GUN)
-						{
-							enqueue(&info.thread_queue[MASTER_THREAD_DATA], rmsg, MAX_DATA_LEN);
-						}
+						enqueue(&info.thread_queue[MASTER_THREAD_DATA], rmsg, MAX_DATA_LEN);
+					}
+				}
+				else
+				{
+					psy_msg_t* psy_msg = FD[i].recvBuffer;
+					msg_t msg;
+					memset(&msg, 0, sizeof(msg_t));
+					int len;
+					int antenna_recv;
+
+					ret = antenna_match(psy_msg, &msg, info.device_info.node_role);
+					if (ret == 1)
+					{
+
+						enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
 					}
 					else
 					{
-						psy_msg_t* psy_msg = FD[i].recvBuffer;
-						msg_t msg;
-						memset(&msg, 0, sizeof(msg_t));
-						int len;
-						int antenna_recv;
-
-						ret = antenna_match(psy_msg, &msg, info.device_info.node_role);
-						if (ret == 1)
-						{
-
-							enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
-						}
-						else
-						{
-							printf("match fail throw, M send antenna = %d, Z%d receive antenna = %d, current slot = %d.%d\n", psy_msg->msg.head.antenna_id, MY_INDEX, inquire_antenna(info.current_slot), info.current_time_frame, info.current_slot);
-						}
-						///*信道仿真,匹配自身波束信息对齐*/
-						//ret = psy_recv(len, psy_msg, &msg, antenna_recv, info.device_info.node_role);
-						//if (ret == 0)
-						//{
-						//	enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
-						//}
-						//else
-						//{
-						//	printf("sim fail throw\n");
-						//	continue;
-						//}
+						printf("match fail throw, M send antenna = %d, Z%d receive antenna = %d, current slot = %d.%d\n", psy_msg->msg.head.antenna_id, MY_INDEX, inquire_antenna(info.current_slot), info.current_time_frame, info.current_slot);
 					}
+					///*信道仿真,匹配自身波束信息对齐*/
+					//ret = psy_recv(len, psy_msg, &msg, antenna_recv, info.device_info.node_role);
+					//if (ret == 0)
+					//{
+					//	enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
+					//}
+					//else
+					//{
+					//	printf("sim fail throw\n");
+					//	continue;
+					//}
 				}
-			//}
+			}
+			else
+			{
+				printf("node %d link error\n", i);
+				FD[i].fd = 0;
+				msg_t msg;
+				msg.data[0] = i;
+				enqueue(&info.thread_queue[LINK_CONTROL_THREAD], &msg, sizeof(msg_t));
+			}
 		}
 	}
 

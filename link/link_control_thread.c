@@ -10,9 +10,9 @@ void* link_control_thread(void* arg)
 
 	link_info_print();
 
-	init_complete_judge();
+	//init_complete_judge();
 
-	//link_complete_boardcast();
+	relink();
 
 }
 
@@ -141,5 +141,52 @@ void link_info_print()
 	for (i = 0; i < info.simulated_link_num; i++)
 	{
 		printf("(device)%d (ip)%s (aip)%s (fd)%d\n", i, FD[i].ip, inet_ntoa(FD[i].addr.sin_addr), FD[i].fd);
+	}
+}
+
+
+void relink()
+{
+	msg_t msg;
+	int i = 0;
+	while (1)
+	{
+		dequeue(&info.thread_queue[LINK_CONTROL_THREAD],&msg, &msg.len);
+		i = msg.data[0];
+		printf("relink to node %d\n", i);
+
+		/*本机作为服务端 等待比自身索引号大的设备连接*/
+		if (MY_INDEX < i)
+		{
+			printf("wait for connect\n");
+			struct sockaddr_in temp_addr;
+			FD[i].addr_len = sizeof(FD[i].addr);
+			int fd = accept(LFD, (struct sockaddr*)&temp_addr, &(FD[i].addr_len));
+			int j;
+			char buff[1024];
+			recv(fd, buff, 1024, 0);
+			int x = *(int*)buff;
+			FD[x].fd = fd;
+			memcpy(&FD[x].addr, &temp_addr, sizeof(struct sockaddr_in));
+			printf("(device)%d (ip)%s (fd)%d is connected\n", x, inet_ntoa(FD[x].addr.sin_addr), FD[x].fd);
+		}
+		/*本机作为客户端 连上比自身索引号小的设备*/
+		else
+		{
+			FD[i].fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+			memset(&FD[i].addr, 0, sizeof(FD[i].addr));
+			FD[i].addr.sin_family = AF_INET;
+			FD[i].addr.sin_port = htons(FD[i].port);
+			inet_pton(AF_INET, FD[i].ip, (void*)&FD[i].addr.sin_addr);
+
+			printf("is connecting to (device)%d (ip)%s (fd)%d (port)%d\n", i, FD[i].ip, FD[i].fd, FD[i].port);
+			while (0 != connect(FD[i].fd, (struct sockaddr*)&FD[i].addr, sizeof(FD[i].addr)))
+			{
+				perror("link connect");
+			}
+			send(FD[i].fd, &MY_INDEX, sizeof(int), 0);
+			printf("send: %d\n", MY_INDEX);
+		}
+
 	}
 }

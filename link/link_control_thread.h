@@ -14,7 +14,7 @@ void link_init();
 void link_complete_boardcast();
 void link_info_print();
 void init_complete_judge();
-
+void relink();
 
 
 #endif
