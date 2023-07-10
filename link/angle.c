@@ -109,3 +109,113 @@ void calculateAngles(const Point3D* point, double* alpha, double* beta)
 
     *beta = 57.295779513082323 * asin(sqrt(beta_tmp) / sqrt(beta_tmp + point->z * point->z));
 }
+
+
+/**********************************************************************************************/
+/**********************************************************************************************/
+/**********************************************************************************************/
+//距离计算
+double caculate_distance(Point3D a, Point3D b)
+{
+    double distance = sqrt(pow(b.x - a.x, 2) + pow(b.y - a.y, 2) + pow(b.z - a.z, 2));
+    return distance;
+}
+
+//时延计算
+double caculate_time_delay(double distance)
+{
+    return distance / C;
+}
+
+//路径损耗
+double caculate_path_loss(double distance, double frequency)
+{
+    return pow((4 * PI * distance * frequency / C), 2);
+}
+
+//径向速度 b：发射方 a：接收方
+double caculate_radial_velocity(Point3D a, Point3D av, Point3D b, Point3D bv)
+{
+    double Dx = a.x - b.x;
+    double Dy = a.y - b.y;
+    double Dz = a.z - b.z;
+    double Dvx = av.x - bv.x;
+    double Dvy = av.y - bv.y;
+    double Dvz = av.z - bv.z;
+    double v = (Dx * Dvx + Dy * Dvy + Dz * Dvz) / sqrt(pow(Dx, 2) + pow(Dy, 2) + pow(Dz, 2));
+    return v;
+}
+
+//多普勒频移
+double caculate_doppler_shift(double frequency, double v)
+{
+    return frequency * v / C;
+}
+
+
+//发射功率 
+double caculate_transmit_power(double Pti_dBm, double Nt, double Lc)
+{
+    double Pt_dBm = Pti_dBm + 10 * log10(Nt) - Lc;
+    return Pt_dBm;
+}
+
+//等效全向辐射功率
+double caculate_eirp(double Pt_dBm, double Gt_dBi, double Lt_dB)
+{
+    double EIRP_dBm = Pt_dBm + Gt_dBi - Lt_dB;
+    return EIRP_dBm;
+}
+
+//天线增益
+double caculate_antenna_gain(double Nt, double Dd, double Ef, double lambda, double Ls)
+{
+    double Gt_dBi = 10 * log10(4 * PI * Nt * pow(Dd, 2) * Ef / pow(lambda, 2)) - Ls;
+    return Gt_dBi;
+}
+
+
+//噪声电平
+double caculate_noise_level(double Fn_dB, double Lc_dB, double B_dBHz)
+{
+    double N_dBm = -174 + Fn_dB + Lc_dB + B_dBHz;
+    return N_dBm;
+}
+
+
+//等效扩频倍数
+double caculate_SS(double Sos, double Sds)
+{
+    double equivalentSS = Sos / ((log2(Sos) + 1) * Sds);
+    return equivalentSS;
+}
+
+//扩频增益
+double caculate_spreading_gain(double SS)
+{
+    double spreadingGain_dB = 10 * log10(SS);
+    return spreadingGain_dB;
+}
+
+//接收功率
+double caculate_received_power(double EIRP_dBm, double Li_dB, double AR_dB, double Gr_dBi, double Lr_dB)
+{
+    double Pr_dBm = EIRP_dBm - Li_dB - AR_dB + Gr_dBi - Lr_dB;
+    return Pr_dBm;
+}
+
+
+//信噪比
+double caculate_snr(double Pr_dBm, double C_dB, double N_dBm)
+{
+    double SNR_dB = Pr_dBm + C_dB - N_dBm;
+    return SNR_dB;
+}
+
+
+double caculate_ber(double SNR_dB)
+{
+    double SNR_linear = pow(10, SNR_dB / 10);
+    double ber = 0.5 * erfc(sqrt(SNR_linear));
+    return ber;
+}

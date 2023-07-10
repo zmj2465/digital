@@ -261,17 +261,25 @@ typedef struct _fddi_info_t
 }fddi_info_t;
 
 
+#pragma pack(1)
+typedef struct {
+	int len;
+	int role;
+	int index; //选择天线
+	int flag;
+	Point3D pos; //位置
+	Point3D v; //速度
+	Point3D rv; //角速度
+	Quaternion q; //四元数
+	Point3D p_to; //
+}psy_head_t;
+
 typedef struct _psy_msg_t
 {
-	Point3D pos;
-	Point3D p_to;
-	Quaternion q;
-	int role;
-	int index;
-	int flag;
+	psy_head_t psy_head;
 	msg_t msg;
 }psy_msg_t;
-
+#pragma pack()
 
 
 extern fddi_info_t fddi_info;

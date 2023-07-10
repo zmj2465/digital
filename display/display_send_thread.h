@@ -33,6 +33,7 @@ enum {
     REPLAY_SPEED,
 };
 
+#pragma pack(1)
 
 typedef struct {
     int tx_flag;
@@ -127,6 +128,8 @@ typedef struct _show_t
         uint16_t data_seq;
     };
 }show_t;
+
+#pragma pack()
 
 extern display_state_t display_state;
 extern show_t show_msg;
