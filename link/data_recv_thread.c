@@ -47,7 +47,7 @@ int data_recv_proc(void)
 	if (ret < 0)
 	{
 		ret = -1;
-		printf("error\n");
+		printf("select error\n");
 		return ret;
 	}
 

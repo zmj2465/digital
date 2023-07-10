@@ -57,7 +57,7 @@ int main()
     ret=load_config(INFO_SET_DESK_FILE);
     if (ret == -1)
     {
-        printf("error\n");
+        printf("load config error\n");
     }
 
 

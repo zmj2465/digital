@@ -5,11 +5,10 @@
 #define HEAD_LEN 3
 #define CC_LEN   100
 
-#define aa f1
 
 void msg_proc(char* get)
 {
-
+    
 }
 
 
@@ -18,6 +17,8 @@ void* rs_485_recv_thread(void* arg)
     pthread_detach(pthread_self());
 
     char get[MAX_DATA_LEN];
+
+
 
     while (1)
     {
@@ -28,4 +29,10 @@ void* rs_485_recv_thread(void* arg)
     }
 }
 
+void generate_show_msg()
+{
+    show_msg.type = 0;
+    show_msg.len = 4+sizeof(display_t);
+    show_msg.display_info.serial_number = display_state.seq++;
+}
 

@@ -2,6 +2,9 @@
 
 info_t info;
 fddi_info_t fddi_info;
+
+
+
 AntennaTransform transform[12] = {
     // M1
     {.dx = 0, .dy = 268.6774, .dz = 0.8, .h = {{0, 0, 1}, {1.7285, 0, 0}, {0, 0, 0}}},
@@ -47,5 +50,4 @@ void queue_init()
 	{
 		init_msg_queue(&info.thread_queue[i], 6);
 	}
-
 }

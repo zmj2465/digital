@@ -3,12 +3,44 @@
 
 #include <pthread.h>
 #include <stdio.h>
+#include <dirent.h>
 #include "compatible.h"
 #include <stdlib.h>
 #include "common.h"
 
+#define NO_MODE 0
+#define SIM_MODE 1
+#define REPLAY_MODE 2
+#define OFF 0
+#define ON 1
 
 
+enum {
+    DISPLAY_INFO,
+    SIM_READY,
+    SIM_START,
+    SIM_END,
+    FILE_SEQ,
+    IMP_EVENT,
+
+    SIM_START_ = 101,
+    SIM_END_,
+    REPLAY_SELECT_,
+    REPLAY_START_,
+    REPLAY_REP_,
+    REPLAY_STOP_,
+    REPLAY_RECOVER_,
+    REPLAY_SPEED,
+};
+
+
+typedef struct {
+    int tx_flag;
+    int mode;
+    int interval;
+    int seq;
+    FILE* file;
+}display_state_t;
 
 typedef struct {
     uint8_t tx_rx_status;       // 天线收发状态 (0：关闭 1：正在发送 2：正在接收)
@@ -85,10 +117,24 @@ typedef struct {
     channel_t channel_params[4];    // 信道参数，与其它4个节点的数据传输的信道信息
 } display_t;
 
+typedef struct _show_t
+{
+    uint16_t type;
+    uint16_t len;
+    union {
+        display_t display_info;
+        uint16_t file_seq;
+        uint16_t data_seq;
+    };
+}show_t;
 
+extern display_state_t display_state;
+extern show_t show_msg;
 
 void* display_send_thread(void* arg);
-
 void display_send_thread_init();
+void set_mode(int mode, int flag);
+void select_file(show_t* msg);
+void find_data();
 
 #endif

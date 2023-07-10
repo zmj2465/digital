@@ -47,12 +47,14 @@
 #define INFO_SET_FILE "../../../info set/info_set.ini"
 #define INFO_SET_DESK_FILE "C:\\Users\\xykc\\Desktop\\info_set.ini" 
 #define END_FLAG "\n"
+#define DIR_SEPARATOR "\\"
 #else
 #define OVERALL_FILE "../info set/ipinfo.txt"
 #define PRIVATE_FILE "../info set/base_info.txt"
 #define SIMULATE_FILE "../info set/simulation_config.txt"
 #define INFO_SET_FILE "../info set/info_set.ini"
 #define END_FLAG "\r"
+#define DIR_SEPARATOR "/"
 #endif
 
 
@@ -64,6 +66,7 @@ void wsa_init();
 void udelay(int us);
 void set_process_priority();
 void set_thread_priority();
+int setNonBlocking(int sockfd);
 
 
 

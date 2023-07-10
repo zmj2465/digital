@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include "common.h"
 #include "queue.h"
+#include "display_send_thread.h"
 
 
 

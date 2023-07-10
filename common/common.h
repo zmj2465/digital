@@ -21,7 +21,10 @@
 #define FD_NUM			info.simulated_link_num
 #define RSET			info.rset
 #define LFD				info.simulated_link[MY_INDEX].fd
-#define CLOCK_REALTIME 0
+#define CLOCK_REALTIME  0
+#define DISPLAY_FD      info.display_system.fd
+
+
 
 enum 
 {
@@ -147,6 +150,7 @@ typedef struct _info_t
 	/*simulation_replay*/
 	//HANDLE hSharedMem;
 	//LPVOID lpSharedMem;
+
 	int mem_ptr;
 	int act_prt;
 
@@ -271,7 +275,6 @@ typedef struct _psy_msg_t
 
 
 extern fddi_info_t fddi_info;
-
 
 void queue_init();
 
