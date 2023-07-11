@@ -5,12 +5,20 @@ void* fddi_thread(void* arg)
 {
     pthread_detach(pthread_self());
 
+    while (1)
+    {
+        generate_show_msg();
+        Sleep(1000);
+    }
+
     fddi_thread_init();
 
     char data[MAX_DATA_LEN];
     int len;
 
     fddi_info_t* p = (fddi_info_t*)data;
+
+    
 
     while (1)
     {
@@ -68,11 +76,11 @@ void fddi_thread_init()
 
 void generate_show_msg()
 {
+    int ret = 0;
     show_msg.type = 0;
     show_msg.len = 4 + sizeof(display_t);
     show_msg.display_info.serial_number = display_state.seq++;
 
-
     //´æ´¢
-
+    ret = fwrite(&show_msg, sizeof(char), show_msg.len, info.data_file);
 }

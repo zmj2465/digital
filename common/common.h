@@ -8,6 +8,9 @@
 #include "compatible.h"
 #include "queue.h"
 #include "mytime.h"
+//#include "windows.h"
+//#include <dirent.h>
+#include "stdio.h"
 
 #define STORE_SIZE		1024
 #define MAX_DEVICE		12
@@ -150,7 +153,8 @@ typedef struct _info_t
 	/*simulation_replay*/
 	//HANDLE hSharedMem;
 	//LPVOID lpSharedMem;
-
+	FILE* data_file;
+	FILE* log_file;
 	int mem_ptr;
 	int act_prt;
 

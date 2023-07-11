@@ -10,6 +10,7 @@
 #include "link_control_thread.h"
 #include "data_recv_thread.h"
 #include "data_send_thread.h"
+#include "file_manage.h"
 #include "queue.h"
 
 #include "compatible.h"
@@ -29,17 +30,7 @@ int main()
 {  
     time_init();
 
-    //while (1)
-    //{
-    //    printf("%lld\n", my_get_time());
-    //    Sleep(1000);
-    //}
-    //while (1);
-
     int ret;
-
-
-
 
     /*链接库初始化*/
     wsa_init();
@@ -51,8 +42,6 @@ int main()
     set_process_priority();
 
     ///*ip信息配置*/
-    //load_ip_config();
-
     load_config(INFO_SET_FILE);
     ret=load_config(INFO_SET_DESK_FILE);
     if (ret == -1)
@@ -60,6 +49,8 @@ int main()
         printf("load config error\n");
     }
 
+    //文件夹创建
+    file_init();
 
 
     /*数据存储初始化*/
@@ -347,6 +338,7 @@ int load_config(char* filename)
         printf("ip : %s\n", FD[j].ip);
         printf("port : %d\n", FD[j].port);
     }
-
-
 }
+
+
+
