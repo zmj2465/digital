@@ -82,5 +82,5 @@ void generate_show_msg()
     show_msg.display_info.serial_number = display_state.seq++;
 
     //´æ´¢
-    ret = fwrite(&show_msg, sizeof(char), show_msg.len, info.data_file);
+    //ret = fwrite(&show_msg, sizeof(char), show_msg.len, info.data_file);
 }

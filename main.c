@@ -28,6 +28,10 @@ pthread_mutex_t lock;
 
 int main()
 {  
+
+    //文件夹创建
+    file_init();
+
     time_init();
 
     int ret;
@@ -49,12 +53,10 @@ int main()
         printf("load config error\n");
     }
 
-    //文件夹创建
-    file_init();
-
 
     /*数据存储初始化*/
     data_store_init();
+
 
     /*信号量初始化*/   
     sem_init(&info.send_semaphore, 0, 0);
@@ -262,6 +264,7 @@ int load_config(char* filename)
     //printf("%d %s\n", ret, num);
     FD_NUM = atoi(num);
 
+    //tolog("SIM_NUM:%d\n", FD_NUM);
     printf("SIM_NUM:%d\n", FD_NUM);
 
     //本节点信息

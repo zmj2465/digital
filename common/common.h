@@ -12,6 +12,9 @@
 //#include <dirent.h>
 #include "stdio.h"
 
+//#define printf tolog
+
+
 #define STORE_SIZE		1024
 #define MAX_DEVICE		12
 #define HOST_NAME_LEN	20
@@ -153,8 +156,8 @@ typedef struct _info_t
 	/*simulation_replay*/
 	//HANDLE hSharedMem;
 	//LPVOID lpSharedMem;
-	FILE* data_file;
-	FILE* log_file;
+	//FILE* data_file;
+	//FILE* log_file;
 	int mem_ptr;
 	int act_prt;
 
