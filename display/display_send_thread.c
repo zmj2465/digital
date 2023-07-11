@@ -270,12 +270,12 @@ void find_data()
 //    }
 //
 //    int i;
-//    for (i = 0; i < 10; i++)
-//    {
-//        memset(a, i, 1024);
-//        fwrite(a, sizeof(char), sizeof(a), file);  // 将内容写入文件
-//        printf("write success\n");
-//    }
+    //for (i = 0; i < 10; i++)
+    //{
+    //    memset(a, i, 1024);
+    //    fwrite(a, sizeof(char), sizeof(a), file);  // 将内容写入文件
+    //    printf("write success\n");
+    //}
 //
 //    fseek(file, 2*1024, SEEK_SET);
 //    fread(a, sizeof(char), sizeof(a), file);

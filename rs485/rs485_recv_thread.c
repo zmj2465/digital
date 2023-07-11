@@ -29,10 +29,4 @@ void* rs_485_recv_thread(void* arg)
     }
 }
 
-void generate_show_msg()
-{
-    show_msg.type = 0;
-    show_msg.len = 4+sizeof(display_t);
-    show_msg.display_info.serial_number = display_state.seq++;
-}
 

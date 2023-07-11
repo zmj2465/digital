@@ -28,6 +28,7 @@ void* fddi_thread(void* arg)
         printf("a=%x,b=%x,d=%x\n", data[0], data[1], data[2]);
         printf("x=%g\ny=%g\nz=%g\nq0=%g\nq1=%g\nq2=%g\nq3=%g\n", p->pos.x, p->pos.y, p->pos.z, p->q.q0, p->q.q1, p->q.q2, p->q.q3);
 
+        generate_show_msg();
         /*ËÍÍùmaster*/
         //enqueue(&info.thread_queue[MASTER_THREAD], data, len);
     }
@@ -62,4 +63,16 @@ void fddi_thread_init()
     info.fddi_system.fd = accept(lfd, (struct sockaddr*)&(info.fddi_system.addr), &(info.fddi_system.addr_len)); //**
 
     printf("fddi_system connect success %d\n", info.fddi_system.fd);
+}
+
+
+void generate_show_msg()
+{
+    show_msg.type = 0;
+    show_msg.len = 4 + sizeof(display_t);
+    show_msg.display_info.serial_number = display_state.seq++;
+
+
+    //´æ´¢
+
 }
