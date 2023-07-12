@@ -1,5 +1,7 @@
 #include "data_recv_thread.h"
 
+
+
 /*
 功能：数据接收线程
 参数：无
@@ -47,7 +49,7 @@ int data_recv_proc(void)
 	if (ret < 0)
 	{
 		ret = -1;
-		printf("error\n");
+		printf("select error\n");
 		return ret;
 	}
 

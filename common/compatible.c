@@ -113,3 +113,26 @@ void udelay(int us)
 
     }
 }
+
+
+int setNonBlocking(int sockfd) {
+#ifdef _WIN32
+    u_long mode = 1; // 1 表示非阻塞模式，0 表示阻塞模式
+    if (ioctlsocket(sockfd, FIONBIO, &mode) != 0) {
+        printf("set socket fail\n");
+        return -1; // 设置失败
+    }
+#else
+    int flags = fcntl(sockfd, F_GETFL, 0);
+    if (flags == -1) {
+        return -1; // 设置失败
+    }
+
+    flags |= O_NONBLOCK;
+    if (fcntl(sockfd, F_SETFL, flags) == -1) {
+        return -1; // 设置失败
+    }
+#endif
+
+    return 0; // 设置成功
+}

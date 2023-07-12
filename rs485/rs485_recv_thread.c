@@ -5,11 +5,10 @@
 #define HEAD_LEN 3
 #define CC_LEN   100
 
-#define aa f1
 
 void msg_proc(char* get)
 {
-
+    
 }
 
 
@@ -18,6 +17,8 @@ void* rs_485_recv_thread(void* arg)
     pthread_detach(pthread_self());
 
     char get[MAX_DATA_LEN];
+
+
 
     while (1)
     {

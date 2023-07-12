@@ -19,24 +19,8 @@
 #include <sys/resource.h>
 #include <time.h>
 #include <sys/time.h>
-
 #endif
 
-
-/*线程创建模板
-    void* rs_485_thread(void* arg)
-    {
-        pthread_detach(pthread_self());
-    }
-    pthread_t thread_id; // 线程id
-    void* arg = NULL; // 线程参数
-    int ret = pthread_create(&thread_id, NULL, rs_485_thread, arg);
-    if (ret != 0)
-    {
-        // 创建线程失败，处理错误
-        printf("error\n");
-    }
-*/
 
 
 #ifdef _WIN32
@@ -46,13 +30,21 @@
 #define OUTPUT_FILE_NAME "../../../aaa.txt"
 #define INFO_SET_FILE "../../../info set/info_set.ini"
 #define INFO_SET_DESK_FILE "C:\\Users\\xykc\\Desktop\\info_set.ini" 
+
+#define FOLDER_NAME_LEN 100
+#define TOTAL_FOLDER "C:\\Digital prototype"
+#define LOG_FOLDER   "C:\\Digital prototype\\log"
+#define DATA_FOLDER  "C:\\Digital prototype\\data"
+
 #define END_FLAG "\n"
+#define DIR_SEPARATOR "\\"
 #else
 #define OVERALL_FILE "../info set/ipinfo.txt"
 #define PRIVATE_FILE "../info set/base_info.txt"
 #define SIMULATE_FILE "../info set/simulation_config.txt"
 #define INFO_SET_FILE "../info set/info_set.ini"
 #define END_FLAG "\r"
+#define DIR_SEPARATOR "/"
 #endif
 
 
@@ -64,6 +56,7 @@ void wsa_init();
 void udelay(int us);
 void set_process_priority();
 void set_thread_priority();
+int setNonBlocking(int sockfd);
 
 
 

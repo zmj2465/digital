@@ -3,6 +3,14 @@
 int prepare_simulation = 0;
 struct antenna_info_t antenna_info[6];
 
+phy_fun funs[] = {
+    config_judge,
+    distance_judge,
+    antenna_match_,
+    channel_sim,
+};
+
+
 double calculateAngle(const Point3D* a, const Point3D* b)
 {
     double absxk;
@@ -605,8 +613,8 @@ int psy_recv(int len,char* data, msg_t* msg, int index, int role)
     bool ret;
     psy_msg_t* p = (psy_msg_t*)data;
     //printf("psy_recv:x=%f y=%f z=%f q0=%f q1=%f q2=%f q3=%f\n", p->pos.x, p->pos.y, p->pos.z, p->q.q0, p->q.q1, p->q.q2, p->q.q3);
-    if (p->flag == 0 || prepare_simulation == 0) return 1;
-    ret = checkAngles(p->pos, p->p_to, p->q, p->index, p->role, fddi_info.pos, antenna_info[index].point_to, fddi_info.q, index, role);
+    if (p->psy_head.flag == 0 || prepare_simulation == 0) return 1;
+    ret = checkAngles(p->psy_head.pos, p->psy_head.p_to, p->psy_head.q, p->psy_head.index, p->psy_head.role, fddi_info.pos, antenna_info[index].point_to, fddi_info.q, index, role);
     if (ret == false) return 1;
     memcpy(msg, (char*)(&p->msg), sizeof(msg_t));
     return 0;
@@ -617,16 +625,90 @@ void psy_send(int len, char* data, msg_t* msg, int index, int role)
 {
     psy_msg_t* p= (psy_msg_t*)data;
     memcpy((char*)(&p->msg), msg, sizeof(msg_t));
-    p->pos.x = fddi_info.pos.x;
-    p->pos.y = fddi_info.pos.y;
-    p->pos.z = fddi_info.pos.z;
-    p->q.q0 = fddi_info.q.q0;
-    p->q.q1 = fddi_info.q.q1;
-    p->q.q2 = fddi_info.q.q2;
-    p->q.q3 = fddi_info.q.q3;
-    p->p_to = antenna_info[index].point_to;
-    p->index = index;
-    p->role = role;
-    p->flag = prepare_simulation;
+    p->psy_head.pos.x = fddi_info.pos.x;
+    p->psy_head.pos.y = fddi_info.pos.y;
+    p->psy_head.pos.z = fddi_info.pos.z;
+    p->psy_head.q.q0 = fddi_info.q.q0;
+    p->psy_head.q.q1 = fddi_info.q.q1;
+    p->psy_head.q.q2 = fddi_info.q.q2;
+    p->psy_head.q.q3 = fddi_info.q.q3;
+    p->psy_head.p_to = antenna_info[index].point_to;
+    p->psy_head.index = index;
+    p->psy_head.role = role;
+    p->psy_head.flag = prepare_simulation;
 }
+
+
+
+bool psy_recv_(psy_msg_t* data, msg_t* msg)
+{
+    bool ret = true;
+    int i = 0;
+    for (i = 0; i < sizeof(funs) / sizeof(phy_fun); i++)
+    {
+        ret |= funs[i](data);
+        if (ret == false) return ret;
+    }
+
+
+
+    return ret;
+}
+
+
+
+int psy_send_(psy_msg_t* data, msg_t* msg)
+{
+    data->psy_head.len = sizeof(psy_head_t) + sizeof(msg_t);
+    data->psy_head.role = info.device_info.node_role;
+    data->psy_head.index = info.current_antenna;
+    data->psy_head.flag = prepare_simulation;
+    data->psy_head.pos = fddi_info.pos;
+    data->psy_head.v = fddi_info.v;
+    data->psy_head.rv = fddi_info.rv;
+    data->psy_head.q = fddi_info.q;
+    data->psy_head.p_to = antenna_info[info.current_antenna].point_to;
+    data->msg = *msg;
+}
+//
+
+//信息加载判断 有一方未加载数据则不接收数据
+bool config_judge(psy_msg_t* p)
+{
+    bool ret = true;
+    if (p->psy_head.flag == 0 || prepare_simulation == 0) return false;
+    return ret;
+}
+
+//距离判断 大于最大距离不接收数据
+bool distance_judge(psy_msg_t* p)
+{
+    bool ret = true;
+    double distance = caculate_distance(p->psy_head.pos, fddi_info.pos);
+    if (distance > MAX_DISTANCE) return false;
+    return ret;
+}
+
+
+//天线匹配 匹配失败不接收数据
+bool antenna_match_(psy_msg_t* p)
+{
+    bool ret = true;
+    ret=checkAngles(p->psy_head.pos, p->psy_head.p_to, p->psy_head.q, p->psy_head.index, p->psy_head.role, fddi_info.pos, antenna_info[info.current_antenna].point_to, fddi_info.q, info.current_antenna, info.device_info.node_role);
+    return ret;
+}
+
+
+//信道仿真 丢包则不接收数据
+bool channel_sim(psy_msg_t* data)
+{
+    bool ret;
+
+    return ret;
+}
+
+
+
+
+
 

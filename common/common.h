@@ -8,6 +8,12 @@
 #include "compatible.h"
 #include "queue.h"
 #include "mytime.h"
+//#include "windows.h"
+//#include <dirent.h>
+#include "stdio.h"
+
+//#define printf tolog
+
 
 #define STORE_SIZE		1024
 #define MAX_DEVICE		12
@@ -21,7 +27,10 @@
 #define FD_NUM			info.simulated_link_num
 #define RSET			info.rset
 #define LFD				info.simulated_link[MY_INDEX].fd
-#define CLOCK_REALTIME 0
+#define CLOCK_REALTIME  0
+#define DISPLAY_FD      info.display_system.fd
+
+
 
 enum 
 {
@@ -147,6 +156,8 @@ typedef struct _info_t
 	/*simulation_replay*/
 	//HANDLE hSharedMem;
 	//LPVOID lpSharedMem;
+	//FILE* data_file;
+	//FILE* log_file;
 	int mem_ptr;
 	int act_prt;
 
@@ -257,21 +268,28 @@ typedef struct _fddi_info_t
 }fddi_info_t;
 
 
+#pragma pack(1)
+typedef struct {
+	int len;
+	int role;
+	int index; //选择天线
+	int flag;
+	Point3D pos; //位置
+	Point3D v; //速度
+	Point3D rv; //角速度
+	Quaternion q; //四元数
+	Point3D p_to; //
+}psy_head_t;
+
 typedef struct _psy_msg_t
 {
-	Point3D pos;
-	Point3D p_to;
-	Quaternion q;
-	int role;
-	int index;
-	int flag;
+	psy_head_t psy_head;
 	msg_t msg;
 }psy_msg_t;
-
+#pragma pack()
 
 
 extern fddi_info_t fddi_info;
-
 
 void queue_init();
 

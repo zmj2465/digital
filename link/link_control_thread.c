@@ -187,6 +187,6 @@ void relink()
 			send(FD[i].fd, &MY_INDEX, sizeof(int), 0);
 			printf("send: %d\n", MY_INDEX);
 		}
-
+		link_info_print();
 	}
 }
