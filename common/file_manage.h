@@ -26,6 +26,7 @@ void create_map(file_info_t* file, int size);
 int get_file_num(char* dir);
 void file_init();
 void tolog(char* s, ...);
+void todata(char* data, int len);
 
 void for_test();
 

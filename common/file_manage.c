@@ -182,6 +182,12 @@ void tolog(char* s,...)
     }
 }
 
+void todata(char* data, int len)
+{
+    memcpy(data_file.mappedData + data_file.ptr, data, len);
+    data_file.ptr += len;
+}
+
 
 
 void for_test()
