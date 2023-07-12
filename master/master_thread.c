@@ -52,7 +52,7 @@ int master_data_proc(void)
                 info.timerId_M[index] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, index, TIME_ONESHOT);
 #endif
 
-                printf("M receive Z%d data frame, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
+                printf("M receive Z%d data frame, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, msg.head.seq);
                 break;
             case START_GUN:
                 if (msg.data[0] == START_GUN_RES)
@@ -71,7 +71,7 @@ int master_data_proc(void)
                     info.device_info.node_num++;
                     info.device_info.node_list = info.device_info.node_list | (1 << index);
                     info.scan_flag_M[index] = 1;
-                    printf("M receive Z%d scan response, list = %d, current slot = %d.%d\n", index, info.device_info.node_list, info.current_time_frame, info.current_slot);
+                    printf("M receive Z%d scan response, list = %d, current slot = %d.%d, seq = %d\n", index, info.device_info.node_list, info.current_time_frame, info.current_slot, msg.head.seq);
                 }
                 else
                 {
@@ -83,7 +83,7 @@ int master_data_proc(void)
                 {
                     index = inquire_address(msg.head.src);
                     info.distance_flag_M[index] = 1;
-                    printf("M receive Z%d distance frame, current slot = %d.%d\n", index, info.current_time_frame, info.current_slot);
+                    printf("M receive Z%d distance frame, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, msg.head.seq);
                 }
                 else
                 {
@@ -127,6 +127,7 @@ int master_data_proc(void)
 #endif
                         /*É¨ÃèÏìÓ¦Ö¡*/
                         info.scan_flag_Z = 1;
+                        printf("Z%d receive M scan request, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
                     }
                     else if (msg.data[0] == SCAN_CON)
                     {
@@ -134,6 +135,7 @@ int master_data_proc(void)
                         /*¹Ø±ÕÉ¨Ãè»Ø¸´¶¨Ê±Æ÷*/
                         timeKillEvent(info.timerId);
 #endif
+                        printf("Z%d receive M scan confirm, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
                         fsm_do(EVENT_WAN_SUCC);
                     }
                     else
@@ -147,7 +149,7 @@ int master_data_proc(void)
                     timeKillEvent(info.timerId_Z);
                     info.timerId_Z = timeSetEvent(TIMER_DELAY, 0, TimerCallback, Z_DATA_TIMER, TIME_ONESHOT);
 #endif
-                    printf("Z%d receive M data frame, current slot = %d.%d\n", MY_INDEX, info.current_time_frame, info.current_slot);       
+                    printf("Z%d receive M data frame, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);       
                     break;
                 default:
                     break;

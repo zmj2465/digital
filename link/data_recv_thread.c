@@ -58,6 +58,7 @@ int data_recv_proc(void)
 		if (FD_ISSET(FD[i].fd, &RSET))
 		{
 			ret = recv(FD[i].fd, FD[i].recvBuffer, sizeof(psy_msg_t), 0);
+			//printf("psy_msg_t len = %d,ret len = %d\n", sizeof(psy_msg_t), ret);
 			if (ret > 0)
 			{
 				/*状态机判断*/
@@ -65,7 +66,7 @@ int data_recv_proc(void)
 				{
 					psy_msg_t* psy_msg = FD[i].recvBuffer;
 					msg_t* rmsg = FD[i].recvBuffer;
-					printf("no sim get, msg = %d psy_msg = %d msg_type = %d psy_type = %d\n", rmsg->head.dst, psy_msg->msg.head.dst, rmsg->head.type, psy_msg->msg.head.type);
+					printf("no sim get, msg = %d psy_msg = %d msg_type = %d psy_type = %d seq = %d\n", rmsg->head.dst, psy_msg->msg.head.dst, rmsg->head.type, psy_msg->msg.head.type, rmsg->head.seq);
 					if (rmsg->head.type == START_GUN)
 					{
 						enqueue(&info.thread_queue[MASTER_THREAD_DATA], rmsg, MAX_DATA_LEN);
@@ -82,12 +83,11 @@ int data_recv_proc(void)
 					ret = antenna_match(psy_msg, &msg, info.device_info.node_role);
 					if (ret == 1)
 					{
-
 						enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
 					}
 					else
 					{
-						printf("match fail throw, M send antenna = %d, Z%d receive antenna = %d, current slot = %d.%d\n", psy_msg->msg.head.antenna_id, MY_INDEX, inquire_antenna(info.current_slot), info.current_time_frame, info.current_slot);
+						printf("match fail throw, M send antenna = %d, Z%d receive antenna = %d, current slot = %d.%d, seq = %d\n", psy_msg->msg.head.antenna_id, MY_INDEX, inquire_antenna(info.current_slot), info.current_time_frame, info.current_slot, psy_msg->msg.head.seq);
 					}
 					///*信道仿真,匹配自身波束信息对齐*/
 					//ret = psy_recv(len, psy_msg, &msg, antenna_recv, info.device_info.node_role);
@@ -151,11 +151,11 @@ int antenna_match(char* data, msg_t* msg, int role)
 			memcpy(msg, (msg_t*)(&ptr->msg), sizeof(msg_t));
 			info.antenna_Z = antenna_recv;
 
-			recv = my_get_time();
-			sub = recv - msg->head.send_t;
+			//recv = my_get_time();
+			//sub = recv - msg->head.send_t;
 
-			printf("temp = %d ns\n", sub/1000);
-			printf("match successfully, M send antenna = %d, Z%d receive antenna = %d, current slot = %d.%d\n", ptr->msg.head.antenna_id, MY_INDEX, info.antenna_Z, info.current_time_frame, info.current_slot);
+			//printf("temp = %d ns\n", sub/1000);
+			//printf("match successfully, M send antenna = %d, Z%d receive antenna = %d, current slot = %d.%d\n", ptr->msg.head.antenna_id, MY_INDEX, info.antenna_Z, info.current_time_frame, info.current_slot);
 			return 1;
 		}
 	}
