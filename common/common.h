@@ -184,9 +184,12 @@ typedef struct _info_t
 	uint64_t network_st;
 	uint64_t network_ed;
 	int set_network_time;			//建网时间
-	int test_lost;					//丢失再建链测试	
+	int test_lost;					//丢失再建链测试
+	int seq_m;
+	int seq_z;
 }info_t;
 
+#pragma pack(1)
 typedef struct _head_t
 {
 	uint8_t dst;
@@ -195,6 +198,7 @@ typedef struct _head_t
 	struct timespec send_time;
 	uint64_t send_t;
 	uint8_t antenna_id;
+	int seq;
 	//位置信息
 }head_t;
 
@@ -225,6 +229,7 @@ typedef struct _msg_t
 	uint8_t data[MAX_DATA_LEN]; //样机内部数据只传输data
 	int		len;				//样机内部传输时不含head长度，样机间传输时包含head长度
 }msg_t;
+#pragma pack()
 
 extern info_t info;
 
