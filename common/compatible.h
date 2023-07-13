@@ -35,6 +35,7 @@
 #define TOTAL_FOLDER "C:\\Digital prototype"
 #define LOG_FOLDER   "C:\\Digital prototype\\log"
 #define DATA_FOLDER  "C:\\Digital prototype\\data"
+#define SCHE_FOLDER   "C:\\Digital prototype\\sche"
 
 #define END_FLAG "\n"
 #define DIR_SEPARATOR "\\"
@@ -65,7 +66,17 @@ int setNonBlocking(int sockfd);
 
 
 
-
+//char a[]="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+//uint64_t c, b;
+//while (1)
+//{
+//    c = my_get_time();
+//    tolog("aaaaa %d a %d aaaaaaaaaaaaaaaaaa %f aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n", 100, 100, 2.2);
+//    //printf("aaaaa %d a %d aaaaaaaaaaaaaaaaaa %f aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n", 100, 100, 2.2);
+//    b = my_get_time();
+//    tosche("%lld\n", b - c);
+//    Sleep(1000);
+//}
 
 
 

@@ -13,10 +13,12 @@ typedef struct {
 	LPVOID mappedData;
 	int ptr;
 	int size;
+	pthread_mutex_t lock;
 }file_info_t;
 
 extern file_info_t log_file;
 extern file_info_t data_file;
+extern file_info_t sche_file;
 
 
 
@@ -27,6 +29,7 @@ int get_file_num(char* dir);
 void file_init();
 void tolog(char* s, ...);
 void todata(char* data, int len);
+void tosche(char* s, ...);
 
 void for_test();
 

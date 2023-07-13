@@ -93,6 +93,7 @@ void enqueue(msg_queue_t* queue, void* data, int len)
 	while ((queue->tail + 1) % (queue->max_size) == queue->head)
 	{
 		pthread_cond_wait(&queue->cond, &queue->lock);
+		printf("queue is full\n");
 	}
 
 	memcpy(queue->node[queue->tail].data, data, len);

@@ -3,15 +3,17 @@
 
 file_info_t log_file;
 file_info_t data_file;
-
+file_info_t sche_file;
 
 void file_init()
 {
     create_folder();
     create_file(&data_file, DATA_FOLDER, "data");
     create_file(&log_file, LOG_FOLDER, "log");
+    create_file(&sche_file, SCHE_FOLDER, "sche");
     create_map(&data_file, 2);
     create_map(&log_file, 2);
+    create_map(&sche_file, 2);
 }
 
 
@@ -19,7 +21,7 @@ void file_init()
 void create_folder()
 {
     int i = 0;
-    char dirname[][FOLDER_NAME_LEN] = { TOTAL_FOLDER ,LOG_FOLDER,DATA_FOLDER };
+    char dirname[][FOLDER_NAME_LEN] = { TOTAL_FOLDER ,LOG_FOLDER,DATA_FOLDER,SCHE_FOLDER };
     // 使用mkdir函数创建文件夹
     for (i = 0; i < sizeof(dirname) / sizeof(dirname[0]); i++)
     {
@@ -43,6 +45,7 @@ void create_file(file_info_t* file,char* dir,char* name)
     }
     strcpy(file->name, n1);
     fclose(file->file);
+    pthread_mutex_init(&file->lock, NULL);
     return 0;
 }
 
@@ -173,9 +176,24 @@ void tolog(char* s,...)
 {
     va_list args;
     va_start(args, s);
+    pthread_mutex_lock(&log_file.lock);
     int written = vsnprintf(log_file.mappedData + log_file.ptr, log_file.size - log_file.ptr, s, args);
     if (written >= 0) {
         log_file.ptr += written;
+    }
+    else {
+        perror("写入日志文件失败");
+    }
+    pthread_mutex_unlock(&log_file.lock);
+}
+
+void tosche(char* s, ...)
+{
+    va_list args;
+    va_start(args, s);
+    int written = vsnprintf(sche_file.mappedData + sche_file.ptr, sche_file.size - sche_file.ptr, s, args);
+    if (written >= 0) {
+        sche_file.ptr += written;
     }
     else {
         perror("写入日志文件失败");
@@ -184,8 +202,9 @@ void tolog(char* s,...)
 
 void todata(char* data, int len)
 {
-    memcpy(data_file.mappedData + data_file.ptr, data, len);
-    data_file.ptr += len;
+    //memcpy(data_file.mappedData + data_file.ptr, data, len);
+    //data_file.ptr += len;
+    fwrite(data, sizeof(char), len, data_file.file);
 }
 
 

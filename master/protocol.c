@@ -105,6 +105,9 @@ int fsm_init2off_st(int para)
 	info.device_info.node_list = 0x21;
 	schedule_slot_init();
 	info.test_lost = 0;
+	info.seq_m = 0;
+	info.seq_z = 0;
+	info.time_schedule_flag = 0;
 	return 0;
 }
 

@@ -53,12 +53,13 @@ int main()
         printf("load config error\n");
     }
 
-
     /*数据存储初始化*/
     data_store_init();
 
 
+
     /*信号量初始化*/   
+    pthread_spin_init(&start_spin,PTHREAD_PROCESS_PRIVATE);
     sem_init(&info.send_semaphore, 0, 0);
     sem_init(&info.thread_create_semaphore, 0, 0);
 
@@ -97,6 +98,7 @@ int main()
     {
         printf("error\n");
     }
+
 
     /**/
     ret = pthread_create(&info.display_send_thread_id, NULL, display_send_thread, NULL);

@@ -102,6 +102,18 @@ void link_init()
 
 	}
 
+	int flag = 1; 
+	for (i = 0; i < MY_INDEX; i++)
+	{
+		if (setsockopt(FD[i].fd, IPPROTO_TCP, TCP_NODELAY, (const char*)&flag, sizeof(int)) == SOCKET_ERROR)
+		{
+			printf("无法设置套接字选项.\n");
+			closesocket(FD[i].fd);
+			WSACleanup();
+			return 1;
+		}
+	}
+
 	printf("all link complete\n");
 
 	return;
