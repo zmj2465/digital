@@ -105,6 +105,9 @@ int fsm_init2off_st(int para)
 	info.device_info.node_list = 0x21;
 	schedule_slot_init();
 	info.test_lost = 0;
+	info.seq_m = 0;
+	info.seq_z = 0;
+	info.time_schedule_flag = 0;
 	return 0;
 }
 
@@ -126,14 +129,16 @@ int fsm_init2off_ed(int para)
 		msg.data[0] = START_GUN_REQ;
 		msg.data[1] = START_GUN_TIME;
 		msg.len = 2;
-		clock_gettime(CLOCK_REALTIME, &info.str.base_time);
+		//clock_gettime(CLOCK_REALTIME, &info.str.base_time);
+		info.str.base_t = my_get_time();
 		info.str.start_time = START_GUN_TIME;
 		for (i = 1; i < FD_NUM; i++)
 		{
 			generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
 			send(FD[i].fd, &msg, msg.len, 0);
 		}
-		printf("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
+		//printf("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
+		printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
 	}
 	return 0;
 }
@@ -146,12 +151,20 @@ int fsm_init2off_ed(int para)
 int fsm_off2wsn_st(int para)
 {
 	/*同步仿真建链时间，将自身状态设置为fsm_wsn*/
-	struct timespec str_m;
-	clock_gettime(CLOCK_REALTIME, &str_m);
-	while ((str_m.tv_sec * 1000000000 + str_m.tv_nsec) < (info.str.base_time.tv_sec * 1000000000 + info.str.base_time.tv_nsec + info.str.start_time * 1000000000))
+	//struct timespec str_m;
+	//clock_gettime(CLOCK_REALTIME, &str_m);
+	//while ((str_m.tv_sec * 1000000000 + str_m.tv_nsec) < (info.str.base_time.tv_sec * 1000000000 + info.str.base_time.tv_nsec + info.str.start_time * 1000000000))
+	//{
+	//	clock_gettime(CLOCK_REALTIME, &str_m);
+	//}
+	uint64_t str;
+	str = my_get_time();
+	while (str < (info.str.base_t + info.str.start_time * 1000000000))
 	{
-		clock_gettime(CLOCK_REALTIME, &str_m);
+		str = my_get_time();
 	}
+
+
 	return 0;
 }
 
@@ -163,7 +176,8 @@ int fsm_off2wsn_st(int para)
 int fsm_off2wsn_ed(int para)
 {
 	/*计算建网时间，开始时刻*/
-	clock_gettime(CLOCK_REALTIME, &info.set_network_st);
+	//clock_gettime(CLOCK_REALTIME, &info.set_network_st);
+	info.network_st = my_get_time();
 	return 0;
 }
 
@@ -175,11 +189,18 @@ int fsm_off2wsn_ed(int para)
 int fsm_off2wan_st(int para)
 {
 	/*同步仿真建链时间，将自身状态设置为fsm_wan*/
-	struct timespec str_m;
-	clock_gettime(CLOCK_REALTIME, &str_m);
-	while ((str_m.tv_sec * 1000000000 + str_m.tv_nsec) < (info.str.base_time.tv_sec * 1000000000 + info.str.base_time.tv_nsec + info.str.start_time * 1000000000))
+	//struct timespec str_m;
+	//clock_gettime(CLOCK_REALTIME, &str_m);
+	//while ((str_m.tv_sec * 1000000000 + str_m.tv_nsec) < (info.str.base_time.tv_sec * 1000000000 + info.str.base_time.tv_nsec + info.str.start_time * 1000000000))
+	//{
+	//	clock_gettime(CLOCK_REALTIME, &str_m);
+	//}
+
+	uint64_t str;
+	str = my_get_time();
+	while (str < (info.str.base_t + info.str.start_time * 1000000000))
 	{
-		clock_gettime(CLOCK_REALTIME, &str_m);
+		str = my_get_time();
 	}
 	return 0;
 }
@@ -206,9 +227,11 @@ int fsm_off2wan_ed(int para)
 int fsm_wsn2on_st(int para)
 {
 	/*计算建网时间，结束时刻*/
-	clock_gettime(CLOCK_REALTIME, &info.set_network_ed);
 	uint64_t sub;
-	sub = (info.set_network_ed.tv_sec - info.set_network_st.tv_sec) * 1000000000 + (info.set_network_ed.tv_nsec - info.set_network_st.tv_nsec);
+	//clock_gettime(CLOCK_REALTIME, &info.set_network_ed);
+	//sub = (info.set_network_ed.tv_sec - info.set_network_st.tv_sec) * 1000000000 + (info.set_network_ed.tv_nsec - info.set_network_st.tv_nsec);
+	info.network_ed = my_get_time();
+	sub = info.network_ed - info.network_st;
 	info.set_network_time = sub / 1000000;
 	printf("set network time = %d ms\n", info.set_network_time);
 	return 0;
@@ -262,7 +285,8 @@ int fsm_on2wsn_st(int para)
 int fsm_on2wsn_ed(int para)
 {
 	/*丢失再建链，计算建网时间，开始时刻*/
-	clock_gettime(CLOCK_REALTIME, &info.set_network_st);
+	//clock_gettime(CLOCK_REALTIME, &info.set_network_st);
+	info.network_st = my_get_time();
 	return 0;
 }
 

@@ -5,7 +5,10 @@
 #include <stdbool.h>
 #include "angle.h"
 
+
+#define MAX_DISTANCE 500000
 extern int prepare_simulation;
+typedef bool (*phy_fun)(psy_msg_t*);
 
 struct antenna_info_t {
     Point3D point_to;
@@ -57,5 +60,14 @@ void channel_simulation();
 
 int psy_recv(int len, char* data, msg_t* msg, int index, int role);
 void psy_send(int len, char* data, msg_t* msg, int index, int role);
+
+bool psy_recv_(psy_msg_t* data, msg_t* msg);
+int psy_send_(psy_msg_t* data, msg_t* msg);
+
+bool config_judge(psy_msg_t* p);
+bool distance_judge(psy_msg_t* p);
+bool antenna_match_(psy_msg_t* p);
+bool channel_sim(psy_msg_t* data);
+
 
 #endif

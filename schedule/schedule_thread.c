@@ -33,6 +33,17 @@ void* schedule_thread(void* arg)
     pthread_detach(pthread_self());
     set_thread_priority();
 
+    int i = 0;
+    for (i = 0; i < SLOT_NUM; i++) slot_table[i] = 800;
+
+    DWORD_PTR mask = 1 << 5;
+    HANDLE hThread = GetCurrentThread();
+
+    if (SetThreadAffinityMask(hThread, mask) == 0) {
+        printf("Failed to set thread affinity\n");
+        return 1;
+    }
+
     while (1)
     {
         if (fsm_status == FSM_WSN || fsm_status == FSM_WAN || fsm_status == FSM_ON)
@@ -71,8 +82,8 @@ int schedule_slot(void)
     {
         if ( (0 <= info.current_slot && info.current_slot <= 28) || (info.current_slot == 61) )
         {
+            info.time_schedule_flag = 1;
             antenna_table[info.current_antenna] = 1;
-            sem_post(&info.send_semaphore);
             udelay(slot_table[info.current_slot]);
             info.current_antenna = (info.current_antenna + 1) % ANTENNA_NUM;
             info.current_slot = (info.current_slot + 1) % SLOT_NUM;
@@ -96,7 +107,7 @@ int schedule_slot(void)
         case 1:
             if ((30 <= info.current_slot && info.current_slot <= 34) || (info.current_slot == 59))
             {
-                sem_post(&info.send_semaphore);
+                info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }

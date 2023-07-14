@@ -10,6 +10,7 @@
 #include "link_control_thread.h"
 #include "data_recv_thread.h"
 #include "data_send_thread.h"
+#include "file_manage.h"
 #include "queue.h"
 
 #include "compatible.h"
@@ -20,17 +21,20 @@
 #include "protocol.h"
 #include "main.h"
 
+#include "mytime.h"
+
 sem_t semaphore;
 pthread_mutex_t lock;
 
-static int temp = 0;
-
-
 int main()
-{
-    int ret;
-    struct timespec test;
+{  
 
+    //文件夹创建
+    file_init();
+
+    time_init();
+
+    int ret;
 
     /*链接库初始化*/
     wsa_init();
@@ -42,15 +46,20 @@ int main()
     set_process_priority();
 
     ///*ip信息配置*/
-    //load_ip_config();
-
     load_config(INFO_SET_FILE);
-
+    ret=load_config(INFO_SET_DESK_FILE);
+    if (ret == -1)
+    {
+        printf("load config error\n");
+    }
 
     /*数据存储初始化*/
     data_store_init();
 
+
+
     /*信号量初始化*/   
+    pthread_spin_init(&start_spin,PTHREAD_PROCESS_PRIVATE);
     sem_init(&info.send_semaphore, 0, 0);
     sem_init(&info.thread_create_semaphore, 0, 0);
 
@@ -89,6 +98,7 @@ int main()
     {
         printf("error\n");
     }
+
 
     /**/
     ret = pthread_create(&info.display_send_thread_id, NULL, display_send_thread, NULL);
@@ -236,6 +246,12 @@ int GetIniKeyString(char* title, char* key, char* filename, char* buf)
 
 int load_config(char* filename)
 {
+
+    FILE* fp;
+    if (NULL == (fp = fopen(filename, "r"))) {
+        return -1;
+    }
+
     char name[20];
     char num[20];
     char key[20];
@@ -250,6 +266,7 @@ int load_config(char* filename)
     //printf("%d %s\n", ret, num);
     FD_NUM = atoi(num);
 
+    //tolog("SIM_NUM:%d\n", FD_NUM);
     printf("SIM_NUM:%d\n", FD_NUM);
 
     //本节点信息
@@ -305,11 +322,11 @@ int load_config(char* filename)
         ret = GetIniKeyString("NUM", key, filename, value);
         //printf("%d %s\n", ret, value);
 
-        ret = GetIniKeyString(value, "ip", filename, &buff[++i]);
+        ret = GetIniKeyString(value, "ip", filename, (char*)&buff[++i]);
         //printf("%d %s\n", ret, buff[i]);
         ip_index = i;
 
-        ret = GetIniKeyString(value, "port", filename, &buff[++i]);
+        ret = GetIniKeyString(value, "port", filename, (char*)&buff[++i]);
         //printf("%d %s\n", ret, buff[i]);
         port_index = i;
 
@@ -326,6 +343,7 @@ int load_config(char* filename)
         printf("ip : %s\n", FD[j].ip);
         printf("port : %d\n", FD[j].port);
     }
-
-
 }
+
+
+

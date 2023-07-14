@@ -4,6 +4,7 @@
 #include <sched.h>
 #include "pthread.h"
 
+
 void wsa_init()
 {
     #ifdef _WIN32
@@ -17,6 +18,8 @@ void wsa_init()
     }
     #endif
 }
+
+
 
 void set_process_priority()
 {
@@ -92,19 +95,62 @@ void set_thread_priority()
 
 #define CLOCK_REALTIME 0
 
+int record[100];
 void udelay(int us)
 {
-
     uint64_t temp;
-    struct timespec t_start, t_end;
-    clock_gettime(CLOCK_REALTIME, &t_start);
+    //struct timespec t_start, t_end;
+    //clock_gettime(CLOCK_REALTIME, &t_start);
+
+    uint64_t start, end;
+    start = my_get_time();
 
     while (1)
     {
-
-        clock_gettime(CLOCK_REALTIME, &t_end);
-        temp = (t_end.tv_sec - t_start.tv_sec) * 1000000000 + (t_end.tv_nsec - t_start.tv_nsec);
-        if (temp >= us * 1000) break;
-
+        //clock_gettime(CLOCK_REALTIME, &t_end);
+        //temp = (t_end.tv_sec - t_start.tv_sec) * 1000000000 + (t_end.tv_nsec - t_start.tv_nsec);
+        end = my_get_time();
+        temp = end - start;
+        if (temp >= us * 1000)
+        {
+            //tosche("temp = %lldus\n", temp/1000);
+            break;
+        }
     }
+}
+
+
+int setNonBlocking(int sockfd) {
+#ifdef _WIN32
+    u_long mode = 1; // 1 表示非阻塞模式，0 表示阻塞模式
+    if (ioctlsocket(sockfd, FIONBIO, &mode) != 0) {
+        printf("set socket fail\n");
+        return -1; // 设置失败
+    }
+#else
+    int flags = fcntl(sockfd, F_GETFL, 0);
+    if (flags == -1) {
+        return -1; // 设置失败
+    }
+
+    flags |= O_NONBLOCK;
+    if (fcntl(sockfd, F_SETFL, flags) == -1) {
+        return -1; // 设置失败
+    }
+#endif
+
+    return 0; // 设置成功
+}
+
+uint64_t get_time_()
+{
+#if(DESKTOP==1)
+    struct timespec time;
+    clock_gettime(CLOCK_MONOTONIC, &time);
+    return time.tv_sec * 1000 * 1000 * 1000 + time.tv_nsec;
+#else
+    uint64_t time;
+    time = my_get_time();
+    return time;
+#endif
 }
