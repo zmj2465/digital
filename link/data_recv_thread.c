@@ -135,6 +135,7 @@ int data_recv_proc(void)
 		ret = recv(FD[0].fd, FD[0].recvBuffer, sizeof(psy_msg_t), 0);
 		i = 0;
 	}
+	//udelay(200);
 	uint64_t start, end;
 	start = my_get_time();
 	if (ret > 0)

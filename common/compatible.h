@@ -1,6 +1,17 @@
 #ifndef _COMPATIBLE_H_
 #define _COMPATIBLE_H_
 
+#include <stdint.h>
+
+#define DESKTOP 1
+
+#if(DESKTOP==1)
+#define my_get_time() get_time_()
+#else
+
+#endif
+
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <windows.h>
@@ -8,7 +19,6 @@
 #include <time.h>
 #pragma comment(lib, "kernel32.lib")
 //#pragma comment(lib, "pcieapi.lib")
-
 #else
 #include <unistd.h>
 #include <sys/types.h>
@@ -20,6 +30,8 @@
 #include <time.h>
 #include <sys/time.h>
 #endif
+
+
 
 
 
@@ -58,6 +70,7 @@ void udelay(int us);
 void set_process_priority();
 void set_thread_priority();
 int setNonBlocking(int sockfd);
+uint64_t get_time_();
 
 
 

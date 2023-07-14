@@ -18,8 +18,6 @@ void* rs_485_recv_thread(void* arg)
 
     char get[MAX_DATA_LEN];
 
-
-
     while (1)
     {
         /*接收信息*/
