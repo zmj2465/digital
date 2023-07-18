@@ -20,10 +20,7 @@ void* rs_485_recv_thread(void* arg)
 
     while (1)
     {
-        /*接收信息*/
-        //read
 
-        msg_proc(get);
     }
 }
 
