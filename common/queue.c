@@ -130,7 +130,7 @@ int enqueue_no_block(msg_queue_t* queue, void* data, int len)
 	pthread_mutex_lock(&queue->lock);
 	if ((queue->tail + 1) % (queue->max_size) == queue->head)
 	{
-		printf("queue is full\n");
+		printf("queue is full\n", __FUNCTION__);
 		pthread_mutex_unlock(&queue->lock);
 		return -1;
 	}

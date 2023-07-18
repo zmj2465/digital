@@ -18,8 +18,10 @@ void* rs_485_recv_thread(void* arg)
 
     char get[MAX_DATA_LEN];
     rs485_info_t* p = (rs485_info_t*)get;
+    int len = 0;
     while (1)
     {
+        dequeue(&info.thread_queue[RS485_RECV_THREAD], get, &len);
         switch (p->type)
         {
             case SP:
