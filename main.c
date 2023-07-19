@@ -29,9 +29,7 @@ pthread_mutex_t lock;
 
 
 int main()
-{  
-
-    //文件夹创建
+{
     file_init();
 
     time_init();
@@ -55,10 +53,7 @@ int main()
         printf("load config error\n");
     }
 
-    /*数据存储初始化*/
-    data_store_init();
-
-
+    
 
     /*信号量初始化*/   
     pthread_spin_init(&start_spin,PTHREAD_PROCESS_PRIVATE);
@@ -274,7 +269,6 @@ int load_config(char* filename)
     //本节点信息
     ret = GetIniKeyString("MY_NAME", "name", filename, name);
     printf("My Real Name:%s\n", name);
-    printf("ip:%s\n", name);
 
     ret = GetIniKeyString(name, "ip", filename, (char*)&buff[++i]);
     strcpy(info.ip, buff[i]);

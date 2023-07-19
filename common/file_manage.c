@@ -37,7 +37,7 @@ void create_file(file_info_t* file,char* dir,char* name)
     time_t t = time(NULL);
     struct tm* tm = localtime(&t);
     strftime(n, sizeof(n), "%Y%m%d_%H-%M-%S", tm);
-    sprintf(n1, "%s\\%s_%s.txt", dir, n, name);
+    sprintf(n1, "%s\\%d_%s_%s.txt", dir, MY_INDEX, n, name);
     file->file = fopen(n1, "w+");
     if (file->file == NULL) {
         printf("无法创建文件\n");
