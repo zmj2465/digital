@@ -7,8 +7,6 @@
 参数：无
 返回值：无
 */
-
-
 void* data_send_thread(void* arg)
 {
     pthread_detach(pthread_self());
@@ -24,32 +22,19 @@ void* data_send_thread(void* arg)
 
     while (1)
     {
-        static uint64_t a, b;
-        ////if (__sync_bool_compare_and_swap(&info.time_schedule_flag, 1, 0))
-        ////{
-        ////    //a = my_get_time();
-        ////    //tosche("%lld us\n", (a - b) / 1000);
-        ////    //b = a;
-        ////    /*end_time = my_get_time();
-        ////    tosche("%lld us\n", (end_time - start_time) / 1000);*/
-        ////    data_send_proc();
-        ////}
-
+        //if (__sync_bool_compare_and_swap(&info.time_schedule_flag, 1, 0))
+        //{
+        //    //a = my_get_time();
+        //    //tosche("%lld us\n", (a - b) / 1000);
+        //    //b = a;
+        //    /*end_time = my_get_time();
+        //    tosche("%lld us\n", (end_time - start_time) / 1000);*/
+        //    data_send_proc();
+        //}
         if (info.time_schedule_flag == 1)
         {
             info.time_schedule_flag = 0;
-            a = my_get_time();
-            tosche("a%lld us\n", (a - b));
-            b = a;
-            ////end_time = my_get_time();
-            ////pthread_spin_lock(&start_spin);
-            //uint64_t temp = (a - start_time) / 1000;
-            ////pthread_spin_unlock(&start_spin);
-            //tosche("b%lld us\n", temp);
             data_send_proc();
-            //b = my_get_time();
-            //tosche("%lld\n", (b - a) / 1000);
-            
         }
     }
 }
@@ -212,7 +197,6 @@ int data_send_proc(void)
                             send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
                             //printf("s:%d\n", pmsg.msg.head.seq);
                             printf("M send Z%d data, current slot = %d.%d, seq = %d, time = %lld\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq, pmsg.msg.head.send_t);
-                            info.test_lost++;
                         }
                         return 0;    
                     }

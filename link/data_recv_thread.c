@@ -10,6 +10,7 @@
 void* data_recv_thread(void* arg)
 {
     pthread_detach(pthread_self());
+	set_thread_priority();
 	int i;
 	for (i = 0; i < info.simulated_link_num; i++)
 	{
@@ -30,7 +31,6 @@ void* data_recv_thread(void* arg)
 		//tosche("time=%lld\n",end-start);
     }
 }
-
 
 /*
 功能：数据接收的处理，存入对应socket端口的接收数据缓存区
@@ -135,9 +135,6 @@ int data_recv_proc(void)
 		ret = recv(FD[0].fd, FD[0].recvBuffer, sizeof(psy_msg_t), 0);
 		i = 0;
 	}
-	//udelay(200);
-	uint64_t start, end;
-	start = my_get_time();
 	if (ret > 0)
 	{
 		/*状态机判断*/
@@ -164,6 +161,8 @@ int data_recv_proc(void)
 			uint64_t sub;
 			uint64_t recv_time;
 
+
+
 			ret = antenna_match(psy_msg, &msg, info.device_info.node_role);
 			if (ret == 1)
 			{
@@ -187,8 +186,6 @@ int data_recv_proc(void)
 			//	printf("sim fail throw\n");
 			//	continue;
 			//}
-			end = my_get_time();
-			//tosche("s:%lld current slot = %d.%d, seq = %d\n", end - start, info.current_time_frame, info.current_slot, msg.head.seq);
 		}
 	}
 	else
@@ -242,7 +239,6 @@ int antenna_match(char* data, msg_t* msg, int role)
 			//recv = my_get_time();
 			//sub = recv - msg->head.send_t;
 
-			//to_log("temp = %d ns\n", sub/1000);
 			//printf("match successfully, M send antenna = %d, Z%d receive antenna = %d, current slot = %d.%d\n", ptr->msg.head.antenna_id, MY_INDEX, info.antenna_Z, info.current_time_frame, info.current_slot);
 			return 1;
 		}
