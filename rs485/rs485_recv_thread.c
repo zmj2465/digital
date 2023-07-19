@@ -17,15 +17,17 @@ void* rs_485_recv_thread(void* arg)
     pthread_detach(pthread_self());
 
     char get[MAX_DATA_LEN];
-
-
-
+    rs485_info_t* p = (rs485_info_t*)get;
+    int len = 0;
     while (1)
     {
-        /*接收信息*/
-        //read
-
-        msg_proc(get);
+        dequeue(&info.thread_queue[RS485_RECV_THREAD], get, &len);
+        switch (p->type)
+        {
+            case SP:
+                enqueue_no_block(&info.thread_queue[DATA_SEND_THREAD], p->sp, SP_LEN);
+                break;
+        }
     }
 }
 

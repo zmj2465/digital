@@ -17,7 +17,7 @@ extern uint64_t start_time;
 extern uint64_t end_time;
 extern pthread_spinlock_t start_spin;
 
-#define printf tolog
+//#define printf tolog
 
 #define STORE_SIZE		1024
 #define MAX_DEVICE		12

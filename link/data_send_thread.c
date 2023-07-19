@@ -11,6 +11,15 @@ void* data_send_thread(void* arg)
 {
     pthread_detach(pthread_self());
     set_thread_priority();
+
+    DWORD_PTR mask = 1 << 6;
+    HANDLE hThread = GetCurrentThread();
+
+    //if (SetThreadAffinityMask(hThread, mask) == 0) {
+    //    printf("Failed to set thread affinity\n");
+    //    return 1;
+    //}
+
     while (1)
     {
         //if (__sync_bool_compare_and_swap(&info.time_schedule_flag, 1, 0))

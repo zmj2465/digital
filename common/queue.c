@@ -90,6 +90,7 @@ void init_msg_queue(msg_queue_t* queue, int max_size) {
 void enqueue(msg_queue_t* queue, void* data, int len)
 {
 	pthread_mutex_lock(&queue->lock);
+
 	while ((queue->tail + 1) % (queue->max_size) == queue->head)
 	{
 		pthread_cond_wait(&queue->cond, &queue->lock);
@@ -108,6 +109,7 @@ void enqueue(msg_queue_t* queue, void* data, int len)
 void dequeue(msg_queue_t* queue, void** data, int* len)
 {
 	pthread_mutex_lock(&queue->lock);
+
 	while (queue->head == queue->tail)
 	{
 		pthread_cond_wait(&queue->cond, &queue->lock);
@@ -119,6 +121,44 @@ void dequeue(msg_queue_t* queue, void** data, int* len)
 	queue->head = (queue->head + 1) % queue->max_size;
 
 	pthread_cond_signal(&queue->cond);
+	pthread_mutex_unlock(&queue->lock);
+}
+
+
+int enqueue_no_block(msg_queue_t* queue, void* data, int len)
+{
+	pthread_mutex_lock(&queue->lock);
+	if ((queue->tail + 1) % (queue->max_size) == queue->head)
+	{
+		printf("queue is full\n", __FUNCTION__);
+		pthread_mutex_unlock(&queue->lock);
+		return -1;
+	}
+
+	memcpy(queue->node[queue->tail].data, data, len);
+	queue->node[queue->tail].len = len;
+
+	queue->tail = (queue->tail + 1) % queue->max_size;
+
+	pthread_mutex_unlock(&queue->lock);
+}
+
+int dequeue_no_block(msg_queue_t* queue, void** data, int* len)
+{
+	pthread_mutex_lock(&queue->lock);
+
+	if (queue->head == queue->tail)
+	{
+		printf("queue is empty\n");
+		pthread_mutex_unlock(&queue->lock);
+		return -1;
+	}
+
+	memcpy(data, queue->node[queue->head].data, queue->node[queue->head].len);
+	*len = queue->node[queue->head].len;
+
+	queue->head = (queue->head + 1) % queue->max_size;
+
 	pthread_mutex_unlock(&queue->lock);
 }
 

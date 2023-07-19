@@ -11,7 +11,6 @@
 #include <stdint.h>
 #pragma comment(lib, "kernel32.lib")
 //#pragma comment(lib, "pcieapi.lib")
-
 #else
 #include <unistd.h>
 #include <sys/types.h>
@@ -23,6 +22,8 @@
 #include <time.h>
 #include <sys/time.h>
 #endif
+
+
 
 
 
@@ -61,5 +62,6 @@ void udelay(int us);
 void set_process_priority();
 void set_thread_priority();
 int setNonBlocking(int sockfd);
+uint64_t get_time_();
 
 #endif

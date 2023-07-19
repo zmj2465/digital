@@ -26,6 +26,8 @@
 sem_t semaphore;
 pthread_mutex_t lock;
 
+
+
 int main()
 {  
 

@@ -44,4 +44,8 @@ void init_msg_queue(msg_queue_t* queue, int max_size);
 void enqueue(msg_queue_t* queue, void* data, int len);
 void dequeue(msg_queue_t* queue, void** data, int* len);
 
+
+int enqueue_no_block(msg_queue_t* queue, void* data, int len);
+int dequeue_no_block(msg_queue_t* queue, void** data, int* len);
+
 #endif
