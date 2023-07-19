@@ -49,7 +49,6 @@ void fddi_thread_init()
     int ret = 0;
 
     //创建侦听socket
-    //lfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     lfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     //设置端口复用

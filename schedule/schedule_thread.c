@@ -33,11 +33,6 @@ void* schedule_thread(void* arg)
     pthread_detach(pthread_self());
     set_thread_priority();
 
-    //int i;
-    //for (i = 0; i < SLOT_NUM; i++)
-    //{
-    //    slot_table[i] = 2600;
-    //}
     while (1)
     {
         if (fsm_status == FSM_WSN || fsm_status == FSM_WAN || fsm_status == FSM_ON)
