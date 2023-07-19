@@ -1,11 +1,14 @@
 #ifndef _COMPATIBLE_H_
 #define _COMPATIBLE_H_
 
+#define DESKTOP			1 //置1系统时钟，置0 PTP时钟
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <windows.h>
 #include <ws2tcpip.h>
 #include <time.h>
+#include <stdint.h>
 #pragma comment(lib, "kernel32.lib")
 //#pragma comment(lib, "pcieapi.lib")
 
@@ -52,34 +55,11 @@
 
 
 
-
+uint64_t get_time_swtich(void);
 void wsa_init();
 void udelay(int us);
 void set_process_priority();
 void set_thread_priority();
 int setNonBlocking(int sockfd);
-
-
-
-
-
-
-
-
-//char a[]="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-//uint64_t c, b;
-//while (1)
-//{
-//    c = my_get_time();
-//    tolog("aaaaa %d a %d aaaaaaaaaaaaaaaaaa %f aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n", 100, 100, 2.2);
-//    //printf("aaaaa %d a %d aaaaaaaaaaaaaaaaaa %f aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n", 100, 100, 2.2);
-//    b = my_get_time();
-//    tosche("%lld\n", b - c);
-//    Sleep(1000);
-//}
-
-
-
-
 
 #endif

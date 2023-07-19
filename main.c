@@ -63,6 +63,53 @@ int main()
     sem_init(&info.send_semaphore, 0, 0);
     sem_init(&info.thread_create_semaphore, 0, 0);
 
+    //if (MY_INDEX == 0)
+    //{
+    //int lfd;
+    //int ret = 0;
+
+    ////创建侦听socket
+    ////lfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    //lfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    ////设置端口复用
+    //int opt = 1;
+    //if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt) == -1) printf("setsockopt error");
+    ////绑定本机ip地址、端口号
+    //struct sockaddr_in addr;
+    //addr.sin_family = AF_INET;
+    //inet_pton(AF_INET, "192.168.1.26", (void*)&addr.sin_addr); //**ip**
+    //addr.sin_port = htons(7777); //**port**
+    //ret = bind(lfd, (struct sockaddr*)&addr, sizeof addr);
+    ////开始监听
+    //listen(lfd, SOMAXCONN);
+
+    //info.control_system.addr_len = sizeof(info.control_system.addr);
+    //info.control_system.fd = accept(lfd, (struct sockaddr*)&(info.control_system.addr), &(info.control_system.addr_len));
+
+    //printf("control_system connect success %d\n", info.control_system.fd);
+    //}
+    //else
+    //{ 
+    //    int i;
+    //    i = MY_INDEX;
+    //    FD[i].fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    //    //FD[i].fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    //    memset(&FD[i].addr, 0, sizeof(FD[i].addr));
+    //    FD[i].addr.sin_family = AF_INET;
+    //    FD[i].addr.sin_port = htons(7777);
+    //    inet_pton(AF_INET, "192.168.1.26", (void*)&FD[i].addr.sin_addr);
+
+    //    printf("is connecting to (device)%d (ip)%s (fd)%d (port)%d\n", i, FD[i].ip, FD[i].fd, FD[i].port);
+    //    while (0 != connect(FD[i].fd, (struct sockaddr*)&FD[i].addr, sizeof(FD[i].addr)))
+    //    {
+    //        perror("link connect");
+    //    }
+
+    //    send(FD[i].fd, &MY_INDEX, sizeof(int), 0);
+    //    printf("send: %d\n", MY_INDEX);
+    //}
+
+    //while (1);
 
     /*线程初始化*/
     ret = pthread_create(&info.rs_485_recv_thread_id, NULL, rs_485_recv_thread, NULL);

@@ -22,6 +22,7 @@ void link_init()
 	int ret = 0;
 
 	//创建侦听socket
+	//LFD = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	LFD = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	//设置端口复用
@@ -71,6 +72,7 @@ void link_init()
 	/*本机作为客户端 连上比自身索引号小的设备*/
 	for (i = MY_INDEX - 1; i >= 0; i--)
 	{
+		//FD[i].fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		FD[i].fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 		memset(&FD[i].addr, 0, sizeof(FD[i].addr));
 		FD[i].addr.sin_family = AF_INET;
@@ -185,6 +187,7 @@ void relink()
 		/*本机作为客户端 连上比自身索引号小的设备*/
 		else
 		{
+			//FD[i].fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 			FD[i].fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 			memset(&FD[i].addr, 0, sizeof(FD[i].addr));
 			FD[i].addr.sin_family = AF_INET;

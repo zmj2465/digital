@@ -90,34 +90,38 @@ void set_thread_priority()
 #endif
 }
 
-#define CLOCK_REALTIME 0
 
 void udelay(int us)
 {
-
     uint64_t temp;
-
-    //struct timespec t_start, t_end;
-    //clock_gettime(CLOCK_REALTIME, &t_start);
-
-    uint64_t start, end;
-    start = my_get_time();
+    struct timespec t_start, t_end;
+    clock_gettime(CLOCK_MONOTONIC, &t_start);
 
     while (1)
     {
-        end = my_get_time();
-        temp = end - start;
-        //clock_gettime(CLOCK_REALTIME, &t_end);
-        //temp = (t_end.tv_sec - t_start.tv_sec) * 1000000000 + (t_end.tv_nsec - t_start.tv_nsec);
+        clock_gettime(CLOCK_MONOTONIC, &t_end);
+        temp = (t_end.tv_sec - t_start.tv_sec) * 1000000000 + (t_end.tv_nsec - t_start.tv_nsec);
         if (temp >= us * 1000)
         {
             //tosche("temp = %lld us\n", temp/1000);
             break;
         }
-
     }
 }
 
+
+uint64_t get_time_swtich(void)
+{
+#if(DESKTOP == 1)
+    struct timespec time;
+    clock_gettime(CLOCK_MONOTONIC, &time);
+    return time.tv_sec * 1000 * 1000 * 1000 + time.tv_nsec;
+#else
+    uint64_t time;
+    time = my_get_time();
+    return time;
+#endif
+}
 
 int setNonBlocking(int sockfd) {
 #ifdef _WIN32

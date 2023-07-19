@@ -163,8 +163,6 @@ int fsm_off2wsn_st(int para)
 	{
 		str = my_get_time();
 	}
-
-
 	return 0;
 }
 

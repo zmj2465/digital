@@ -32,6 +32,12 @@ void* schedule_thread(void* arg)
 {
     pthread_detach(pthread_self());
     set_thread_priority();
+
+    //int i;
+    //for (i = 0; i < SLOT_NUM; i++)
+    //{
+    //    slot_table[i] = 2600;
+    //}
     while (1)
     {
         if (fsm_status == FSM_WSN || fsm_status == FSM_WAN || fsm_status == FSM_ON)
@@ -71,8 +77,8 @@ int schedule_slot(void)
         if ( (0 <= info.current_slot && info.current_slot <= 28) || (info.current_slot == 61) )
         {
             info.time_schedule_flag = 1;
-            antenna_table[info.current_antenna] = 1;
-            udelay(slot_table[info.current_slot]);
+            antenna_table[info.current_antenna] = 1;           
+            udelay(slot_table[info.current_slot]);  
             info.current_antenna = (info.current_antenna + 1) % ANTENNA_NUM;
             info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             memset(antenna_table, 0, sizeof(antenna_table));
