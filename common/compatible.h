@@ -64,6 +64,5 @@ void udelay(int us);
 void set_process_priority();
 void set_thread_priority();
 int setNonBlocking(int sockfd);
-uint64_t get_time_();
 
 #endif

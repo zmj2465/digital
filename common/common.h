@@ -36,7 +36,6 @@ extern pthread_spinlock_t start_spin;
 #define FD_NUM			info.simulated_link_num
 #define RSET			info.rset
 #define LFD				info.simulated_link[MY_INDEX].fd
-#define CLOCK_REALTIME  0
 #define DISPLAY_FD      info.display_system.fd
 
 
