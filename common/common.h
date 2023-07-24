@@ -12,7 +12,7 @@
 //#include <dirent.h>
 #include "stdio.h"
 
-#if(1)
+#if(0)
 #define plog(format, ...) tofile(LOG,format,##__VA_ARGS__)
 #else
 #define plog(format, ...) printf(format, ##__VA_ARGS__)
