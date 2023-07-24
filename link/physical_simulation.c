@@ -191,12 +191,12 @@ void convertCoordinates2(const Point3D* p1, const AntennaTransform* transform, P
 //}
 //
 //double calculateBeta(Point3D point) {
-//    printf("bb: x=%g y=%g z=%g\n", point.x, point.y, point.z);
+//    plog("bb: x=%g y=%g z=%g\n", point.x, point.y, point.z);
 //    double beta;
 //
 //    beta = asin(sqrt(powf(point.x, 2) + powf(point.y, 2)) / sqrt(powf(point.x, 2) + powf(point.y, 2) + powf(point.z, 2)));
 //
-//    printf("bbb: %g\n", beta);
+//    plog("bbb: %g\n", beta);
 //    return beta;
 //
 //}
@@ -283,7 +283,7 @@ void convertCoordinates2(const Point3D* p1, const AntennaTransform* transform, P
 //        beta2 = calculateBeta(p13);
 //        if (beta2 < anglez) ret_recv = true;
 //    }
-//    printf("checkAngles:%g %g %g %g %d\n", alpha1, beta1, alpha2, beta2, ret_send & ret_recv);
+//    plog("checkAngles:%g %g %g %g %d\n", alpha1, beta1, alpha2, beta2, ret_send & ret_recv);
 //    return ret_send & ret_recv;
 //}
 
@@ -344,7 +344,7 @@ void convertCoordinates2(const Point3D* p1, const AntennaTransform* transform, P
 //    convertCoordinates(&p21, &quaternion1, &p22);
 //    convertCoordinates(&p11, &quaternion2, &p12);
 //
-//    //printf("[start] %g\n", distance);
+//    //plog("[start] %g\n", distance);
 //    for (i = 0; i < 6; i++)
 //    {
 //        if (role1 == 0)
@@ -367,10 +367,10 @@ void convertCoordinates2(const Point3D* p1, const AntennaTransform* transform, P
 //            convertCoordinates2(&p12, &transform[i + 6], &p13);
 //            calculateAngles(&p13, &alpha2[i], &beta2[i]);
 //        }
-//        //printf("x2=%g y2=%g z2=%g x1=%g y1=%g z1=%g\n", p23.x, p23.y, p23.z, p13.x, p13.y, p13.z);
-//        //printf("a1=%g b1=%g a2=%g b2=%g\n", alpha1[i], beta1[i], alpha2[i], beta2[i]);
+//        //plog("x2=%g y2=%g z2=%g x1=%g y1=%g z1=%g\n", p23.x, p23.y, p23.z, p13.x, p13.y, p13.z);
+//        //plog("a1=%g b1=%g a2=%g b2=%g\n", alpha1[i], beta1[i], alpha2[i], beta2[i]);
 //    }
-//    //printf("[end]\n");
+//    //plog("[end]\n");
 //
 //    if (role1 == 0 && role2 == 1)  //M·¢ ZÊÕ
 //    {
@@ -612,7 +612,7 @@ int psy_recv(int len,char* data, msg_t* msg, int index, int role)
 {
     bool ret;
     psy_msg_t* p = (psy_msg_t*)data;
-    //printf("psy_recv:x=%f y=%f z=%f q0=%f q1=%f q2=%f q3=%f\n", p->pos.x, p->pos.y, p->pos.z, p->q.q0, p->q.q1, p->q.q2, p->q.q3);
+    //plog("psy_recv:x=%f y=%f z=%f q0=%f q1=%f q2=%f q3=%f\n", p->pos.x, p->pos.y, p->pos.z, p->q.q0, p->q.q1, p->q.q2, p->q.q3);
     if (p->psy_head.flag == 0 || prepare_simulation == 0) return 1;
     ret = checkAngles(p->psy_head.pos, p->psy_head.p_to, p->psy_head.q, p->psy_head.index, p->psy_head.role, fddi_info.pos, antenna_info[index].point_to, fddi_info.q, index, role);
     if (ret == false) return 1;

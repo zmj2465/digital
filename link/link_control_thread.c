@@ -6,9 +6,9 @@ void* link_control_thread(void* arg)
 
 	link_init();
 
-	sem_post(&info.thread_create_semaphore);
-
 	link_info_print();
+
+	sem_post(&info.thread_create_semaphore);
 
 	//init_complete_judge();
 
@@ -80,11 +80,11 @@ void link_init()
 		printf("is connecting to (device)%d (ip)%s (fd)%d (port)%d\n", i, FD[i].ip, FD[i].fd, FD[i].port);
 		while (0 != connect(FD[i].fd, (struct sockaddr*)&FD[i].addr, sizeof(FD[i].addr)))
 		{
-			perror("link connect");
+			//perror(".");
+			printf(".");
 		}
 
 		send(FD[i].fd, &MY_INDEX, sizeof(int), 0);
-		printf("send: %d\n", MY_INDEX);
 
 
 		//uint8_t aaa[1024];
@@ -114,29 +114,12 @@ void link_init()
 		}
 	}
 
-	printf("all link complete\n");
+	printf("\nall link complete\n\n");
 
 	return;
 }
 
 
-void link_complete_boardcast()
-{
-	int i = 0;
-	start_boardcast_t boardcast_msg;
-
-	clock_gettime(CLOCK_REALTIME, &boardcast_msg.base_time);
-	boardcast_msg.start_time = 10;
-
-	if (MY_INDEX == 0)
-	{
-		for (i = 1; i < info.simulated_link_num; i++)
-		{
-			send(FD[i].fd, &boardcast_msg, sizeof(start_boardcast_t), 0);
-			printf("base time=%lld,%ld start time=%d\n", boardcast_msg.base_time.tv_sec, boardcast_msg.base_time.tv_nsec, boardcast_msg.start_time);
-		}
-	}
-}
 
 void init_complete_judge()
 {
@@ -154,6 +137,7 @@ void link_info_print()
 	{
 		printf("(device)%d (ip)%s (aip)%s (fd)%d\n", i, FD[i].ip, inet_ntoa(FD[i].addr.sin_addr), FD[i].fd);
 	}
+	printf("------------------------------------------\n");
 }
 
 
@@ -194,11 +178,13 @@ void relink()
 			printf("is connecting to (device)%d (ip)%s (fd)%d (port)%d\n", i, FD[i].ip, FD[i].fd, FD[i].port);
 			while (0 != connect(FD[i].fd, (struct sockaddr*)&FD[i].addr, sizeof(FD[i].addr)))
 			{
-				perror("link connect");
+				//perror(".");
+				printf(".");
 			}
 			send(FD[i].fd, &MY_INDEX, sizeof(int), 0);
-			printf("send: %d\n", MY_INDEX);
+			//printf("send: %d\n", MY_INDEX);
 		}
-		link_info_print();
+		//link_info_print();
+		printf("\nrelink to node %d success\n", i);
 	}
 }

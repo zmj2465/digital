@@ -12,13 +12,17 @@
 //#include <dirent.h>
 #include "stdio.h"
 
+#if(1)
+#define plog(format, ...) tofile(LOG,format,##__VA_ARGS__)
+#else
+#define plog(format, ...) printf(format, ##__VA_ARGS__)
+#endif
+
 
 extern uint64_t start_time;
 extern uint64_t end_time;
 extern pthread_spinlock_t start_spin;
 
-
-#define printf tolog
 
 #define STORE_SIZE		1024
 #define MAX_DEVICE		12
@@ -36,6 +40,13 @@ extern pthread_spinlock_t start_spin;
 #define DISPLAY_FD      info.display_system.fd
 
 
+#define tosche(format, ...) tofile(SCHE,format,##__VA_ARGS__)
+
+enum {
+	DATA,
+	LOG,
+	SCHE,
+};
 
 enum 
 {

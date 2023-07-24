@@ -33,7 +33,7 @@ void control_recv_thread_init()
 
     //设置端口复用
     int opt = 1;
-    if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt) == -1) printf("setsockopt error");
+    if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt) == -1) plog("setsockopt error");
 
     //绑定本机ip地址、端口号
     struct sockaddr_in addr;
@@ -48,7 +48,7 @@ void control_recv_thread_init()
     info.control_system.addr_len = sizeof(info.control_system.addr);
     info.control_system.fd = accept(lfd, (struct sockaddr*)&(info.control_system.addr), &(info.control_system.addr_len));
 
-    printf("control_system connect success %d\n", info.control_system.fd);
+    plog("control_system connect success %d\n", info.control_system.fd);
 
 }
 

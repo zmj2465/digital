@@ -3,6 +3,8 @@
 
 #define DESKTOP			1 //置1系统时钟，置0 PTP时钟
 
+
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <windows.h>

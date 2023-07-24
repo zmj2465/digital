@@ -21,8 +21,6 @@ int time_init()
     HMODULE hDLL = LoadLibrary(dllName);
     if (hDLL != NULL)
     {
-        printf("ok\n");
-
         FUNC init_pcie = GetProcAddress(hDLL, funName1);
 
         if (init_pcie != NULL)

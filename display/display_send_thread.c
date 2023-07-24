@@ -59,7 +59,7 @@ void display_send_thread_init()
 
     //设置端口复用
     int opt = 1;
-    if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt) == -1) printf("setsockopt error");
+    if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt) == -1) plog("setsockopt error");
 
     //绑定本机ip地址、端口号
     struct sockaddr_in addr;
@@ -73,7 +73,7 @@ void display_send_thread_init()
 
     info.display_system.addr_len = sizeof(info.display_system.addr); //**
     info.display_system.fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
-    printf("display_system connect success %d\n", info.display_system.fd);
+    plog("display_system connect success %d\n", info.display_system.fd);
     setNonBlocking(info.display_system.fd);
 }
 
@@ -155,7 +155,7 @@ void select_file(show_t* msg)
     WIN32_FIND_DATA findData;
     HANDLE hFind = FindFirstFile(searchPattern, &findData);
     if (hFind == INVALID_HANDLE_VALUE) {
-        printf("dir can not find!\n");
+        plog("dir can not find!\n");
         return 1;
     }
 
@@ -168,7 +168,7 @@ void select_file(show_t* msg)
 
     if (txtCount < targetFileIndex)
     {
-        printf("error file seq\n");
+        plog("error file seq\n");
         return;
     }
 
@@ -186,7 +186,7 @@ void select_file(show_t* msg)
             // 打开文件
             display_state.file = fopen(filePath, "r");
             if (display_state.file == NULL) {
-                printf("file can not open:%s\n", filePath);
+                plog("file can not open:%s\n", filePath);
                 FindClose(hFind);
                 return 1;
             }
@@ -208,7 +208,7 @@ void select_file(show_t* msg)
     // 执行ls命令获取文件列表
     pipe = popen(command, "r");
     if (pipe == NULL) {
-        printf("无法打开目录！\n");
+        plog("无法打开目录！\n");
         return 1;
     }
 
@@ -225,7 +225,7 @@ void select_file(show_t* msg)
             // 打开文件
             FILE* file = fopen(filePath, "r");
             if (file == NULL) {
-                printf("无法打开文件：%s\n", filePath);
+                plog("无法打开文件：%s\n", filePath);
                 pclose(pipe);
                 return 1;
             }
@@ -265,7 +265,7 @@ void find_data()
 //    FILE* file;
 //    file = fopen("C:\\Users\\MRGT\\Desktop\\display.txt", "rwb");  // 以二进制写入模式打开文件
 //    if (file == NULL) {
-//        printf("open fail\n");
+//        plog("open fail\n");
 //        return 1;
 //    }
 //
@@ -274,14 +274,14 @@ void find_data()
     //{
     //    memset(a, i, 1024);
     //    fwrite(a, sizeof(char), sizeof(a), file);  // 将内容写入文件
-    //    printf("write success\n");
+    //    plog("write success\n");
     //}
 //
 //    fseek(file, 2*1024, SEEK_SET);
 //    fread(a, sizeof(char), sizeof(a), file);
-//    printf("five \n");
+//    plog("five \n");
 //    for (i = 0; i < sizeof(a); i++) {
-//        printf("%x ", a[i]);
+//        plog("%x ", a[i]);
 //    }
 //
 //

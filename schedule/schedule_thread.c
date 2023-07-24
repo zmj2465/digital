@@ -319,56 +319,56 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
     switch (dwUser)
     {
     case 1:
-        printf("M not receive Z1 message in 300ms\n");
+        plog("M not receive Z1 message in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 1);
-        printf("M lost Z1 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
+        plog("M lost Z1 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
         if (fsm_status == FSM_ON)
         {
             fsm_do(EVENT_LOST_Z);
         }
         break;
     case 2:
-        printf("M not receive Z2 message in 300ms\n");
+        plog("M not receive Z2 message in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 2);
-        printf("M lost Z2 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
+        plog("M lost Z2 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
         if (fsm_status == FSM_ON)
         {
             fsm_do(EVENT_LOST_Z);
         }
         break;
     case 3:
-        printf("M not receive Z3 message in 300ms\n");
+        plog("M not receive Z3 message in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 3);
-        printf("M lost Z3 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
+        plog("M lost Z3 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
         if (fsm_status == FSM_ON)
         {
             fsm_do(EVENT_LOST_Z);
         }
         break;
     case 4:
-        printf("M not receive Z4 message in 300ms\n");
+        plog("M not receive Z4 message in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 4);
-        printf("M lost Z4 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
+        plog("M lost Z4 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
         if (fsm_status == FSM_ON)
         {
             fsm_do(EVENT_LOST_Z);
         }
         break;
     case SCAN_REQ_TIMER:
-        printf("Z not receive scan require in 300ms\n");
+        plog("Z not receive scan require in 300ms\n");
         break;
     case SCAN_RES_TIMER:
-        printf("M not receive scan response in 300ms\n");
+        plog("M not receive scan response in 300ms\n");
         break;
     case SCAN_CON_TIMER:
-        printf("Z not receive scan confirm in 300ms\n");
+        plog("Z not receive scan confirm in 300ms\n");
         break;
     case Z_DATA_TIMER:
-        printf("Z not receive M message in 300ms\n");
+        plog("Z not receive M message in 300ms\n");
         fsm_do(EVENT_LOST_M);
         break;
     default:
