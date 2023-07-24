@@ -107,7 +107,6 @@ void udelay(int us)
         temp = (t_end.tv_sec - t_start.tv_sec) * 1000000000 + (t_end.tv_nsec - t_start.tv_nsec);
         if (temp >= us * 1000)
         {
-            //tosche("temp = %lldus\n", temp/1000);
             break;
         }
     }

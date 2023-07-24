@@ -32,7 +32,7 @@ int main()
 {
     file_init();
 
-    time_init();
+    //time_init();
 
     int ret;
 
@@ -47,7 +47,7 @@ int main()
 
     ///*ip–≈œ¢≈‰÷√*/
     load_config(INFO_SET_FILE);
-    ret=load_config(INFO_SET_DESK_FILE);
+    //ret=load_config(INFO_SET_DESK_FILE);
     if (ret == -1)
     {
         printf("load config error\n");

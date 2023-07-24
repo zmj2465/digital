@@ -322,7 +322,7 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         printf("M not receive Z1 message in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 1);
-        printf("M lost Z1 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
+        printf("M lost Z1, list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
         if (fsm_status == FSM_ON)
         {
             fsm_do(EVENT_LOST_Z);
@@ -332,7 +332,7 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         printf("M not receive Z2 message in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 2);
-        printf("M lost Z2 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
+        printf("M lost Z2, list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
         if (fsm_status == FSM_ON)
         {
             fsm_do(EVENT_LOST_Z);
@@ -342,7 +342,7 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         printf("M not receive Z3 message in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 3);
-        printf("M lost Z3 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
+        printf("M lost Z3, list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
         if (fsm_status == FSM_ON)
         {
             fsm_do(EVENT_LOST_Z);
@@ -352,7 +352,7 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         printf("M not receive Z4 message in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 4);
-        printf("M lost Z4 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
+        printf("M lost Z4, list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
         if (fsm_status == FSM_ON)
         {
             fsm_do(EVENT_LOST_Z);

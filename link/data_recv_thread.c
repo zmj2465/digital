@@ -158,15 +158,17 @@ int data_recv_proc(void)
 			int len;
 			int antenna_recv;
 			uint64_t sub;
-			uint64_t recv_time;
-
+			//uint64_t recv_time;
+			struct timespec recv_time;
 
 
 			ret = antenna_match(psy_msg, &msg, info.device_info.node_role);
 			if (ret == 1)
 			{
-				recv_time = my_get_time();
-				sub = recv_time - msg.head.send_t;
+				//recv_time = my_get_time();
+				//sub = recv_time - msg.head.send_t;
+				clock_gettime(CLOCK_REALTIME, &recv_time);
+				sub = (recv_time.tv_sec - msg.head.send_time.tv_sec) * 1000000000 + (recv_time.tv_nsec - msg.head.send_time.tv_nsec);
 				printf("current slot = %d.%d, seq = %d, time = %lld, sub = %lldns\n", info.current_time_frame, info.current_slot, msg.head.seq, recv_time, sub);
 				enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
 			}

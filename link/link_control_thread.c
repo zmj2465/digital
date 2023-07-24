@@ -167,6 +167,8 @@ void relink()
 		i = msg.data[0];
 		printf("relink to node %d\n", i);
 
+
+
 		/*本机作为服务端 等待比自身索引号大的设备连接*/
 		if (MY_INDEX < i)
 		{

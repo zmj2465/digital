@@ -25,8 +25,8 @@ extern pthread_spinlock_t start_spin;
 #define HOST_NAME_LEN	20
 #define IP_LEN			20
 #define MAX_DATA_LEN	2048
-#define START_GUN_TIME	10		/*仿真开始时间,暂定10s后*/
-#define TIMER_DELAY		300  	/*定时器延时：300ms*/
+#define START_GUN_TIME	10		/*仿真开始时间：10s*/
+#define TIMER_DELAY		300  	/*定时器时间：300ms*/
 #define MY_INDEX		info.link_index
 #define FD				info.simulated_link
 #define FD_NUM			info.simulated_link_num
@@ -110,9 +110,9 @@ typedef struct _device_info_t
 
 typedef struct _start_boardcast_t
 {
-	struct timespec base_time;		/*同步系统时间*/
-	uint64_t base_t;
-	uint64_t start_time;				/*仿真开始时间*/
+	struct timespec base_time;	/*系统时钟下的基准时间*/
+	uint64_t base_t;			/*PTP授时系统下的基准时间*/
+	int start_time;				/*仿真开始时间*/
 }start_boardcast_t;
 
 typedef struct _info_t
@@ -176,24 +176,23 @@ typedef struct _info_t
 	int scan_flag_Z;				//扫描标志位Z
 
 #ifdef _WIN32
-	UINT timerId;					//扫描询问扫描回复定时器
+	UINT timerId;					//扫描询问、扫描回复定时器
 	UINT timerId_Z;					//数据帧定时器Z
 	UINT timerId_M[MAX_DEVICE];		//数据帧定时器M
 #endif
 
-	int antenna_M[MAX_DEVICE];		//天线匹配表M
-	int antenna_Z;					//天线匹配表Z
-	struct timespec set_network_st; //建网开始时刻
-	struct timespec set_network_ed; //建网结束时刻
-	uint64_t network_st;
-	uint64_t network_ed;
+	int antenna_M[MAX_DEVICE];		//天线匹配表M（0-5）
+	int antenna_Z;					//天线匹配表Z（0-5）
+	struct timespec set_network_st; //系统时钟下建网开始时刻
+	struct timespec set_network_ed; //系统时钟下建网结束时刻
+	uint64_t network_st;			//PTP授时系统下建网开始时刻
+	uint64_t network_ed;			//PTP授时系统下建网结束时刻
 	int set_network_time;			//建网时间
-	int test_lost;					//丢失再建链测试
-	int seq_m;
-	int seq_z;
-	int time_schedule_flag;
-	int time_frame_flag[MAX_DEVICE];
-	int time_frame_flag_z;
+	int seq_m;						//序列号M
+	int seq_z;						//序列号Z
+	int time_schedule_flag;			//时隙调度标志位，置1表示发送时隙，置0表示接收时隙
+	int time_frame_flag[MAX_DEVICE];//时帧标志位M，指示Z建链完成后，M在这个时帧不发送数据，等待下个时帧内接收Z的数据
+	int time_frame_flag_z;			//时帧标志位Z，指示Z建链完成后，在下一时帧发送数据帧给M
 }info_t;
 
 #pragma pack(1)
