@@ -94,7 +94,7 @@ void set_thread_priority()
 }
 
 
-int record[100];
+
 void udelay(int us)
 {
     uint64_t temp;
@@ -147,17 +147,4 @@ int setNonBlocking(int sockfd) {
 #endif
 
     return 0; // 设置成功
-}
-
-uint64_t get_time_()
-{
-#if(DESKTOP==1)
-    struct timespec time;
-    clock_gettime(CLOCK_MONOTONIC, &time);
-    return time.tv_sec * 1000 * 1000 * 1000 + time.tv_nsec;
-#else
-    uint64_t time;
-    time = my_get_time();
-    return time;
-#endif
 }

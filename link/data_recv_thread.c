@@ -148,7 +148,6 @@ int data_recv_proc(void)
 				//printf("r:%d\n", rmsg->head.seq);
 				enqueue(&info.thread_queue[MASTER_THREAD_DATA], rmsg, MAX_DATA_LEN);
 			}
-			end = my_get_time();
 			//tosche("d:%lld current slot = %d.%d, seq = %d\n", end - start, info.current_time_frame, info.current_slot, rmsg->head.seq);
 		}
 		else
