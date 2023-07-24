@@ -34,6 +34,11 @@ void link_init()
 	inet_pton(AF_INET, info.ip, (void*)&addr.sin_addr);
 	addr.sin_port = htons(info.port);
 	ret = bind(LFD, (struct sockaddr*)&addr, sizeof addr);
+	if (ret < 0)
+	{
+		printf("bind error config ip again\n");
+		while (1);
+	}
 
 	//开始监听
 	listen(LFD, SOMAXCONN);
