@@ -154,6 +154,7 @@ void relink()
 	{
 		dequeue(&info.thread_queue[LINK_CONTROL_THREAD],&msg, &msg.len);
 		i = msg.data[0];
+		printf("---------------------------\n", i);
 		printf("relink to node %d\n", i);
 
 		/*本机作为服务端 等待比自身索引号大的设备连接*/
