@@ -200,9 +200,9 @@ void tofile(int i, char* s, ...)
 
 void todata(char* data, int len)
 {
-    //memcpy(data_file.mappedData + data_file.ptr, data, len);
-    //data_file.ptr += len;
-    fwrite(data, sizeof(char), len, file_config[0].file.file);
+    memcpy(file_config[0].file.mappedData + file_config[0].file.ptr, data, len);
+    file_config[0].file.ptr += len;
+    //fwrite(data, sizeof(char), len, file_config[0].file.file);
 }
 
 
