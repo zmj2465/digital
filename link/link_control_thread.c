@@ -164,10 +164,12 @@ void relink()
 			FD[i].addr_len = sizeof(FD[i].addr);
 			int fd = accept(LFD, (struct sockaddr*)&temp_addr, &(FD[i].addr_len));
 			int j;
+			printf("fd=%d\n", fd);
 			char buff[1024];
 			recv(fd, buff, 1024, 0);
 			int x = *(int*)buff;
 			FD[x].fd = fd;
+			i = x;
 			memcpy(&FD[x].addr, &temp_addr, sizeof(struct sockaddr_in));
 			printf("(device)%d (ip)%s (fd)%d is connected\n", x, inet_ntoa(FD[x].addr.sin_addr), FD[x].fd);
 		}
@@ -191,5 +193,6 @@ void relink()
 		}
 		//link_info_print();
 		printf("\nrelink to node %d success\n", i);
+		printf("---------------------------\n", i);
 	}
 }

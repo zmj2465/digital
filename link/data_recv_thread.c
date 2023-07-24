@@ -45,13 +45,13 @@ int data_recv_proc(void)
 
 	struct timeval timeout;
 	timeout.tv_sec = 0;
-	timeout.tv_usec = 0;
+	timeout.tv_usec = 500000;
 
 	FD_ZERO(&RSET);
 	int i = 0;
 	for (i = 0; i < info.simulated_link_num; i++)
 	{
-		if (FD[i].fd != 0)
+		if (FD[i].fd != 0 && i != MY_INDEX)
 		{
 			maxfd = FD[i].fd > maxfd ? FD[i].fd : maxfd;
 			FD_SET(FD[i].fd, &RSET);
@@ -59,11 +59,12 @@ int data_recv_proc(void)
 	}
 
 
-	num = select(maxfd + 1, &RSET, NULL, NULL, NULL);
+	num = select(maxfd + 1, &RSET, NULL, NULL, &timeout);
 	if (num < 0)
 	{
 		num = -1;
-		printf("select error\n");
+		if (maxfd != 0)
+			printf("select error %d\n",maxfd);
 		return num;
 	}
 	else if (num == 0)
