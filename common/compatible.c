@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <sched.h>
 #include "pthread.h"
-
+//#include "common.h"
+#include "file_manage.h"
 
 void wsa_init()
 {
@@ -27,7 +28,7 @@ void set_process_priority()
     HANDLE hProcess = GetCurrentProcess();
 
     int priority = GetPriorityClass(hProcess);
-    printf("Old Process priority: 0x%x\n", priority);
+    //printf("Old Process priority: 0x%x\n", priority);
 
     if (!SetPriorityClass(hProcess, REALTIME_PRIORITY_CLASS))
     {
@@ -35,7 +36,7 @@ void set_process_priority()
         return ;
     }
     priority = GetPriorityClass(hProcess);
-    printf("New Process priority: 0x%x\n", priority);
+    //printf("New Process priority: 0x%x\n", priority);
     CloseHandle(hProcess);
 #else
     int priority = getpriority(PRIO_PROCESS, 0);
@@ -60,14 +61,14 @@ void set_thread_priority()
     HANDLE hThread = GetCurrentThread();
 
     int priority = GetThreadPriority(hThread);
-    printf("Old Thread priority: %d\n", priority);
+    //printf("Old Thread priority: %d\n", priority);
 
     if(!SetThreadPriority(hThread, THREAD_PRIORITY_TIME_CRITICAL))
     {
         printf("Failed to set thread priority \n");
     }
     priority = GetThreadPriority(hThread);
-    printf("New Thread priority: %d\n", priority);
+    //printf("New Thread priority: %d\n", priority);
 #else
     pthread_t thread = pthread_self();
     struct sched_param param;

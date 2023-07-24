@@ -16,7 +16,7 @@ void* data_send_thread(void* arg)
     HANDLE hThread = GetCurrentThread();
 
     //if (SetThreadAffinityMask(hThread, mask) == 0) {
-    //    printf("Failed to set thread affinity\n");
+    //    plog("Failed to set thread affinity\n");
     //    return 1;
     //}
 
@@ -70,8 +70,8 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
-                        printf("M send Z%d scan require, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
-                        //printf("s:%d\n", pmsg.msg.head.seq);
+                        plog("M send Z%d scan require, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                        //plog("s:%d\n", pmsg.msg.head.seq);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
@@ -106,8 +106,8 @@ int data_send_proc(void)
                             send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
                             info.scan_flag_M[index] = 0;
                             info.time_frame_flag[index] = info.current_time_frame + 1;
-                            printf("M send Z%d scan confirm, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
-                            //printf("s:%d\n", pmsg.msg.head.seq);
+                            plog("M send Z%d scan confirm, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                            //plog("s:%d\n", pmsg.msg.head.seq);
                             if (info.device_info.node_num == FD_NUM)
                             {
                                 fsm_do(EVENT_WSN_SUCC);
@@ -123,8 +123,8 @@ int data_send_proc(void)
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
-                            //printf("s:%d\n", pmsg.msg.head.seq);
-                            //printf("M send Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                            //plog("s:%d\n", pmsg.msg.head.seq);
+                            //plog("M send Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                             return 0;
                         }
 
@@ -140,8 +140,8 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
-                        //printf("s:%d\n", pmsg.msg.head.seq);
-                        printf("M send Z%d scan require, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                        //plog("s:%d\n", pmsg.msg.head.seq);
+                        plog("M send Z%d scan require, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
@@ -169,8 +169,8 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], DISTANCE, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
-                        //printf("s:%d\n", pmsg.msg.head.seq);
-                        printf("M send Z%d distance frame, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                        //plog("s:%d\n", pmsg.msg.head.seq);
+                        plog("M send Z%d distance frame, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         info.distance_flag_M[i] = 0;
                     }
                 }
@@ -195,8 +195,8 @@ int data_send_proc(void)
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
-                            //printf("s:%d\n", pmsg.msg.head.seq);
-                            printf("M send Z%d data, current slot = %d.%d, seq = %d, time = %lld\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq, pmsg.msg.head.send_t);
+                            //plog("s:%d\n", pmsg.msg.head.seq);
+                            plog("M send Z%d data, current slot = %d.%d, seq = %d, time = %lld\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq, pmsg.msg.head.send_t);
                         }
                         return 0;    
                     }
@@ -223,8 +223,8 @@ int data_send_proc(void)
                     generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                     psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                     send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
-                    //printf("s:%d\n", pmsg.msg.head.seq);
-                    printf("Z%d send scan response, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);                
+                    //plog("s:%d\n", pmsg.msg.head.seq);
+                    plog("Z%d send scan response, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);                
 #ifdef _WIN32
                     /*打开扫描回复定时器*/
                     info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_CON_TIMER, TIME_ONESHOT);
@@ -246,8 +246,8 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
-                        //printf("s:%d\n", pmsg.msg.head.seq);
-                        printf("Z%d send M data, current slot = %d.%d, seq = %d, time = %lldns\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq, pmsg.msg.head.send_t);
+                        //plog("s:%d\n", pmsg.msg.head.seq);
+                        plog("Z%d send M data, current slot = %d.%d, seq = %d, time = %lldns\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq, pmsg.msg.head.send_t);
                     }
                 }
             }
@@ -260,8 +260,8 @@ int data_send_proc(void)
                     generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], DISTANCE, &msg);
                     psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                     send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
-                    //printf("s:%d\n", pmsg.msg.head.seq);
-                    printf("Z%d send distance frame, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                    //plog("s:%d\n", pmsg.msg.head.seq);
+                    plog("Z%d send distance frame, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                 }
             }
             break;

@@ -3,6 +3,8 @@
 
 #define DESKTOP			1 //置1系统时钟，置0 PTP时钟
 
+
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <windows.h>
@@ -62,5 +64,7 @@ void udelay(int us);
 void set_process_priority();
 void set_thread_priority();
 int setNonBlocking(int sockfd);
+
+
 
 #endif

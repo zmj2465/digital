@@ -1,6 +1,7 @@
 #include "queue.h"
 
 
+
 //
 //void init_msg_queue(msg_queue_t* queue, int max_size) {
 //	queue->head = NULL;
@@ -161,7 +162,6 @@ int dequeue_no_block(msg_queue_t* queue, void** data, int* len)
 
 	pthread_mutex_unlock(&queue->lock);
 }
-
 
 
 void destroy_msg_queue(msg_queue_t* queue, int max_size) {

@@ -1,19 +1,28 @@
 #include "file_manage.h"
 
 
-file_info_t log_file;
-file_info_t data_file;
-file_info_t sche_file;
+//file_info_t log_file;
+//file_info_t data_file;
+//file_info_t sche_file;
+
+
+
+file_config_t file_config[] = {
+    {DATA_FOLDER,"data",},
+    {LOG_FOLDER,"log",},
+    {SCHE_FOLDER,"sche",},
+};
+
 
 void file_init()
 {
+    int i = 0;
     create_folder();
-    create_file(&data_file, DATA_FOLDER, "data");
-    create_file(&log_file, LOG_FOLDER, "log");
-    create_file(&sche_file, SCHE_FOLDER, "sche");
-    create_map(&data_file, 2);
-    create_map(&log_file, 2);
-    create_map(&sche_file, 2);
+    for (i = 0; i < sizeof(file_config) / sizeof(file_config[0]); i++)
+    {
+        create_file(&file_config[i].file, file_config[i].directory, file_config[i].name);
+        create_map(&file_config[i].file, 2);
+    }
 }
 
 
@@ -172,39 +181,28 @@ void create_map(file_info_t* file,int size)
 }
 
 
-void tolog(char* s,...)
+void tofile(int i, char* s, ...)
 {
     va_list args;
     va_start(args, s);
-    pthread_mutex_lock(&log_file.lock);
-    int written = vsnprintf(log_file.mappedData + log_file.ptr, log_file.size - log_file.ptr, s, args);
+    pthread_mutex_lock(&file_config[i].file.lock);
+    int written = vsnprintf(file_config[i].file.mappedData + file_config[i].file.ptr, file_config[i].file.size - file_config[i].file.ptr, s, args);
     if (written >= 0) {
-        log_file.ptr += written;
+        file_config[i].file.ptr += written;
     }
     else {
         perror("写入日志文件失败");
     }
-    pthread_mutex_unlock(&log_file.lock);
+    pthread_mutex_unlock(&file_config[i].file.lock);
 }
 
-void tosche(char* s, ...)
-{
-    va_list args;
-    va_start(args, s);
-    int written = vsnprintf(sche_file.mappedData + sche_file.ptr, sche_file.size - sche_file.ptr, s, args);
-    if (written >= 0) {
-        sche_file.ptr += written;
-    }
-    else {
-        perror("写入日志文件失败");
-    }
-}
+
 
 void todata(char* data, int len)
 {
-    //memcpy(data_file.mappedData + data_file.ptr, data, len);
-    //data_file.ptr += len;
-    fwrite(data, sizeof(char), len, data_file.file);
+    memcpy(file_config[0].file.mappedData + file_config[0].file.ptr, data, len);
+    file_config[0].file.ptr += len;
+    //fwrite(data, sizeof(char), len, file_config[0].file.file);
 }
 
 
