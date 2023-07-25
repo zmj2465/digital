@@ -1,7 +1,5 @@
 #include "data_recv_thread.h"
 
-
-
 /*
 功能：数据接收线程
 参数：无
@@ -78,12 +76,10 @@ int data_recv_proc(void)
 				/*状态机判断*/
 				if (fsm_status == FSM_INIT || fsm_status == FSM_OFF)
 				{
-					psy_msg_t* psy_msg = FD[i].recvBuffer;
 					msg_t* rmsg = FD[i].recvBuffer;
 					plog("no sim get, msg = %d msg_type = %d seq = %d\n", rmsg->head.dst, rmsg->head.type, rmsg->head.seq);
 					if (rmsg->head.type == START_GUN)
 					{
-						//plog("r:%d\n", rmsg->head.seq);
 						enqueue(&info.thread_queue[MASTER_THREAD_DATA], rmsg, MAX_DATA_LEN);
 					}
 
@@ -105,7 +101,7 @@ int data_recv_proc(void)
 
 						recv_time = my_get_time();
 						sub = recv_time - msg.head.send_t;
-						plog("current slot = %d.%d, seq = %d, time = %lld, sub = %lldns\n", info.current_time_frame, info.current_slot, msg.head.seq, recv_time, sub);
+						//plog("current slot = %d.%d, seq = %d, time = %lld, sub = %lldns\n", info.current_time_frame, info.current_slot, msg.head.seq, recv_time, sub);
 						enqueue(&info.thread_queue[MASTER_THREAD_DATA], &msg, MAX_DATA_LEN);
 					}
 					else

@@ -39,6 +39,8 @@ void* schedule_thread(void* arg);
 void schedule_slot_init(void);
 int schedule_slot(void);
 int schedule_inquire_index(int index, int current_slot);
+int beacon_z_inquire_index(int index, int slot, int time_frame);
+int beacon_m_inquire_index(int index, int slot, int time_frame);
 int inquire_index(int node_index);
 int inquire_node_index(int index, int current_slot);
 int inquire_slot(int current_slot);

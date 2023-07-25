@@ -113,7 +113,7 @@ int schedule_slot(void)
         case 2:
             if ((35 <= info.current_slot && info.current_slot <= 39) || (info.current_slot == 59))
             {
-                sem_post(&info.send_semaphore);
+                info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
@@ -130,7 +130,7 @@ int schedule_slot(void)
         case 3:
             if ((40 <= info.current_slot && info.current_slot <= 43) || (info.current_slot == 59) || (info.current_slot == 30))
             {
-                sem_post(&info.send_semaphore);
+                info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
@@ -147,7 +147,7 @@ int schedule_slot(void)
         case 4:
             if ((44 <= info.current_slot && info.current_slot <= 47) || (info.current_slot == 59) || (info.current_slot == 35))
             {
-                sem_post(&info.send_semaphore);
+                info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
@@ -170,7 +170,7 @@ int schedule_slot(void)
 
 /*
 功能：将当前数据时隙与在网终端Z匹配
-参数：索引号，当前数据时隙
+参数：索引号，当前时隙
 返回值：成功则返回对应索引号，失败返回-1
 */
 int schedule_inquire_index(int index, int current_slot)
@@ -195,6 +195,58 @@ int schedule_inquire_index(int index, int current_slot)
 }
 
 /*
+功能：将当前信令时隙与终端Z匹配，奇数时帧，Z1、Z2给M发信令，偶数时帧，Z3、Z4给M发信令
+参数：索引号，当前时隙，当前时帧
+返回值：成功则返回对应索引号，失败返回-1
+*/
+int beacon_z_inquire_index(int index, int slot, int time_frame)
+{
+    if ((index == 1) && (slot == 30) && (time_frame % 2 == 1))
+    {
+        return 1;
+    }
+    if ((index == 2) && (slot == 35) && (time_frame % 2 == 1))
+    {
+        return 2;
+    }
+    if ((index == 3) && (slot == 30) && (time_frame % 2 == 0))
+    {
+        return 3;
+    }
+    if ((index == 4) && (slot == 35) && (time_frame % 2 == 0))
+    {
+        return 4;
+    }
+    return -1;
+}
+
+/*
+功能：M将当前信令时隙与在网终端Z匹配，奇数时帧，M给Z1、Z2发信令，偶数时帧，M给Z3、Z4发信令
+参数：当前时隙，当前时帧
+返回值：成功则返回对应索引号，失败返回-1
+*/
+int beacon_m_inquire_index(int index, int slot, int time_frame)
+{
+    if ((inquire_index(index) == 1) && (slot == 0) && (time_frame % 2 == 1))
+    {
+        return 1;
+    }
+    if ((inquire_index(index) == 2) && (slot == 5) && (time_frame % 2 == 1))
+    {
+        return 2;
+    }
+    if ((inquire_index(index) == 3) && (slot == 0) && (time_frame % 2 == 0))
+    {
+        return 3;
+    }
+    if ((inquire_index(index) == 4) && (slot == 5) && (time_frame % 2 == 0))
+    {
+        return 4;
+    }
+    return -1;
+}
+
+/*
 功能：判断当前终端Z是否在网
 参数：节点索引
 返回值：在网则返回对应节点索引，不在网则返回-1
@@ -211,7 +263,7 @@ int inquire_index(int node_index)
 
 /*
 功能：判断当前时隙是哪个Z的发送时隙
-参数：索引号，当前数据时隙
+参数：索引号，当前时隙
 返回值：成功则返回对应索引号，失败返回-1
 */
 int inquire_node_index(int index, int current_slot)
@@ -319,7 +371,7 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
     switch (dwUser)
     {
     case 1:
-        plog("M not receive Z1 message in 300ms\n");
+        plog("M not receive Z1 beacon in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 1);
         plog("M lost Z1 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
@@ -329,7 +381,7 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         }
         break;
     case 2:
-        plog("M not receive Z2 message in 300ms\n");
+        plog("M not receive Z2 beacon in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 2);
         plog("M lost Z2 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
@@ -339,7 +391,7 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         }
         break;
     case 3:
-        plog("M not receive Z3 message in 300ms\n");
+        plog("M not receive Z3 beacon in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 3);
         plog("M lost Z3 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
@@ -349,7 +401,7 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         }
         break;
     case 4:
-        plog("M not receive Z4 message in 300ms\n");
+        plog("M not receive Z4 beacon in 300ms\n");
         info.device_info.node_num--;
         info.device_info.node_list = info.device_info.node_list ^ (1 << 4);
         plog("M lost Z4 , list = %d, current slot = %d.%d\n", info.device_info.node_list, info.current_time_frame, info.current_slot);
@@ -368,7 +420,7 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         plog("Z not receive scan confirm in 300ms\n");
         break;
     case Z_DATA_TIMER:
-        plog("Z not receive M message in 300ms\n");
+        plog("Z not receive M beacon in 300ms\n");
         fsm_do(EVENT_LOST_M);
         break;
     default:

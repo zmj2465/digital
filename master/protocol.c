@@ -58,9 +58,9 @@ void fsm_do(int event)
 			oprst = (*ptr[i].oprst)(event);
 			if (con == 0 && oprst == 0)//0表示满足转移条件
 			{
-				fsm_status = ptr[i].next;//设置新状态
+				fsm_status = ptr[i].next;//设置新状态	
+				plog("fsm new status : %s, event : %d\r\n", fsm[fsm_status].name, ptr[i].event);
 				opred = (*ptr[i].opred)(event);
-				plog("fsm new status : %s, event : %d, end opreation ret : %d\r\n", fsm[fsm_status].name, ptr[i].event, opred);
 				break;
 			}
 			else
@@ -106,6 +106,10 @@ int fsm_init2off_st(int para)
 	schedule_slot_init();
 	info.seq_m = 0;
 	info.seq_z = 0;
+	info.seq_beacon_m = 0;
+	info.seq_beacon_z = 0;
+	info.seq_distance_m = 0;
+	info.seq_distance_z = 0;
 	info.time_schedule_flag = 0;
 	return 0;
 }
@@ -134,7 +138,7 @@ int fsm_init2off_ed(int para)
 		for (i = 1; i < FD_NUM; i++)
 		{
 			generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
-			send(FD[i].fd, &msg, sizeof(msg_t), 0);
+			send(FD[i].fd, &msg, msg.len, 0);
 		}
 		//plog("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
 		plog("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
@@ -209,7 +213,7 @@ int fsm_off2wan_st(int para)
 */
 int fsm_off2wan_ed(int para)
 {
-	/*打开扫描询问定时器*/
+	/*打开扫描请求定时器*/
 #ifdef _WIN32
 	info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_REQ_TIMER, TIME_ONESHOT);
 #endif
