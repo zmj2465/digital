@@ -1,9 +1,7 @@
 #ifndef _COMPATIBLE_H_
 #define _COMPATIBLE_H_
 
-#define DESKTOP			1 //置1系统时钟，置0 PTP时钟
-
-
+#define DESKTOP			1		//置1系统时钟，置0 PTP时钟
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -12,7 +10,6 @@
 #include <time.h>
 #include <stdint.h>
 #pragma comment(lib, "kernel32.lib")
-//#pragma comment(lib, "pcieapi.lib")
 #else
 #include <unistd.h>
 #include <sys/types.h>
@@ -24,9 +21,6 @@
 #include <time.h>
 #include <sys/time.h>
 #endif
-
-
-
 
 
 #ifdef _WIN32
@@ -53,8 +47,6 @@
 #define END_FLAG "\r"
 #define DIR_SEPARATOR "/"
 #endif
-
-
 
 
 

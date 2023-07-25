@@ -5,12 +5,13 @@
 #include <sched.h>
 #include <semaphore.h>
 #include <stdint.h>
-#include "compatible.h"
-#include "queue.h"
+#include <stdio.h>
 #include "mytime.h"
+#include "queue.h"
+#include "compatible.h"
 //#include "windows.h"
 //#include <dirent.h>
-#include "stdio.h"
+
 
 #if(0)
 #define plog(format, ...) tofile(LOG,format,##__VA_ARGS__)
@@ -18,30 +19,27 @@
 #define plog(format, ...) printf(format, ##__VA_ARGS__)
 #endif
 
-
+#define tosche(format, ...) tofile(SCHE,format,##__VA_ARGS__)
 extern uint64_t start_time;
 extern uint64_t end_time;
 extern pthread_spinlock_t start_spin;
 
-
-#define STORE_SIZE		1024
-#define MAX_DEVICE		12
-#define HOST_NAME_LEN	20
-#define IP_LEN			20
-#define MAX_DATA_LEN	2048
-#define START_GUN_TIME	10		/*仿真开始时间：10s*/
-#define TIMER_DELAY		300  	/*定时器时间：300ms*/
-#define MY_INDEX		info.link_index
-#define FD				info.simulated_link
-#define FD_NUM			info.simulated_link_num
-#define RSET			info.rset
+#define STORE_SIZE		1024	//存储文件的大小
+#define MAX_DEVICE		12		//最大终端数量
+#define HOST_NAME_LEN	20		//设备名长度
+#define IP_LEN			20		//ip地址长度
+#define MAX_DATA_LEN	2048	//最大数据长度
+#define START_GUN_TIME	10		//仿真开始时间：10s
+#define TIMER_DELAY		300  	//定时器时间：300ms
+#define MY_INDEX		info.link_index						
+#define FD				info.simulated_link					
+#define FD_NUM			info.simulated_link_num				
+#define RSET			info.rset							
 #define LFD				info.simulated_link[MY_INDEX].fd
 #define DISPLAY_FD      info.display_system.fd
 
-
-#define tosche(format, ...) tofile(SCHE,format,##__VA_ARGS__)
-
-enum {
+enum 
+{
 	DATA,
 	LOG,
 	SCHE,
@@ -78,21 +76,21 @@ enum FRAME_TYPE
 
 enum FRAME_SUBTYPE
 {
-	START_GUN_REQ = 1,
-	START_GUN_RES = 2,
-	SCAN_REQ = 1,
-	SCAN_RES = 2,
-	SCAN_CON = 3,
-	DISTANCE_M = 1,
-	DISTANCE_Z = 2,
+	START_GUN_REQ = 1,		//发令枪请求
+	START_GUN_RES = 2,		//发令枪响应
+	SCAN_REQ = 1,			//扫描请求
+	SCAN_RES = 2,			//扫描响应
+	SCAN_CON = 3,			//扫描确认
+	DISTANCE_M = 1,			//测距M	
+	DISTANCE_Z = 2,			//测距Z
 };
 
 enum TIMER_ID
 {
-	SCAN_REQ_TIMER = 5,
-	SCAN_RES_TIMER,
-	SCAN_CON_TIMER,
-	Z_DATA_TIMER
+	SCAN_REQ_TIMER = 5,		//扫描请求帧定时器
+	SCAN_RES_TIMER,			//扫描响应帧定时器
+	SCAN_CON_TIMER,			//扫描确认帧定时器
+	Z_DATA_TIMER			//数据帧定时器Z
 };
 
 typedef struct _link_info_t
@@ -183,13 +181,13 @@ typedef struct _info_t
 	int current_antenna;			//当前发射天线号
 	int current_time_frame;			//当前时帧号
 	int distance_flag_M[MAX_DEVICE];//测距标志位M
-	int scan_flag_M[MAX_DEVICE];	//扫描标志位M
-	int scan_flag_Z;				//扫描标志位Z
+	int scan_flag_M[MAX_DEVICE];	//扫描标志位M，置1发送扫描确认帧
+	int scan_flag_Z;				//扫描标志位Z，置1发送扫描响应帧
 
 #ifdef _WIN32
-	UINT timerId;					//扫描询问、扫描回复定时器
-	UINT timerId_Z;					//数据帧定时器Z
-	UINT timerId_M[MAX_DEVICE];		//数据帧定时器M
+	UINT timerId;					//扫描询问、扫描回复定时器ID
+	UINT timerId_Z;					//数据帧Z定时器ID
+	UINT timerId_M[MAX_DEVICE];		//数据帧M定时器ID
 #endif
 
 	int antenna_M[MAX_DEVICE];		//天线匹配表M（0-5）
@@ -202,20 +200,20 @@ typedef struct _info_t
 	int seq_m;						//序列号M
 	int seq_z;						//序列号Z
 	int time_schedule_flag;			//时隙调度标志位，置1表示发送时隙，置0表示接收时隙
-	int time_frame_flag[MAX_DEVICE];//时帧标志位M，指示Z建链完成后，M在这个时帧不发送数据，等待下个时帧内接收Z的数据
+	int time_frame_flag_m[MAX_DEVICE];//时帧标志位M，指示Z建链完成后，M在这个时帧不发送数据，在下一时帧开始接收和发送数据
 	int time_frame_flag_z;			//时帧标志位Z，指示Z建链完成后，在下一时帧发送数据帧给M
 }info_t;
 
 #pragma pack(1)
 typedef struct _head_t
 {
-	uint8_t dst;
-	uint8_t src;
-	uint8_t type;
-	struct timespec send_time;
-	uint64_t send_t;
-	uint8_t antenna_id;
-	int seq;
+	uint8_t dst;				//目的地址	
+	uint8_t src;				//源地址
+	uint8_t type;				//包类型
+	struct timespec send_time;	//系统时钟下发送时间
+	uint64_t send_t;			//PTP授时系统下发送时间
+	uint8_t antenna_id;			//天线ID
+	int seq;					//发包序列号
 	//位置信息
 }head_t;
 
@@ -227,7 +225,7 @@ typedef struct _cp_t
 
 typedef struct _sp_t
 {
-	uint16_t st;	/*self test result*/
+	uint16_t st;				//自检结果
 	/*待补充*/
 }sp_t;
 
@@ -242,7 +240,7 @@ typedef struct _frame_t
 
 typedef struct _msg_t
 {
-	head_t	head;
+	head_t	head;				//包头
 	uint8_t data[MAX_DATA_LEN]; //样机内部数据只传输data
 	int		len;				//样机内部传输时不含head长度，样机间传输时包含head长度
 }msg_t;
@@ -250,26 +248,28 @@ typedef struct _msg_t
 
 extern info_t info;
 
-typedef struct {
+typedef struct 
+{
 	float x;
 	float y;
 	float z;
 } Point3D;
 
-typedef struct {
+typedef struct 
+{
 	float q0;
 	float q1;
 	float q2;
 	float q3;
 } Quaternion;
 
-typedef struct {
+typedef struct 
+{
 	float dx;
 	float dy;
 	float dz;
 	float h[3][3];
 } AntennaTransform;
-
 
 extern AntennaTransform transform[12];
 
@@ -291,16 +291,17 @@ typedef struct _fddi_info_t
 
 
 #pragma pack(1)
-typedef struct {
+typedef struct 
+{
 	int len;
 	int role;
-	int index; //选择天线
+	int index;		//选择天线
 	int flag;
-	Point3D pos; //位置
-	Point3D v; //速度
-	Point3D rv; //角速度
-	Quaternion q; //四元数
-	Point3D p_to; //
+	Point3D pos;	//位置
+	Point3D v;		//速度
+	Point3D rv;		//角速度
+	Quaternion q;	//四元数
+	Point3D p_to; 
 }psy_head_t;
 
 typedef struct _psy_msg_t
@@ -310,10 +311,7 @@ typedef struct _psy_msg_t
 }psy_msg_t;
 #pragma pack()
 
-
 extern fddi_info_t fddi_info;
 
 void queue_init();
-
 #endif
-

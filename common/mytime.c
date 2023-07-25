@@ -29,7 +29,6 @@ int time_init()
             if (state == 0)
             {
                 printf("fail\n");
-                //cout << "init_pcie failed\n";
             }
 
             if (state != 0)

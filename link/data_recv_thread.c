@@ -19,16 +19,11 @@ void* data_recv_thread(void* arg)
 	//uint64_t start, end;
 	//setNonBlocking(FD[0].fd);
 	//setNonBlocking(FD[1].fd);
-	//set_thread_priority();
     while (1)
     {
-        /*接收消息并送往主控模块*/
-		//start = my_get_time();
 
 		data_recv_proc();
-	
-		//end = my_get_time();
-		//tosche("time=%lld\n",end-start);
+
     }
 }
 
@@ -78,7 +73,6 @@ int data_recv_proc(void)
 		{
 			num--;
 			ret = recv(FD[i].fd, FD[i].recvBuffer, sizeof(psy_msg_t), 0);
-			//plog("psy_msg_t len = %d,ret len = %d\n", sizeof(psy_msg_t), ret);
 			if (ret > 0)
 			{
 				/*状态机判断*/
@@ -86,7 +80,7 @@ int data_recv_proc(void)
 				{
 					psy_msg_t* psy_msg = FD[i].recvBuffer;
 					msg_t* rmsg = FD[i].recvBuffer;
-					plog("no sim get, msg = %d psy_msg = %d msg_type = %d psy_type = %d seq = %d\n", rmsg->head.dst, psy_msg->msg.head.dst, rmsg->head.type, psy_msg->msg.head.type, rmsg->head.seq);
+					plog("no sim get, msg = %d msg_type = %d seq = %d\n", rmsg->head.dst, rmsg->head.type, rmsg->head.seq);
 					if (rmsg->head.type == START_GUN)
 					{
 						//plog("r:%d\n", rmsg->head.seq);

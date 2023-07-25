@@ -128,7 +128,7 @@ int schedule_slot(void)
             }
             break;
         case 3:
-            if ((40 <= info.current_slot && info.current_slot <= 43) || (info.current_slot == 59))
+            if ((40 <= info.current_slot && info.current_slot <= 43) || (info.current_slot == 59) || (info.current_slot == 30))
             {
                 sem_post(&info.send_semaphore);
                 udelay(slot_table[info.current_slot]);
@@ -145,7 +145,7 @@ int schedule_slot(void)
             }
             break;
         case 4:
-            if ((44 <= info.current_slot && info.current_slot <= 47) || (info.current_slot == 59))
+            if ((44 <= info.current_slot && info.current_slot <= 47) || (info.current_slot == 59) || (info.current_slot == 35))
             {
                 sem_post(&info.send_semaphore);
                 udelay(slot_table[info.current_slot]);

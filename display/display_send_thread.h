@@ -14,8 +14,8 @@
 #define OFF 0
 #define ON 1
 
-
-enum {
+enum 
+{
     DISPLAY_INFO,
     SIM_READY,
     SIM_START,
@@ -35,7 +35,8 @@ enum {
 
 #pragma pack(1)
 
-typedef struct {
+typedef struct
+{
     int tx_flag;
     int mode;
     int interval;
@@ -43,7 +44,8 @@ typedef struct {
     FILE* file;
 }display_state_t;
 
-typedef struct {
+typedef struct 
+{
     uint8_t tx_rx_status;       // 天线收发状态 (0：关闭 1：正在发送 2：正在接收)
     uint8_t beam_width;         // 天线波束宽度
     double azimuth;             // 天线方位角
@@ -52,7 +54,8 @@ typedef struct {
     double gt;                  // 天线接收性能
 } antenna_t;
 
-typedef struct {
+typedef struct 
+{
     uint8_t node;               // 节点
     double packet_loss_rate;    // 丢包率
     double error_rate;          // 误码率
@@ -73,7 +76,8 @@ typedef struct {
 } channel_t;
 
 
-typedef struct {
+typedef struct
+{
     uint16_t serial_number;     // 序列号，标记上传和记录的数据序号，从0递增
     struct timespec system_time;    // 系统时间，前8个字节（long long）为秒数，后4个字节(long)为纳秒数，16字节对齐
     float pos_x;                // 拦截器位置x

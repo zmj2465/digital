@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <sched.h>
 #include "pthread.h"
-//#include "common.h"
 #include "file_manage.h"
 
 void wsa_init()
@@ -19,8 +18,6 @@ void wsa_init()
     }
     #endif
 }
-
-
 
 void set_process_priority()
 {
@@ -94,8 +91,6 @@ void set_thread_priority()
 #endif
 }
 
-
-
 void udelay(int us)
 {
     uint64_t temp;
@@ -112,7 +107,6 @@ void udelay(int us)
         }
     }
 }
-
 
 uint64_t get_time_swtich(void)
 {
