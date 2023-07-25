@@ -28,6 +28,7 @@ int time_init()
             state = init_pcie();
             if (state == 0)
             {
+                printf("fail\n");
                 //cout << "init_pcie failed\n";
             }
 
@@ -50,6 +51,10 @@ uint64_t my_get_time()
     if (get_time != 0)
     {
         ret = get_time();
+    }
+    else
+    {
+        printf("get_time error\n");
     }
     return ret;
 }

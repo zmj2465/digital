@@ -29,7 +29,7 @@ extern pthread_spinlock_t start_spin;
 #define HOST_NAME_LEN	20
 #define IP_LEN			20
 #define MAX_DATA_LEN	2048
-#define START_GUN_TIME	20		/*仿真开始时间：10s*/
+#define START_GUN_TIME	10		/*仿真开始时间：10s*/
 #define TIMER_DELAY		300  	/*定时器时间：300ms*/
 #define MY_INDEX		info.link_index
 #define FD				info.simulated_link
@@ -123,7 +123,7 @@ typedef struct _start_boardcast_t
 {
 	struct timespec base_time;	/*系统时钟下的基准时间*/
 	uint64_t base_t;			/*PTP授时系统下的基准时间*/
-	int start_time;				/*仿真开始时间*/
+	uint64_t start_time;		/*仿真开始时间*/
 }start_boardcast_t;
 
 typedef struct _info_t
