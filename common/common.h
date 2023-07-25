@@ -29,7 +29,7 @@ extern pthread_spinlock_t start_spin;
 #define HOST_NAME_LEN	20
 #define IP_LEN			20
 #define MAX_DATA_LEN	2048
-#define START_GUN_TIME	10		/*仿真开始时间：10s*/
+#define START_GUN_TIME	20		/*仿真开始时间：10s*/
 #define TIMER_DELAY		300  	/*定时器时间：300ms*/
 #define MY_INDEX		info.link_index
 #define FD				info.simulated_link

@@ -287,13 +287,13 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
 
     if (type == START_GUN && MY_INDEX == 0)
     {
-        msg->head.send_time = info.str.base_time;
-        //msg->head.send_t = info.str.base_t;
+        //msg->head.send_time = info.str.base_time;
+        msg->head.send_t = info.str.base_t;
     }
     else
     {
-        clock_gettime(CLOCK_REALTIME, &msg->head.send_time);
-        //msg->head.send_t = my_get_time();
+        //clock_gettime(CLOCK_REALTIME, &msg->head.send_time);
+        msg->head.send_t = my_get_time();
     }
 
     if (MY_INDEX == 0)//M

@@ -30,7 +30,7 @@ pthread_mutex_t lock;
 int main()
 {
 
-    //time_init();
+    time_init();
 
     int ret = 0;
 
