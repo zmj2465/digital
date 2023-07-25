@@ -694,7 +694,13 @@ bool distance_judge(psy_msg_t* p)
 bool antenna_match_(psy_msg_t* p)
 {
     bool ret = true;
-    ret=checkAngles(p->psy_head.pos, p->psy_head.p_to, p->psy_head.q, p->psy_head.index, p->psy_head.role, fddi_info.pos, antenna_info[info.current_antenna].point_to, fddi_info.q, info.current_antenna, info.device_info.node_role);
+    //ret=checkAngles(p->psy_head.pos, p->psy_head.p_to, p->psy_head.q, p->psy_head.index, p->psy_head.role, fddi_info.pos, antenna_info[info.current_antenna].point_to, fddi_info.q, info.current_antenna, info.device_info.node_role);
+    ret = new_angle_check(
+        p->psy_head.pos, fddi_info.pos,
+        p->psy_head.q, fddi_info.q,
+        p->psy_head.index, info.current_antenna,
+        p->psy_head.role, info.device_info.node_role
+    );
     return ret;
 }
 
@@ -708,7 +714,41 @@ bool channel_sim(psy_msg_t* data)
 }
 
 
+bool new_angle_check(Point3D send_p, Point3D recv_p, Quaternion send_q, Quaternion recv_q, int send_r, int recv_r, int send_i, int recv_i)
+{
+    bool ret_send = false;
+    bool ret_recv = false;
+    Point3D null = { 0,0,1 };
+    double angle, anglem, anglez;
+    double distancex = send_p.x - recv_p.x;
+    double distancey = send_p.y - recv_p.y;
+    double distancez = send_p.z - recv_p.z;
+    double distance = sqrt(distancex * distancex + distancey * distancey + distancez * distancez);
 
+    anglem = (distance < 500) ? 55 : (distance < 5000) ? 25 : (distance < 15000) ? 25 : (distance < 30000) ? 25 : 8.5;
+    anglez = (distance < 500) ? 55 : (distance < 5000) ? 55 : (distance < 15000) ? 50 : (distance < 30000) ? 25 : 19;
+
+    Point3D recv_p2, send_p2, recv_p3, send_p3;
+    //发射方
+    convertCoordinates(&recv_p, &send_q, &recv_p2);
+    convertCoordinates2(&recv_p2, &transform[send_i + (send_r == 0 ? 0 : 6)], &recv_p3);
+    angle = calculateAngle(&recv_p3, &null);
+    if (angle < (send_r == 0 ? anglem : anglez))
+    {
+        ret_send = true;
+    }
+
+    //接收方
+    convertCoordinates(&send_p, &recv_q, &send_p2);
+    convertCoordinates2(&send_p2, &transform[recv_i + (recv_r == 0 ? 0 : 6)], &send_p3);
+    angle = calculateAngle(&send_p3, &null);
+    if (angle < (recv_r == 0 ? anglem : anglez))
+    {
+        ret_recv = true;
+    }
+
+    return ret_send & ret_recv;
+}
 
 
 

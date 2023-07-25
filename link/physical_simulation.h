@@ -69,5 +69,6 @@ bool distance_judge(psy_msg_t* p);
 bool antenna_match_(psy_msg_t* p);
 bool channel_sim(psy_msg_t* data);
 
+bool new_angle_check(Point3D send_p, Point3D recv_p, Quaternion send_q, Quaternion recv_q, int send_r, int recv_r, int send_i, int recv_i);
 
 #endif
