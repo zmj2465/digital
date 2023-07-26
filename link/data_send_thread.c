@@ -59,7 +59,7 @@ int data_send_proc(void)
                     {
                         msg.data[0] = SCAN_REQ;
                         msg.len = 1;
-                        /*发送扫描询问帧*/
+                        /*发送扫描请求帧*/
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
@@ -82,17 +82,15 @@ int data_send_proc(void)
             else//数据时隙
             {
                 for (i = 1; i < FD_NUM; i++)
-                {
-                    
+                {                   
                     index = schedule_inquire_index(i, info.current_slot);
                     if (index != -1)
                     {
-                        if (info.scan_flag_M[index] == 1)
+                        if (info.scan_flag_M[index] == 1)//标志位置1，发送扫描确认帧
                         {
                             msg.data[0] = SCAN_CON;
                             msg.data[1] = info.current_time_frame + 1;
                             msg.len = 1;
-                            /*发送扫描确认帧*/
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
@@ -105,11 +103,9 @@ int data_send_proc(void)
                             }
                             return 0;
                         }
-                        else
+                        else//标志位置0，发送数据帧
                         {
-                            /*发送数据帧*/
-                            //dequeue(&info.thread_queue[DATA_SEND_THREAD], msg.data, &msg.len);
-                            if (info.current_time_frame > info.time_frame_flag_m[index])
+                            if (info.current_time_frame >= info.time_frame_flag_m[index])
                             {
                                 msg.data[0] = 5;
                                 msg.len = 1;
@@ -120,16 +116,14 @@ int data_send_proc(void)
                             } 
                             return 0;
                         }
-
                     }
                 }
                 for (i = 1; i < FD_NUM; i++)
                 {
-                    if (inquire_index(i) == -1)//对应终端Z不在网
+                    if (inquire_index(i) == -1)//对应终端Z不在网，发送扫描请求帧
                     {
                         msg.data[0] = SCAN_REQ;
                         msg.len = 1;
-                        /*发送扫描询问帧*/
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
@@ -137,18 +131,27 @@ int data_send_proc(void)
                         /*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
-                    else
-                    {
-                        continue;
-                    }
                 }                
             }
             break;
         /*建链完成状态*/
         case FSM_ON:
-            if(info.current_slot == 0 || info.current_slot == 5)//信令时隙
+            if (info.current_slot == 0 || info.current_slot == 5)//信令时隙
             {
-         
+                for (i = 1; i < FD_NUM; i++)
+                {
+                    index = beacon_m_inquire_index(i, info.current_slot, info.current_time_frame);
+                    if (index != -1)
+                    {
+                        msg.data[0] = 6;
+                        msg.len = 1;
+                        generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], BEACON, &msg);
+                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
+                        plog("M send Z%d beacon, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                        return 0;
+                    }                    
+                }
             }
             else if(info.current_slot == 61)//测距时隙
             {
@@ -178,14 +181,14 @@ int data_send_proc(void)
                     index = schedule_inquire_index(i, info.current_slot);
                     if (index != -1)
                     {
-                        if (info.current_time_frame > info.time_frame_flag_m[index])
+                        if (info.current_time_frame >= info.time_frame_flag_m[index])
                         {
                             msg.data[0] = 5;
                             msg.len = 1;
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
-                            plog("M send Z%d data, current slot = %d.%d, seq = %d, time = %lld\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq, pmsg.msg.head.send_t);
+                            plog("M send Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         }
                         return 0;    
                     }
@@ -203,7 +206,7 @@ int data_send_proc(void)
         {
         /*建链状态*/
         case FSM_WAN:
-            if (info.current_slot != 59)//数据时隙
+            if (info.current_slot != 59)//扫描时隙
             {
                 /*发送扫描响应帧*/
                 if (info.scan_flag_Z == 1)
@@ -226,7 +229,16 @@ int data_send_proc(void)
         case FSM_ON:
             if (info.current_slot == 30 || info.current_slot == 35)//信令时隙
             {
-
+                index = beacon_z_inquire_index(MY_INDEX, info.current_slot, info.current_time_frame);
+                if (index != -1)
+                {
+                    msg.data[0] = 6;
+                    msg.len = 1;
+                    generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], BEACON, &msg);
+                    psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                    send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
+                    plog("Z%d send M beacon, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                }
             }
             else if (info.current_slot == 59)//测距时隙
             {
@@ -252,7 +264,7 @@ int data_send_proc(void)
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                         psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
-                        plog("Z%d send M data, current slot = %d.%d, seq = %d, time = %lldns\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq, pmsg.msg.head.send_t);
+                        plog("Z%d send M data, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                     }
                 }
             }
@@ -298,14 +310,43 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
             index = inquire_address(msg->head.dst);
             msg->head.antenna_id = info.antenna_M[index];
         }
-        msg->head.seq = info.seq_m;
-        info.seq_m++;
+
+
+        if (type == BEACON)
+        {
+            msg->head.seq = info.seq_beacon_m;
+            info.seq_beacon_m++;
+        }
+        else if (type == DISTANCE)
+        {
+            msg->head.seq = info.seq_distance_m;
+            info.seq_distance_m++;
+        }
+        else
+        {
+            msg->head.seq = info.seq_m;
+            info.seq_m++;
+        }
     }
     else//Z
     {
         msg->head.antenna_id = info.antenna_Z;
-        msg->head.seq = info.seq_z;
-        info.seq_z++;
+
+        if (type == BEACON)
+        {
+            msg->head.seq = info.seq_beacon_z;
+            info.seq_beacon_z++;
+        }
+        else if (type == DISTANCE)
+        {
+            msg->head.seq = info.seq_distance_z;
+            info.seq_distance_z++;
+        }
+        else
+        {
+            msg->head.seq = info.seq_z;
+            info.seq_z++;
+        }
     }
 
     msg->len = msg->len + sizeof(head_t) + sizeof(int);//加上包头长度

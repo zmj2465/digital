@@ -43,25 +43,23 @@ int master_data_proc(void)
             {
             case SHORT_FRAME:
                 break;
-            case LONG_FRAME:
+            case BEACON:
                 index = inquire_address(msg.head.src);
-
 #ifdef _WIN32
-                /*M的数据帧定时器*/
+                /*信令帧M定时器*/
                 timeKillEvent(info.timerId_M[index]);
                 info.timerId_M[index] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, index, TIME_ONESHOT);
 #endif
-
-                //plog("M recv Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, msg.head.seq);
+                plog("M recv Z%d beacon, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, msg.head.seq);
+                break;
+            case LONG_FRAME:
+                index = inquire_address(msg.head.src);
+                plog("M recv Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, msg.head.seq);
                 break;
             case START_GUN:
                 if (msg.data[0] == START_GUN_RES)
                 {
                     fsm_do(EVENT_WAIT_SIMULATE);
-                }
-                else
-                {
-                    //plog("M not receive start_gun response\n");
                 }
                 break;
             case SCAN:
@@ -71,11 +69,7 @@ int master_data_proc(void)
                     info.device_info.node_num++;
                     info.device_info.node_list = info.device_info.node_list | (1 << index);
                     info.scan_flag_M[index] = 1;
-                    //plog("M recv Z%d scan response, list = %d, current slot = %d.%d, seq = %d\n", index, info.device_info.node_list, info.current_time_frame, info.current_slot, msg.head.seq);
-                }
-                else
-                {
-                    //plog("M not receive scan response\n");
+                    plog("M recv Z%d scan response, list = %d, current slot = %d.%d, seq = %d\n", index, info.device_info.node_list, info.current_time_frame, info.current_slot, msg.head.seq);
                 }
                 break;
             case DISTANCE:
@@ -83,11 +77,7 @@ int master_data_proc(void)
                 {
                     index = inquire_address(msg.head.src);
                     info.distance_flag_M[index] = 1;
-                    //plog("M recv Z%d distance frame, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, msg.head.seq);
-                }
-                else
-                {
-                    //plog("M not receive Z distance frame\n");
+                    plog("M recv Z%d distance frame, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, msg.head.seq);
                 }
             default:
                 break;
@@ -110,47 +100,42 @@ int master_data_proc(void)
                         msg.data[0] = START_GUN_RES;
                         msg.len = 1;
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
-                        send(FD[0].fd, &msg, sizeof(msg_t), 0);
+                        send(FD[0].fd, &msg, msg.len, 0);
                         fsm_do(EVENT_WAIT_ACCESS);
-                    }
-                    else
-                    {
-                        //plog("Z not receive start_gun require\n");
                     }
                     break;
                 case SCAN:
                     if (msg.data[0] == SCAN_REQ)
                     {
 #ifdef _WIN32
-                        /*关闭扫描询问定时器*/
-                        timeKillEvent(info.timerId);
+                        timeKillEvent(info.timerId);//关闭扫描请求定时器
 #endif
-                        /*扫描响应帧*/
-                        info.scan_flag_Z = 1;
-                        //plog("Z%d recv M scan request, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
+                        info.scan_flag_Z = 1;//扫描响应标志位置1
+                        plog("Z%d recv M scan request, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
                     }
                     else if (msg.data[0] == SCAN_CON)
                     {
 #ifdef _WIN32
-                        /*关闭扫描回复定时器*/
-                        timeKillEvent(info.timerId);
+                        timeKillEvent(info.timerId);//关闭扫描确认定时器
 #endif
                         info.time_frame_flag_z = msg.data[1];
                         plog("Z%d recv M scan confirm, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
                         fsm_do(EVENT_WAN_SUCC);
                     }
-                    else
-                    {
-                        //plog("Z not receive scan\n");
-                    }
                     break;
-                case LONG_FRAME:
+                case BEACON:
 #ifdef _WIN32
-                    /*Z的数据帧定时器*/
+                    /*信令帧Z定时器*/
                     timeKillEvent(info.timerId_Z);
                     info.timerId_Z = timeSetEvent(TIMER_DELAY, 0, TimerCallback, Z_DATA_TIMER, TIME_ONESHOT);
 #endif
-                    //plog("Z%d recv M data, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);       
+                    plog("Z%d recv M beacon, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
+                    break;
+                case LONG_FRAME:
+                    plog("Z%d recv M data, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);       
+                    break;
+                case DISTANCE:
+                    plog("Z%d recv M distance frame, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
                     break;
                 default:
                     break;

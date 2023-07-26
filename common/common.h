@@ -13,13 +13,14 @@
 //#include <dirent.h>
 
 
-#if(0)
+#if(1)
 #define plog(format, ...) tofile(LOG,format,##__VA_ARGS__)
 #else
 #define plog(format, ...) printf(format, ##__VA_ARGS__)
 #endif
 
 #define tosche(format, ...) tofile(SCHE,format,##__VA_ARGS__)
+
 extern uint64_t start_time;
 extern uint64_t end_time;
 extern pthread_spinlock_t start_spin;
@@ -33,7 +34,7 @@ extern pthread_spinlock_t start_spin;
 #define TIMER_DELAY		300  	//定时器时间：300ms
 #define MY_INDEX		info.link_index						
 #define FD				info.simulated_link					
-#define FD_NUM			info.simulated_link_num				
+#define FD_NUM			info.simulated_link_num				//连接仿真系统的装置数目
 #define RSET			info.rset							
 #define LFD				info.simulated_link[MY_INDEX].fd
 #define DISPLAY_FD      info.display_system.fd
@@ -68,10 +69,11 @@ enum FRAME_TYPE
 	SLEF_TEST_RESULT = 0x10, //自检结果
 	PARAMETER_LOAD	 = 0xcc, //参数装订
 	SHORT_FRAME		 = 0x30, //短帧
-	LONG_FRAME		 = 0x60, //长帧
-	START_GUN		 = 0x70, //发令枪
-	SCAN			 = 0x80, //扫描
-	DISTANCE		 = 0x90, //测距
+	LONG_FRAME		 = 0x40, //长帧
+	START_GUN		 = 0x50, //发令枪
+	SCAN			 = 0x60, //扫描
+	DISTANCE		 = 0x70, //测距
+	BEACON			 = 0x80, //信令
 };
 
 enum FRAME_SUBTYPE
@@ -87,9 +89,9 @@ enum FRAME_SUBTYPE
 
 enum TIMER_ID
 {
-	SCAN_REQ_TIMER = 5,		//扫描请求帧定时器
-	SCAN_RES_TIMER,			//扫描响应帧定时器
-	SCAN_CON_TIMER,			//扫描确认帧定时器
+	SCAN_REQ_TIMER = 5,		//扫描请求定时器
+	SCAN_RES_TIMER,			//扫描响应定时器
+	SCAN_CON_TIMER,			//扫描确认定时器
 	Z_DATA_TIMER			//数据帧定时器Z
 };
 
@@ -175,33 +177,37 @@ typedef struct _info_t
 	int act_prt;
 
 	/*device_info*/
-	device_info_t device_info;		//节点信息
-	start_boardcast_t str;			//仿真开始时间
-	int current_slot;				//当前时隙号
-	int current_antenna;			//当前发射天线号
-	int current_time_frame;			//当前时帧号
-	int distance_flag_M[MAX_DEVICE];//测距标志位M
-	int scan_flag_M[MAX_DEVICE];	//扫描标志位M，置1发送扫描确认帧
-	int scan_flag_Z;				//扫描标志位Z，置1发送扫描响应帧
+	device_info_t device_info;			//节点信息
+	start_boardcast_t str;				//仿真开始时间
+	int current_slot;					//当前时隙号
+	int current_antenna;				//当前发射天线号
+	int current_time_frame;				//当前时帧号
+	int distance_flag_M[MAX_DEVICE];	//测距标志位M
+	int scan_flag_M[MAX_DEVICE];		//扫描标志位M，置1发送扫描确认帧
+	int scan_flag_Z;					//扫描标志位Z，置1发送扫描响应帧
 
 #ifdef _WIN32
-	UINT timerId;					//扫描询问、扫描回复定时器ID
-	UINT timerId_Z;					//数据帧Z定时器ID
-	UINT timerId_M[MAX_DEVICE];		//数据帧M定时器ID
+	UINT timerId;						//扫描询问、扫描回复定时器ID
+	UINT timerId_Z;						//数据帧Z定时器ID
+	UINT timerId_M[MAX_DEVICE];			//数据帧M定时器ID
 #endif
 
-	int antenna_M[MAX_DEVICE];		//天线匹配表M（0-5）
-	int antenna_Z;					//天线匹配表Z（0-5）
-	struct timespec set_network_st; //系统时钟下建网开始时刻
-	struct timespec set_network_ed; //系统时钟下建网结束时刻
-	uint64_t network_st;			//PTP授时系统下建网开始时刻
-	uint64_t network_ed;			//PTP授时系统下建网结束时刻
-	int set_network_time;			//建网时间
-	int seq_m;						//序列号M
-	int seq_z;						//序列号Z
-	int time_schedule_flag;			//时隙调度标志位，置1表示发送时隙，置0表示接收时隙
-	int time_frame_flag_m[MAX_DEVICE];//时帧标志位M，指示Z建链完成后，M在这个时帧不发送数据，在下一时帧开始接收和发送数据
-	int time_frame_flag_z;			//时帧标志位Z，指示Z建链完成后，在下一时帧发送数据帧给M
+	int antenna_M[MAX_DEVICE];			//天线匹配表M（0-5）
+	int antenna_Z;						//天线匹配表Z（0-5）
+	struct timespec set_network_st;		//系统时钟下建网开始时刻
+	struct timespec set_network_ed;		//系统时钟下建网结束时刻
+	uint64_t network_st;				//PTP授时系统下建网开始时刻
+	uint64_t network_ed;				//PTP授时系统下建网结束时刻
+	int set_network_time;				//建网时间
+	int seq_m;							//数据包序列号M
+	int seq_z;							//数据包序列号Z
+	int seq_beacon_m;					//信令序列号M
+	int seq_beacon_z;					//信令序列号Z
+	int seq_distance_m;					//测距序列号M
+	int seq_distance_z;					//测距序列号Z
+	int time_schedule_flag;				//时隙调度标志位，置1表示发送时隙，置0表示接收时隙
+	int time_frame_flag_m[MAX_DEVICE];	//时帧标志位M，指示Z建链完成后，M在这个时帧不发送数据，在下一时帧开始接收和发送数据
+	int time_frame_flag_z;				//时帧标志位Z，指示Z建链完成后，在下一时帧发送数据帧给M
 }info_t;
 
 #pragma pack(1)
