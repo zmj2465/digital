@@ -22,13 +22,22 @@ void* fddi_thread(void* arg)
 
     while (1)
     {
-        /*接收光纤信息*/
+        /*接收光纤信息*/ //待优化
         len=recv(info.fddi_system.fd, data, MAX_DATA_LEN, 0);
         prepare_simulation = 1;
         plog("get fddi info len=%d\n", len);
         fddi_info.pos.x = p->pos.x;
         fddi_info.pos.y = p->pos.y;
         fddi_info.pos.z = p->pos.z;
+
+        fddi_info.v.x = p->v.x;
+        fddi_info.v.y = p->v.y;
+        fddi_info.v.z = p->v.z;
+
+        fddi_info.rv.x = p->rv.x;
+        fddi_info.rv.y = p->rv.y;
+        fddi_info.rv.z = p->rv.z;
+
         fddi_info.q.q0 = p->q.q0;
         fddi_info.q.q1 = p->q.q1;
         fddi_info.q.q2 = p->q.q2;

@@ -4,6 +4,8 @@
 display_state_t display_state;
 show_t show_msg;
 
+static int display_fd;
+
 void* display_send_thread(void* arg)
 {
     int ret = 0;
@@ -15,6 +17,7 @@ void* display_send_thread(void* arg)
     find_data();
     //select_file(&msg);
 
+    pthread_mutex_init(&display_state.mutex, NULL);
     display_state.interval = 20;
     display_state.seq = 0;
 
@@ -25,7 +28,7 @@ void* display_send_thread(void* arg)
 
     while (1)
     {
-        ret=recv(DISPLAY_FD, data, MAX_DATA_LEN, 0);
+        ret=recv(display_fd, data, MAX_DATA_LEN, 0);
         if (ret > 0)
         {
             show_t* p = (show_t*)data;
@@ -72,10 +75,12 @@ void display_send_thread_init()
     listen(lfd, SOMAXCONN);
 
     info.display_system.addr_len = sizeof(info.display_system.addr); //**
-    info.display_system.fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
-    plog("display_system connect success %d\n", info.display_system.fd);
-    setNonBlocking(info.display_system.fd);
+    display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
+    plog("display_system connect success %d\n", display_fd);
+    setNonBlocking(display_fd);
 }
+
+
 
 
 void send_to_display(show_t* msg,int type,int len)
@@ -259,34 +264,30 @@ void find_data()
     //发送
 }
 
-//void find_data()
-//{
-//    char a[1024];
-//    FILE* file;
-//    file = fopen("C:\\Users\\MRGT\\Desktop\\display.txt", "rwb");  // 以二进制写入模式打开文件
-//    if (file == NULL) {
-//        plog("open fail\n");
-//        return 1;
-//    }
-//
-//    int i;
-    //for (i = 0; i < 10; i++)
-    //{
-    //    memset(a, i, 1024);
-    //    fwrite(a, sizeof(char), sizeof(a), file);  // 将内容写入文件
-    //    plog("write success\n");
-    //}
-//
-//    fseek(file, 2*1024, SEEK_SET);
-//    fread(a, sizeof(char), sizeof(a), file);
-//    plog("five \n");
-//    for (i = 0; i < sizeof(a); i++) {
-//        plog("%x ", a[i]);
-//    }
-//
-//
-//    return 0;
-//}
+
+void generate_display_msg()
+{
+
+}
+
+
+void generate_key_event(int type)
+{
+    show_t msg;
+    msg.type = IMP_EVENT;
+    msg.len = 4 + sizeof(display_t);
+
+    //
+    pthread_mutex_lock(&display_state.mutex);
+    msg.key.seq = display_state.seq;
+    display_state.seq++;
+    msg.key.system_time.tv_sec = my_get_time();
+    msg.key.key = type;
+    memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
+    send(display_fd, &msg, msg.len, 0);
+    todata(&msg, msg.len);
+    pthread_mutex_unlock(&display_state.mutex);
+}
 
 
 
