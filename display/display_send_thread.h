@@ -41,6 +41,7 @@ typedef struct
     int mode;
     int interval;
     int seq;
+    int find_seq;
     pthread_mutex_t mutex;
     FILE* file;
 }display_state_t;
@@ -160,6 +161,9 @@ typedef struct _show_t
 extern display_state_t display_state;
 extern show_t show_msg;
 
+
+static void init();
+
 void* display_send_thread(void* arg);
 void display_send_thread_init();
 void set_mode(int mode, int flag);
@@ -167,5 +171,14 @@ void select_file(show_t* msg);
 void find_data();
 
 void generate_key_event(int type);
+
+
+void sim_beg_proc(show_t* msg);
+void sim_end_proc(show_t* msg);
+void rep_sel_proc(show_t* msg);
+void rep_beg_proc(show_t* msg);
+void rep_rep_proc(show_t* msg);
+void rep_suspend_proc(show_t* msg);
+void rep_recover_proc(show_t* msg);
 
 #endif

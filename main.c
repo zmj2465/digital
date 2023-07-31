@@ -124,7 +124,6 @@ int main()
     }
 
 
-
     sem_wait(&info.thread_create_semaphore);
 
     /**/
