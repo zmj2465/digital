@@ -129,6 +129,7 @@ typedef struct {
     uint16_t seq;
     struct timespec system_time;
     uint8_t key;
+    uint8_t node;
     float pos_x;                // 拦截器位置x
     float pos_y;                // 拦截器位置y
     float pos_z;                // 拦截器位置z
@@ -150,7 +151,13 @@ typedef struct _show_t
     uint16_t len;
     union {
         display_t display_info; //遥测信息
+        /*仿真就绪*/
+        uint16_t  mode;          //仿真开始
+        /*仿真结束*/
+        /*文件序列*/
         key_event_t key;        //关键事件
+
+
         uint16_t file_seq;
         uint16_t data_seq;
     };

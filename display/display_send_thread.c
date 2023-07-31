@@ -41,7 +41,7 @@ void* display_send_thread(void* arg)
 
         if (display_state.mode == SIM_MODE && display_state.tx_flag == ON)
         {
-            send_to_display(&show_msg, DISPLAY_INFO, sizeof(display_t));
+
             Sleep(display_state.interval);
         }
         else if (display_state.mode == REPLAY_MODE && display_state.tx_flag == ON)
@@ -95,26 +95,121 @@ void display_send_thread_init()
 
 
 
-void send_to_display(show_t* msg,int type,int len)
+void sim_beg_proc(show_t* msg)
 {
-    msg->type = type;
-    msg->len = 4 + len;
-    switch (type)
-    {
-        case DISPLAY_INFO:
-            break;
-        case SIM_READY:
-            break;
-        case SIM_START:
-            break;
-        case SIM_END:
-            break;
-        case FILE_SEQ:
-            break;
-        case IMP_EVENT:
-            break;
-    }
+
 }
+
+void sim_end_proc(show_t* msg)
+{
+
+}
+
+//仿真选择
+void rep_sel_proc(show_t* msg)
+{
+    int num=get_file_num(DATA_FOLDER);
+    printf("file num=%d select seq=%d\n", num, msg->file_seq);
+    //选择文件
+    select_file(msg);
+}
+
+void rep_beg_proc(show_t* msg)
+{
+
+}
+
+void rep_rep_proc(show_t* msg)
+{
+    fseek(display_state.file, sizeof(show_t) * msg->data_seq, SEEK_SET);
+}
+
+void rep_suspend_proc(show_t* msg)
+{
+
+}
+
+void rep_recover_proc(show_t* msg)
+{
+
+}
+
+
+void sim_ready()
+{
+    show_t msg;
+    msg.type = SIM_READY;
+    msg.len = 4;
+    pthread_mutex_lock(&display_state.mutex);
+    send(display_fd, &msg, msg.len, 0);
+    pthread_mutex_unlock(&display_state.mutex);
+}
+
+
+void sim_start(uint16_t mode)
+{
+    show_t msg;
+    msg.type = SIM_START;
+    msg.len = 4+2;
+    msg.mode = mode;
+    pthread_mutex_lock(&display_state.mutex);
+    send(display_fd, &msg, msg.len, 0);
+    pthread_mutex_unlock(&display_state.mutex);
+}
+
+
+void send_display_msg()
+{
+    show_t msg;
+    msg.type = DISPLAY_INFO;
+    msg.len = 4 + sizeof(display_t);
+
+    pthread_mutex_lock(&display_state.mutex);
+    msg.display_info.serial_number = display_state.seq;
+    display_state.seq++;
+    msg.display_info.system_time.tv_sec = my_get_time();
+
+    send(display_fd, &msg, msg.len, 0);
+    todata(&msg, msg.len);
+    pthread_mutex_unlock(&display_state.mutex);
+}
+
+
+void store_display_msg()
+{
+    show_t msg;
+    msg.type = DISPLAY_INFO;
+    msg.len = 4 + sizeof(display_t);
+
+    pthread_mutex_lock(&display_state.mutex);
+    msg.display_info.serial_number = display_state.seq;
+    display_state.seq++;
+    msg.display_info.system_time.tv_sec = my_get_time();
+
+    //send(display_fd, &msg, msg.len, 0);
+    todata(&msg, msg.len);
+    pthread_mutex_unlock(&display_state.mutex);
+}
+
+
+void generate_key_event(int type)
+{
+    show_t msg;
+    msg.type = IMP_EVENT;
+    msg.len = 4 + sizeof(display_t);
+
+    //
+    pthread_mutex_lock(&display_state.mutex);
+    msg.key.seq = display_state.seq;
+    display_state.seq++;
+    msg.key.system_time.tv_sec = my_get_time();
+    msg.key.key = type;
+    memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
+    send(display_fd, &msg, msg.len, 0);
+    todata(&msg, msg.len);
+    pthread_mutex_unlock(&display_state.mutex);
+}
+
 
 
 
@@ -231,76 +326,8 @@ void select_file(show_t* msg)
 
 #endif
 
-    return ;
+    return;
 }
-
-
-
-
-void sim_beg_proc(show_t* msg)
-{
-
-}
-
-void sim_end_proc(show_t* msg)
-{
-
-}
-
-//仿真选择
-void rep_sel_proc(show_t* msg)
-{
-    int num=get_file_num(DATA_FOLDER);
-    printf("file num=%d select seq=%d\n", num, msg->file_seq);
-    //选择文件
-    select_file(msg);
-}
-
-void rep_beg_proc(show_t* msg)
-{
-
-}
-
-void rep_rep_proc(show_t* msg)
-{
-    fseek(display_state.file, sizeof(show_t) * msg->data_seq, SEEK_SET);
-}
-
-void rep_suspend_proc(show_t* msg)
-{
-
-}
-
-void rep_recover_proc(show_t* msg)
-{
-
-}
-
-
-void generate_display_msg()
-{
-
-}
-
-
-void generate_key_event(int type)
-{
-    show_t msg;
-    msg.type = IMP_EVENT;
-    msg.len = 4 + sizeof(display_t);
-
-    //
-    pthread_mutex_lock(&display_state.mutex);
-    msg.key.seq = display_state.seq;
-    display_state.seq++;
-    msg.key.system_time.tv_sec = my_get_time();
-    msg.key.key = type;
-    memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
-    send(display_fd, &msg, msg.len, 0);
-    todata(&msg, msg.len);
-    pthread_mutex_unlock(&display_state.mutex);
-}
-
 
 
 
