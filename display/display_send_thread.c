@@ -29,6 +29,20 @@ void* display_send_thread(void* arg)
     init();
     /*以太网连接*/
     display_send_thread_init();
+    int key = 0;
+    while (1)
+    {
+        //store_display_msg();
+        //Sleep(1);
+        //store_display_msg();
+        //Sleep(1);
+        //store_display_msg();
+        //Sleep(1);
+        //generate_key_event(key);
+        //key = (key + 1) % 8;
+        //Sleep(1);
+
+    }
 
     while (1)
     {
@@ -174,19 +188,137 @@ void send_display_msg()
     pthread_mutex_unlock(&display_state.mutex);
 }
 
-
+int x = 0;
+int d0 = 1;
+int d1d2 = 3;
+int d3d4 = 1;
+int d5d10 = 22;
+int d11d13 = 6;
+int d14d16 = 1;
+int d17 = 1;
+int d18 = 1;
+int d19 = 1;
+int d2022 = 3;
+int d23 = 1;
+int d24 = 1;
+int d25d31 = 0;
 void store_display_msg()
 {
     show_t msg;
+    int i;
+    int j;
     msg.type = DISPLAY_INFO;
     msg.len = 4 + sizeof(display_t);
 
     pthread_mutex_lock(&display_state.mutex);
     msg.display_info.serial_number = display_state.seq;
+    printf("data seq:%d\n", display_state.seq);
     display_state.seq++;
-    msg.display_info.system_time.tv_sec = my_get_time();
+    msg.display_info.system_time.tv_sec = x * 20 * 1000 + 1688610381000000000;// 假设系统时间为 2021-06-21 12:00:00
+    msg.display_info.system_time.tv_nsec = 0;
+    msg.display_info.pos_x = 10.0;
+    msg.display_info.pos_y = 20.0;
+    msg.display_info.pos_z = 10000.0;
+    msg.display_info.vel_x = 1.0;
+    msg.display_info.vel_y = 2.0;
+    msg.display_info.vel_z = 3.0;
+    msg.display_info.ang_vel_x = 0.1;
+    msg.display_info.ang_vel_y = 0.2;
+    msg.display_info.ang_vel_z = 0.3;
+    msg.display_info.quat_q0 = 0.707;
+    msg.display_info.quat_q1 = 0.0;
+    msg.display_info.quat_q2 = 0.0;
+    msg.display_info.quat_q3 = 0.707;
+    msg.display_info.time_element_number = 0;
+    msg.display_info.time_frame_number = 0;
+    msg.display_info.micro_time_slot_number = 0;
+    msg.display_info.node_role = 1;
+    msg.display_info.node_id = 2;
+    msg.display_info.link_status = 0;
+    for (j = 0; j < 4; j++) {
+        msg.display_info.z1_m_distance[j] = 0;
+        msg.display_info.z1_m_azimuth[j] = 0;
+        msg.display_info.z1_m_elevation[j] = 0;
+    }
+    msg.display_info.comm_status_mode = 0;
+    msg.display_info.z_proc_flight_control_data_rx_tx_count = 0;
+    msg.display_info.z_proc_flight_control_data_rx_tx_timestamp = 0;
+    //msg.display_info.z1_m_air_interface_data_rx_tx_count = 0;
+    for (i = 0; i < 4; i++)
+    {
+        msg.display_info.z_m_send_recv_count[i] = 0;
+    }
+    //msg.display_info.z1_m_air_interface_data_rx_tx_timestamp = 0;
+    msg.display_info.operation_status = 0;
+    msg.display_info.channel_coding_decoding_frame_count = 0;
+    msg.display_info.modulation_demodulation_frame_count = 0;
+    msg.display_info.instruction_parsing_frame_count = 0;
+    msg.display_info.m_node_time_freq_sync_status = 0;
+    msg.display_info.m_node_downlink_link_status = 0;
+    msg.display_info.m_node_beam_azimuth_direction = 50;
+    msg.display_info.m_node_beam_elevation_direction = 0;
 
-    //send(display_fd, &msg, msg.len, 0);
+    //for (int i = 0; i < 6; i++) {
+    //    msg.display_info.array_status[i] = 0;
+    //}
+
+
+    msg.display_info.frequency_synthesizer_status = 0;
+    msg.display_info.terminal_working_status_representation = 0;
+    int temp = 0;
+    temp |= d0;
+    temp |= (d1d2 << 1);
+    temp |= (d3d4 << 3);
+    temp |= (d5d10 << 5);
+    temp |= (d11d13 << 11);
+
+    temp |= (d14d16 << 14);
+    temp |= (d17 << 17);
+    temp |= (d18 << 18);
+    temp |= (d19 << 19);
+    temp |= (d2022 << 20);
+    temp |= (d23 << 23);
+    temp |= (d24 << 24);
+
+    msg.display_info.terminal_working_status_representation = temp;
+
+    for (j = 0; j < 6; j++)
+    {
+        msg.display_info.antenna_params[j].tx_rx_status = 1;
+        msg.display_info.antenna_params[j].beam_width = 30;
+        msg.display_info.antenna_params[j].azimuth = 45.67;
+        msg.display_info.antenna_params[j].elevation = 12.34;
+        msg.display_info.antenna_params[j].eirp = 100.0;
+        msg.display_info.antenna_params[j].gt = 20.5;
+    }
+    for (j = 0; j < 4; j++)
+    {
+        msg.display_info.channel_params[j].node = 1;
+        msg.display_info.channel_params[j].packet_loss_rate = 0.05;
+        msg.display_info.channel_params[j].error_rate = 0.1;
+        msg.display_info.channel_params[j].snr = 20.5;
+        msg.display_info.channel_params[j].received_signal_power = -70.2;
+        msg.display_info.channel_params[j].spreading_gain = 12.3;
+        msg.display_info.channel_params[j].equivalent_spreading_factor = 4.5;
+        msg.display_info.channel_params[j].noise_level = -90.1;
+        msg.display_info.channel_params[j].distance = 500.0;
+        msg.display_info.channel_params[j].path_loss = 60.8;
+        msg.display_info.channel_params[j].transmission_delay = 0.003;
+        msg.display_info.channel_params[j].doppler_shift = 100.5;
+        msg.display_info.channel_params[j].radial_velocity = 50.2;
+        msg.display_info.channel_params[j].beam_angle = 30.0;
+        msg.display_info.channel_params[j].antenna_gain = 18.7;
+        msg.display_info.channel_params[j].equivalent_isotropic_radiated_power = 30.5;
+        msg.display_info.channel_params[j].transmitter_output_power = 25.8;
+        if (j == 0)
+            msg.display_info.channel_params[j].state = 1;
+        if (j == 1)
+            msg.display_info.channel_params[j].state = 0;
+        if (j == 2)
+            msg.display_info.channel_params[j].state = 1;
+        if (j == 3)
+            msg.display_info.channel_params[j].state = 0;
+    }
     todata(&msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }
@@ -201,6 +333,7 @@ void generate_key_event(int type)
     //
     pthread_mutex_lock(&display_state.mutex);
     msg.key.seq = display_state.seq;
+    printf("key seq:%d\n", display_state.seq);
     display_state.seq++;
     msg.key.system_time.tv_sec = my_get_time();
     msg.key.key = type;

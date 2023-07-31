@@ -75,6 +75,7 @@ typedef struct
     double antenna_gain;        // 天线增益
     double equivalent_isotropic_radiated_power;  // 等效全向辐射功率
     double transmitter_output_power; // 发射机发射功率
+    uint8_t state;
 } channel_t;
 
 
@@ -101,14 +102,15 @@ typedef struct
     uint8_t node_role;          // 节点角色，0：M节点，1：Z节点
     uint8_t node_id;            // 节点ID号，0~4
     uint8_t link_status;        // 链路连接状态，占用一个字节
-    uint16_t z1_m_distance;     // Z1节点与M节点距离，每节点2字节（0~655.35km）
-    uint16_t z1_m_azimuth;      // Z1节点与M节点相对方位，每节点2字节
-    uint16_t z1_m_elevation;    // Z1节点与M节点相对俯仰，每节点2字节
+    uint16_t z1_m_distance[4];     // Z1节点与M节点距离，每节点2字节（0~655.35km）
+    uint16_t z1_m_azimuth[4];      // Z1节点与M节点相对方位，每节点2字节
+    uint16_t z1_m_elevation[4];    // Z1节点与M节点相对俯仰，每节点2字节
     uint8_t comm_status_mode;   // 通信状态/工作模式，1字节，扫描、建链、通信、静默、小功率/大功率
+
     uint32_t z_proc_flight_control_data_rx_tx_count;    // Z与集成处理器飞控数据收发计数，Z与集成处理器飞控数据接收计数：2字节，Z与集成处理器飞控数据发送计数：2字节
     uint32_t z_proc_flight_control_data_rx_tx_timestamp;    // Z与集成处理器飞控数据收发时戳，Z与集成处理器飞控数据接收时戳：2字节，Z与集成处理器飞控数据发送时戳：2字节
-    uint32_t z1_m_air_interface_data_rx_tx_count;  // Z1与M空口业务包收发计数，Z1与M空口业务包接收计数：2字节，Z1与M空口业务包发送计数：2字节
-    uint32_t z1_m_air_interface_data_rx_tx_timestamp;  // Z1与M空口业务包收发时戳，Z1与M空口业务包接收时戳：2字节，Z1与M空口业务包发送时戳：2字节
+    uint32_t z_m_send_recv_count[4];
+    
     uint8_t operation_status;   // 工作状态，定频、跳频
     uint32_t channel_coding_decoding_frame_count;    // 信道编译码帧计数，信道编码帧计数：2字节，信道译码帧计数：2字节
     uint32_t modulation_demodulation_frame_count;    // 调制解调帧计数，调制帧计数：2字节，解调帧计数：2字节

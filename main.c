@@ -52,14 +52,6 @@ int main()
     file_init();
 
 
-    //FD_ZERO(&RSET);
-    ////FD_SET(200, &RSET);
-    //int num = select(1, &RSET, NULL, NULL, NULL);
-    //printf("num %d\n",num);
-    //while (1);
-
-
-
     /*信号量初始化*/   
     pthread_spin_init(&start_spin,PTHREAD_PROCESS_PRIVATE);
     sem_init(&info.send_semaphore, 0, 0);

@@ -191,7 +191,7 @@ void tofile(int i, char* s, ...)
         file_config[i].file.ptr += written;
     }
     else {
-        perror("写入日志文件失败");
+        printf("写入失败：%d\n", i);
     }
     pthread_mutex_unlock(&file_config[i].file.lock);
 }
@@ -201,6 +201,12 @@ void tofile(int i, char* s, ...)
 void todata(char* data, int len)
 {
     pthread_mutex_lock(&file_config[0].file.lock);
+    if (file_config[0].file.ptr > 1024 * 1024 * 1.5)
+    {
+        printf("***************data full*****************\n");
+        pthread_mutex_unlock(&file_config[0].file.lock);
+        return;
+    }
     memcpy(file_config[0].file.mappedData + file_config[0].file.ptr, data, len);
     file_config[0].file.ptr += len;
     pthread_mutex_unlock(&file_config[0].file.lock);
