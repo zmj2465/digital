@@ -41,6 +41,8 @@ typedef struct
     int mode;
     int interval;
     int seq;
+    int find_seq;
+    pthread_mutex_t mutex;
     FILE* file;
 }display_state_t;
 
@@ -122,12 +124,40 @@ typedef struct
     channel_t channel_params[4];    // 信道参数，与其它4个节点的数据传输的信道信息
 } display_t;
 
+
+typedef struct {
+    uint16_t seq;
+    struct timespec system_time;
+    uint8_t key;
+    uint8_t node;
+    float pos_x;                // 拦截器位置x
+    float pos_y;                // 拦截器位置y
+    float pos_z;                // 拦截器位置z
+    float vel_x;                // 拦截器速度x
+    float vel_y;                // 拦截器速度y
+    float vel_z;                // 拦截器速度z
+    float ang_vel_x;            // 拦截器姿态角速度x
+    float ang_vel_y;            // 拦截器姿态角速度y
+    float ang_vel_z;            // 拦截器姿态角速度z
+    float quat_q0;              // 拦截器姿态四元数q0
+    float quat_q1;              // 拦截器姿态四元数q1
+    float quat_q2;              // 拦截器姿态四元数q2
+    float quat_q3;              // 拦截器姿态四元数q3
+}key_event_t;
+
 typedef struct _show_t
 {
     uint16_t type;
     uint16_t len;
     union {
-        display_t display_info;
+        display_t display_info; //遥测信息
+        /*仿真就绪*/
+        uint16_t  mode;          //仿真开始
+        /*仿真结束*/
+        /*文件序列*/
+        key_event_t key;        //关键事件
+
+
         uint16_t file_seq;
         uint16_t data_seq;
     };
@@ -138,10 +168,24 @@ typedef struct _show_t
 extern display_state_t display_state;
 extern show_t show_msg;
 
+
+static void init();
+
 void* display_send_thread(void* arg);
 void display_send_thread_init();
 void set_mode(int mode, int flag);
 void select_file(show_t* msg);
 void find_data();
+
+void generate_key_event(int type);
+
+
+void sim_beg_proc(show_t* msg);
+void sim_end_proc(show_t* msg);
+void rep_sel_proc(show_t* msg);
+void rep_beg_proc(show_t* msg);
+void rep_rep_proc(show_t* msg);
+void rep_suspend_proc(show_t* msg);
+void rep_recover_proc(show_t* msg);
 
 #endif

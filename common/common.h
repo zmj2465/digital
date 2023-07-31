@@ -279,6 +279,7 @@ typedef struct
 
 extern AntennaTransform transform[12];
 
+#pragma pack(1)
 typedef struct _fddi_info_t
 {
 	char a;
@@ -294,6 +295,7 @@ typedef struct _fddi_info_t
 	Point3D rv;
 	Quaternion q;
 }fddi_info_t;
+#pragma pack()
 
 
 #pragma pack(1)

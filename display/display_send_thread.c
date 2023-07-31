@@ -1,45 +1,52 @@
 #include "display_send_thread.h"
-
+#include "file_manage.h"
 
 display_state_t display_state;
 show_t show_msg;
+static int display_fd;
+
+typedef void (*display_proc_fun)(show_t*);
+
+static display_proc_fun fun[] = {
+    sim_beg_proc,
+    sim_end_proc,
+    rep_sel_proc,
+    rep_beg_proc,
+    rep_rep_proc,
+    rep_suspend_proc,
+    rep_recover_proc,
+};
+
 
 void* display_send_thread(void* arg)
 {
+    pthread_detach(pthread_self());
+
     int ret = 0;
     char data[MAX_DATA_LEN];
     show_t msg;
-    msg.file_seq = 0;
 
-
-    find_data();
-    //select_file(&msg);
-
-    display_state.interval = 20;
-    display_state.seq = 0;
-
-    pthread_detach(pthread_self());
-
+    init();
     /*以太网连接*/
     display_send_thread_init();
 
     while (1)
     {
-        ret=recv(DISPLAY_FD, data, MAX_DATA_LEN, 0);
+        ret=recv(display_fd, data, MAX_DATA_LEN, 0);
         if (ret > 0)
         {
             show_t* p = (show_t*)data;
-            recv_fr_display(p);
+            fun[p->type - 101](p);
         }
 
         if (display_state.mode == SIM_MODE && display_state.tx_flag == ON)
         {
-            send_to_display(&show_msg, DISPLAY_INFO, sizeof(display_t));
+
             Sleep(display_state.interval);
         }
         else if (display_state.mode == REPLAY_MODE && display_state.tx_flag == ON)
         {
-            find_data();
+
             Sleep(display_state.interval);
         }
     }
@@ -47,7 +54,15 @@ void* display_send_thread(void* arg)
 }
 
 
-
+static void init()
+{
+    display_state.interval = 20;
+    display_state.mode = 0;
+    display_state.seq = 0;
+    display_state.find_seq = 0;
+    display_state.tx_flag = 0;
+    pthread_mutex_init(&display_state.mutex, NULL);
+}
 
 void display_send_thread_init()
 {
@@ -72,76 +87,140 @@ void display_send_thread_init()
     listen(lfd, SOMAXCONN);
 
     info.display_system.addr_len = sizeof(info.display_system.addr); //**
-    info.display_system.fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
-    plog("display_system connect success %d\n", info.display_system.fd);
-    setNonBlocking(info.display_system.fd);
+    display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
+    plog("display_system connect success %d\n", display_fd);
+    setNonBlocking(display_fd);
 }
 
 
-void send_to_display(show_t* msg,int type,int len)
+
+
+void sim_beg_proc(show_t* msg)
 {
-    msg->type = type;
-    msg->len = 4 + len;
-    switch (type)
-    {
-        case DISPLAY_INFO:
-            break;
-        case SIM_READY:
-            break;
-        case SIM_START:
-            break;
-        case SIM_END:
-            break;
-        case FILE_SEQ:
-            break;
-        case IMP_EVENT:
-            break;
-    }
+
 }
 
-void recv_fr_display(show_t* msg)
+void sim_end_proc(show_t* msg)
 {
-    switch (msg->type)
-    {
-        case SIM_START_:
-            set_mode(SIM_MODE, ON);
-            break;
-        case SIM_END_:
-            set_mode(NO_MODE, OFF);
-            break;
-        case REPLAY_SELECT_:
-            select_file(msg);
-            break;
-        case REPLAY_START_:
-            set_mode(REPLAY_MODE, ON);
-            break;
-        case REPLAY_REP_:
-            display_state.seq = msg->data_seq;
-            break;
-        case REPLAY_STOP_:
-            set_mode(REPLAY_MODE, OFF);
-            break;
-        case REPLAY_RECOVER_:
-            set_mode(REPLAY_MODE, ON);
-            break;
-        case REPLAY_SPEED:
 
-            break;
-    }
 }
 
-
-void set_mode(int mode,int flag)
+//仿真选择
+void rep_sel_proc(show_t* msg)
 {
-    display_state.mode = mode;
-    display_state.tx_flag = flag;
+    int num=get_file_num(DATA_FOLDER);
+    printf("file num=%d select seq=%d\n", num, msg->file_seq);
+    //选择文件
+    select_file(msg);
 }
+
+void rep_beg_proc(show_t* msg)
+{
+
+}
+
+void rep_rep_proc(show_t* msg)
+{
+    fseek(display_state.file, sizeof(show_t) * msg->data_seq, SEEK_SET);
+}
+
+void rep_suspend_proc(show_t* msg)
+{
+
+}
+
+void rep_recover_proc(show_t* msg)
+{
+
+}
+
+
+void sim_ready()
+{
+    show_t msg;
+    msg.type = SIM_READY;
+    msg.len = 4;
+    pthread_mutex_lock(&display_state.mutex);
+    send(display_fd, &msg, msg.len, 0);
+    pthread_mutex_unlock(&display_state.mutex);
+}
+
+
+void sim_start(uint16_t mode)
+{
+    show_t msg;
+    msg.type = SIM_START;
+    msg.len = 4+2;
+    msg.mode = mode;
+    pthread_mutex_lock(&display_state.mutex);
+    send(display_fd, &msg, msg.len, 0);
+    pthread_mutex_unlock(&display_state.mutex);
+}
+
+
+void send_display_msg()
+{
+    show_t msg;
+    msg.type = DISPLAY_INFO;
+    msg.len = 4 + sizeof(display_t);
+
+    pthread_mutex_lock(&display_state.mutex);
+    msg.display_info.serial_number = display_state.seq;
+    display_state.seq++;
+    msg.display_info.system_time.tv_sec = my_get_time();
+
+    send(display_fd, &msg, msg.len, 0);
+    todata(&msg, msg.len);
+    pthread_mutex_unlock(&display_state.mutex);
+}
+
+
+void store_display_msg()
+{
+    show_t msg;
+    msg.type = DISPLAY_INFO;
+    msg.len = 4 + sizeof(display_t);
+
+    pthread_mutex_lock(&display_state.mutex);
+    msg.display_info.serial_number = display_state.seq;
+    display_state.seq++;
+    msg.display_info.system_time.tv_sec = my_get_time();
+
+    //send(display_fd, &msg, msg.len, 0);
+    todata(&msg, msg.len);
+    pthread_mutex_unlock(&display_state.mutex);
+}
+
+
+void generate_key_event(int type)
+{
+    show_t msg;
+    msg.type = IMP_EVENT;
+    msg.len = 4 + sizeof(display_t);
+
+    //
+    pthread_mutex_lock(&display_state.mutex);
+    msg.key.seq = display_state.seq;
+    display_state.seq++;
+    msg.key.system_time.tv_sec = my_get_time();
+    msg.key.key = type;
+    memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
+    send(display_fd, &msg, msg.len, 0);
+    todata(&msg, msg.len);
+    pthread_mutex_unlock(&display_state.mutex);
+}
+
+
+
+
 
 
 #define MAX_PATH_LENGTH 256
 void select_file(show_t* msg)
 {
-    char directory[MAX_PATH_LENGTH] = "C:\\Users\\MRGT\\source\\repos\\for_display\\name";
+    char directory[MAX_PATH_LENGTH];
+    strcpy(directory, DATA_FOLDER);
+
     int fileCount = 0;
     int targetFileIndex = msg->file_seq;
     int currentIndex = 0;
@@ -247,47 +326,8 @@ void select_file(show_t* msg)
 
 #endif
 
-    return ;
+    return;
 }
-
-
-void find_data()
-{
-    show_t msg;
-    fseek(display_state.file, sizeof(show_t) * display_state.seq++, SEEK_SET);
-    fread(&msg, sizeof(char), sizeof(show_t), display_state.file);
-    //发送
-}
-
-//void find_data()
-//{
-//    char a[1024];
-//    FILE* file;
-//    file = fopen("C:\\Users\\MRGT\\Desktop\\display.txt", "rwb");  // 以二进制写入模式打开文件
-//    if (file == NULL) {
-//        plog("open fail\n");
-//        return 1;
-//    }
-//
-//    int i;
-    //for (i = 0; i < 10; i++)
-    //{
-    //    memset(a, i, 1024);
-    //    fwrite(a, sizeof(char), sizeof(a), file);  // 将内容写入文件
-    //    plog("write success\n");
-    //}
-//
-//    fseek(file, 2*1024, SEEK_SET);
-//    fread(a, sizeof(char), sizeof(a), file);
-//    plog("five \n");
-//    for (i = 0; i < sizeof(a); i++) {
-//        plog("%x ", a[i]);
-//    }
-//
-//
-//    return 0;
-//}
-
 
 
 

@@ -200,8 +200,10 @@ void tofile(int i, char* s, ...)
 
 void todata(char* data, int len)
 {
+    pthread_mutex_lock(&file_config[0].file.lock);
     memcpy(file_config[0].file.mappedData + file_config[0].file.ptr, data, len);
     file_config[0].file.ptr += len;
+    pthread_mutex_unlock(&file_config[0].file.lock);
     //fwrite(data, sizeof(char), len, file_config[0].file.file);
 }
 
@@ -271,3 +273,5 @@ void for_test()
 
     return 0;
 }
+
+

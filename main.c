@@ -59,6 +59,7 @@ int main()
     //while (1);
 
 
+
     /*信号量初始化*/   
     pthread_spin_init(&start_spin,PTHREAD_PROCESS_PRIVATE);
     sem_init(&info.send_semaphore, 0, 0);
@@ -121,6 +122,7 @@ int main()
     {
         printf("error\n");
     }
+
 
     sem_wait(&info.thread_create_semaphore);
 
