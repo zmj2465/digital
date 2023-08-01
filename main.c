@@ -29,10 +29,8 @@ pthread_mutex_t lock;
 
 int main()
 {
-
+    /*ptp时钟初始化*/
     time_init();
-
-    int ret = 0;
 
     /*链接库初始化*/
     wsa_init();
@@ -43,21 +41,28 @@ int main()
     /*设置进程优先级*/
     set_process_priority();
 
-    ///*ip信息配置*/
-    load_config(INFO_SET_FILE);
-    ret=load_config(INFO_SET_DESK_FILE);
-    if (ret == -1) printf("folder config\n");
-    else printf("desktop config\n");
+    /*信息配置*/
+    config_init();
 
+    /*文件系统初始化*/
     file_init();
 
+    /*线程初始化*/
+    thread_init();
 
-    /*信号量初始化*/   
-    pthread_spin_init(&start_spin,PTHREAD_PROCESS_PRIVATE);
-    sem_init(&info.send_semaphore, 0, 0);
-    sem_init(&info.thread_create_semaphore, 0, 0);
+    /*设置初始状态*/
+    fsm_do(EVENT_INIT);
+
+    while (1)
+    {
+        sleep(200000);
+    }
+}
 
 
+void thread_init()
+{
+    int ret = 0;
     /*线程初始化*/
     ret = pthread_create(&info.rs_485_recv_thread_id, NULL, rs_485_recv_thread, NULL);
     if (ret != 0)
@@ -115,9 +120,6 @@ int main()
         printf("error\n");
     }
 
-
-    sem_wait(&info.thread_create_semaphore);
-
     /**/
     ret = pthread_create(&info.data_send_thread_id, NULL, data_recv_thread, NULL);
     if (ret != 0)
@@ -131,59 +133,16 @@ int main()
     {
         printf("error\n");
     }
-
-    /*设置初始状态*/
-    fsm_do(EVENT_INIT);
-
-    while (1)
-    {
-        sleep(200000);
-    }
 }
 
-
-void load_self_config()
+void config_init()
 {
-
+    int ret = 0;
+    load_config(INFO_SET_FILE);
+    ret = load_config(INFO_SET_DESK_FILE);
+    if (ret == -1) printf("folder config\n");
+    else printf("desktop config\n");
 }
-
-
-void load_simulation_config()
-{
-
-}
-
-void data_store_init()
-{
-    //// 打开文件
-    //HANDLE hFile = CreateFile(OUTPUT_FILE_NAME, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    //if (hFile == INVALID_HANDLE_VALUE) {
-    //    printf("Failed to open file\n");
-    //    return 1;
-    //}
-
-    //// 设置文件大小
-    //SetFilePointer(hFile, STORE_SIZE, NULL, FILE_BEGIN);
-    //SetEndOfFile(hFile);
-
-    //// 创建内存映射
-    //HANDLE hMapping = CreateFileMapping(hFile, NULL, PAGE_READWRITE, 0, STORE_SIZE, NULL);
-    //if (hMapping == NULL) {
-    //    printf("Failed to create file mapping\n");
-    //    CloseHandle(hFile);
-    //    return 1;
-    //}
-
-    //// 映射到进程的内存空间
-    //info.lpSharedMem = MapViewOfFile(hMapping, FILE_MAP_WRITE, 0, 0, STORE_SIZE);
-    //if (info.lpSharedMem == NULL) {
-    //    printf("Failed to map view of file\n");
-    //    CloseHandle(hMapping);
-    //    CloseHandle(hFile);
-    //    return 1;
-    //}
-}
-
 
 /*
     * 函数名：         GetIniKeyString
