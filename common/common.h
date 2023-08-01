@@ -23,7 +23,7 @@
 
 extern uint64_t start_time;
 extern uint64_t end_time;
-extern pthread_spinlock_t start_spin;
+//extern pthread_spinlock_t start_spin;
 
 #define STORE_SIZE		1024	//存储文件的大小
 #define MAX_DEVICE		12		//最大终端数量

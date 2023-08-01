@@ -8,7 +8,7 @@ void* link_control_thread(void* arg)
 
 	link_info_print();
 
-	sem_post(&info.thread_create_semaphore);
+	//sem_post(&info.thread_create_semaphore);
 
 	//init_complete_judge();
 

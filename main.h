@@ -2,12 +2,12 @@
 #define _MAIN_H_
 
 
-void load_simulation_config();
-void data_store_init();
+
+void thread_init();
 
 
 int GetIniKeyString(char* title, char* key, char* filename, char* buf);
 int load_config(char* filename);
-
+void config_init();
 
 #endif

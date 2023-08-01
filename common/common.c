@@ -4,7 +4,7 @@ info_t info;
 fddi_info_t fddi_info;
 
 uint64_t start_time;
-pthread_spinlock_t start_spin;
+//pthread_spinlock_t start_spin;
 uint64_t end_time;
 
 AntennaTransform transform[12] = {
