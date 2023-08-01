@@ -70,7 +70,7 @@ void* display_send_thread(void* arg)
 
 static void init()
 {
-    display_state.interval = 20;
+    display_state.interval = 5;
     display_state.mode = 0;
     display_state.seq = 0;
     display_state.find_seq = 0;
@@ -172,22 +172,6 @@ void sim_start(uint16_t mode)
 }
 
 
-void send_display_msg()
-{
-    show_t msg;
-    msg.type = DISPLAY_INFO;
-    msg.len = 4 + sizeof(display_t);
-
-    pthread_mutex_lock(&display_state.mutex);
-    msg.display_info.serial_number = display_state.seq;
-    display_state.seq++;
-    msg.display_info.system_time.tv_sec = my_get_time();
-
-    send(display_fd, &msg, msg.len, 0);
-    todata(&msg, msg.len);
-    pthread_mutex_unlock(&display_state.mutex);
-}
-
 int x = 0;
 int d0 = 1;
 int d1d2 = 3;
@@ -202,7 +186,7 @@ int d2022 = 3;
 int d23 = 1;
 int d24 = 1;
 int d25d31 = 0;
-void store_display_msg()
+void send_display_msg()
 {
     show_t msg;
     int i;
@@ -319,6 +303,7 @@ void store_display_msg()
         if (j == 3)
             msg.display_info.channel_params[j].state = 0;
     }
+    send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }
