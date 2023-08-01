@@ -5,6 +5,7 @@
 #include "schedule_thread.h"
 #include "data_send_thread.h"
 #include "physical_simulation.h"
+#include "sql.h"
 
 typedef enum _FSM_TYPE
 {

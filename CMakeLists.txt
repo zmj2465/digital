@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.8)
 
 project(Project)
 
-add_executable(project "main.c" "main.h" "rs485/rs485_send_thread.c" "rs485/rs485_send_thread.h" "common/compatible.c" "common/compatible.h" "common/common.c" "common/common.h" "rs485/rs485_recv_thread.c" "rs485/rs485_recv_thread.h" "fddi/fddi_thread.c" "fddi/fddi_thread.h" "schedule/schedule_thread.c" "schedule/schedule_thread.h" "control/control_recv_thread.c" "control/control_recv_thread.h" "display/display_send_thread.c"  "master/master_thread.c" "master/master_thread.h" "link/link_control_thread.c" "link/link_control_thread.h" "link/data_send_thread.c" "link/data_send_thread.h" "link/data_recv_thread.c" "link/data_recv_thread.h" "common/queue.c" "common/queue.h" "link/physical_simulation.c" "link/physical_simulation.h" "master/protocol.h" "master/protocol.c"  "link/angle.h" "link/angle.c"   "common/mytime.c" "common/mytime.h"  "common/file_manage.c" "common/file_manage.h")
+add_executable(project "main.c" "main.h" "rs485/rs485_send_thread.c" "rs485/rs485_send_thread.h" "common/compatible.c" "common/compatible.h" "common/common.c" "common/common.h" "rs485/rs485_recv_thread.c" "rs485/rs485_recv_thread.h" "fddi/fddi_thread.c" "fddi/fddi_thread.h" "schedule/schedule_thread.c" "schedule/schedule_thread.h" "control/control_recv_thread.c" "control/control_recv_thread.h" "display/display_send_thread.c"  "master/master_thread.c" "master/master_thread.h" "link/link_control_thread.c" "link/link_control_thread.h" "link/data_send_thread.c" "link/data_send_thread.h" "link/data_recv_thread.c" "link/data_recv_thread.h" "common/queue.c" "common/queue.h" "link/physical_simulation.c" "link/physical_simulation.h" "master/protocol.h" "master/protocol.c"  "link/angle.h" "link/angle.c"   "common/mytime.c" "common/mytime.h"  "common/file_manage.c" "common/file_manage.h" "common/sql.c" "common/sql.h")
 
 include_directories(${PROJECT_SOURCE_DIR}/rs485)
 include_directories(${PROJECT_SOURCE_DIR}/fddi)
@@ -12,6 +12,10 @@ include_directories(${PROJECT_SOURCE_DIR}/display)
 include_directories(${PROJECT_SOURCE_DIR}/master)
 include_directories(${PROJECT_SOURCE_DIR}/link)
 include_directories(${PROJECT_SOURCE_DIR}/common)
+include_directories(${PROJECT_SOURCE_DIR}/MySQL/include)
+link_directories(${PROJECT_SOURCE_DIR}/MySQL/lib)
+find_library(LIB_MYSQL NAMES libmysql PATHS ${PROJECT_SOURCE_DIR}/MySQL/lib)
+target_link_libraries(project ${LIB_MYSQL})
 
 set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")

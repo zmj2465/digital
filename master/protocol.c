@@ -111,6 +111,7 @@ int fsm_init2off_st(int para)
 	info.seq_distance_m = 0;
 	info.seq_distance_z = 0;
 	info.time_schedule_flag = 0;
+	sql_init();
 	return 0;
 }
 
