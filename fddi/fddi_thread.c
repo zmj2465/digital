@@ -83,15 +83,3 @@ void fddi_thread_init()
 }
 
 
-//void generate_show_msg()
-//{
-//    int ret = 0;
-//    show_msg.type = 0;
-//    show_msg.len = 4 + sizeof(display_t);
-//    show_msg.display_info.serial_number = display_state.seq++;
-//
-//
-//    //´æ´¢
-//    //ret = fwrite(&show_msg, sizeof(char), show_msg.len, info.data_file);
-//    todata(&show_msg, show_msg.len);
-//}
