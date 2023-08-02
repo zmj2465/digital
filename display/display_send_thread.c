@@ -437,7 +437,7 @@ void find_data()
     ret=fread(&msg, 1, 4 + sizeof(display_t), display_state.file);
     if (ret == 0)
     {
-        printf("read file error\n");
+        //printf("read file error\n");
         return;
     }
     enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
