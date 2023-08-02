@@ -22,7 +22,7 @@
 #include "common.h"
 #include "protocol.h"
 #include "main.h"
-
+#include "sql.h"
 #include "mytime.h"
 
 sem_t semaphore;
@@ -135,6 +135,9 @@ void thread_init()
     {
         printf("error\n");
     }
+
+
+    sem_wait(&info.thread_create_semaphore);
 
     /**/
     ret = pthread_create(&info.data_send_thread_id, NULL, data_recv_thread, NULL);
