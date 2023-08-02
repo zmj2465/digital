@@ -4,6 +4,7 @@
 display_state_t display_state;
 show_t show_msg;
 static int display_fd;
+static int lfd;
 
 typedef void (*display_proc_fun)(show_t*);
 
@@ -29,20 +30,7 @@ void* display_send_thread(void* arg)
     init();
     /*以太网连接*/
     display_send_thread_init();
-    int key = 0;
-    while (1)
-    {
-        //store_display_msg();
-        //Sleep(1);
-        //store_display_msg();
-        //Sleep(1);
-        //store_display_msg();
-        //Sleep(1);
-        //generate_key_event(key);
-        //key = (key + 1) % 8;
-        //Sleep(1);
 
-    }
 
     while (1)
     {
@@ -52,16 +40,11 @@ void* display_send_thread(void* arg)
             show_t* p = (show_t*)data;
             fun[p->type - 101](p);
         }
-
-        if (display_state.mode == SIM_MODE && display_state.tx_flag == ON)
+        else
         {
-
-            Sleep(display_state.interval);
-        }
-        else if (display_state.mode == REPLAY_MODE && display_state.tx_flag == ON)
-        {
-
-            Sleep(display_state.interval);
+            printf("lost display connect\n");
+            display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len));
+            printf("get display connect\n");
         }
     }
 
@@ -80,7 +63,6 @@ static void init()
 
 void display_send_thread_init()
 {
-    int lfd;
     int ret = 0;
 
     //创建侦听socket
@@ -102,8 +84,8 @@ void display_send_thread_init()
 
     info.display_system.addr_len = sizeof(info.display_system.addr); //**
     display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
-    plog("display_system connect success %d\n", display_fd);
-    setNonBlocking(display_fd);
+    printf("display_system connect success %d\n", display_fd);
+
 }
 
 
@@ -365,7 +347,7 @@ void select_file(show_t* msg)
 
     if (txtCount < targetFileIndex)
     {
-        plog("error file seq\n");
+        printf("error file seq\n");
         return;
     }
 
@@ -445,6 +427,26 @@ void select_file(show_t* msg)
 #endif
 
     return;
+}
+
+
+void find_data()
+{
+    show_t msg;
+    int ret = 0;
+    ret=fread(&msg, 1, 4 + sizeof(display_t), display_state.file);
+    if (ret == 0)
+    {
+        printf("read file error\n");
+        return;
+    }
+    enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
+}
+
+
+void send_to_display(char* data,int len)
+{
+    send(display_fd, data, len, 0);
 }
 
 

@@ -190,4 +190,8 @@ void rep_rep_proc(show_t* msg);
 void rep_suspend_proc(show_t* msg);
 void rep_recover_proc(show_t* msg);
 
+
+void send_to_display(char* data, int len);
+void find_data();
+
 #endif

@@ -14,15 +14,6 @@ void* data_send_thread(void* arg)
 
     while (1)
     {
-        //if (__sync_bool_compare_and_swap(&info.time_schedule_flag, 1, 0))
-        //{
-        //    //a = my_get_time();
-        //    //tosche("%lld us\n", (a - b) / 1000);
-        //    //b = a;
-        //    /*end_time = my_get_time();
-        //    tosche("%lld us\n", (end_time - start_time) / 1000);*/
-        //    data_send_proc();
-        //}
         if (info.time_schedule_flag == 1)
         {
             info.time_schedule_flag = 0;

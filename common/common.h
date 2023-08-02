@@ -54,6 +54,7 @@ enum
 	SCHEDULE_THREAD,
 	CONTROL_RECV_THREAD,
 	DISPLAY_SEND_THREAD,
+	DISPLAY_RECV_THREAD,
 	MASTER_THREAD,
 	LINK_CONTROL_THREAD,
 	DATA_SEND_THREAD,
@@ -135,6 +136,8 @@ typedef struct _info_t
 	pthread_t schedule_thread_id;
 	pthread_t control_recv_thread_id;
 	pthread_t display_send_thread_id;
+	pthread_t display_recv_thread_id;
+	pthread_t display_thread_id;
 	pthread_t master_thread_id;
 	pthread_t link_control_thread_id;
 	pthread_t data_send_thread_id;

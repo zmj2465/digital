@@ -6,6 +6,8 @@
 #include "schedule_thread.h"
 #include "control_recv_thread.h"
 #include "display_send_thread.h"
+#include "display_recv_thread.h"
+#include "display_thread.h"
 #include "master_thread.h"
 #include "link_control_thread.h"
 #include "data_recv_thread.h"
@@ -101,6 +103,20 @@ void thread_init()
 
     /**/
     ret = pthread_create(&info.display_send_thread_id, NULL, display_send_thread, NULL);
+    if (ret != 0)
+    {
+        printf("error\n");
+    }
+
+    /**/
+    ret = pthread_create(&info.display_recv_thread_id, NULL, display_recv_thread, NULL);
+    if (ret != 0)
+    {
+        printf("error\n");
+    }
+
+    /**/
+    ret = pthread_create(&info.display_thread_id, NULL, display_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");
