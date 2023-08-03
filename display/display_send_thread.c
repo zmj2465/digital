@@ -153,6 +153,13 @@ void sim_start(uint16_t mode)
     pthread_mutex_unlock(&display_state.mutex);
 }
 
+static float  posx = 0;
+static float  posy = 0;
+static float  posz = 0;
+static double eirp = 0;
+static uint16_t send_= 0;
+static uint16_t recv_ = 0;
+
 
 int x = 0;
 int d0 = 1;
@@ -182,9 +189,11 @@ void send_display_msg()
     display_state.seq++;
     msg.display_info.system_time.tv_sec = x * 20 * 1000 + 1688610381000000000;// 假设系统时间为 2021-06-21 12:00:00
     msg.display_info.system_time.tv_nsec = 0;
-    msg.display_info.pos_x = 10.0;
-    msg.display_info.pos_y = 20.0;
-    msg.display_info.pos_z = 10000.0;
+    msg.display_info.pos_x = posx;
+    msg.display_info.pos_y = posy;
+    msg.display_info.pos_z = posz;
+    posx += 2;
+    posz += 10;
     msg.display_info.vel_x = 1.0;
     msg.display_info.vel_y = 2.0;
     msg.display_info.vel_z = 3.0;
@@ -198,8 +207,8 @@ void send_display_msg()
     msg.display_info.time_element_number = 0;
     msg.display_info.time_frame_number = 0;
     msg.display_info.micro_time_slot_number = 0;
-    msg.display_info.node_role = 1;
-    msg.display_info.node_id = 2;
+    msg.display_info.node_role = 0;
+    msg.display_info.node_id = 0;
     msg.display_info.link_status = 0;
     for (j = 0; j < 4; j++) {
         msg.display_info.z1_m_distance[j] = 0;
@@ -207,7 +216,9 @@ void send_display_msg()
         msg.display_info.z1_m_elevation[j] = 0;
     }
     msg.display_info.comm_status_mode = 0;
-    msg.display_info.z_proc_flight_control_data_rx_tx_count = 0;
+    msg.display_info.z_proc_flight_control_data_rx_tx_count = (send_ << 16) | recv_;
+    send_ += 2;
+    recv_++;
     msg.display_info.z_proc_flight_control_data_rx_tx_timestamp = 0;
     //msg.display_info.z1_m_air_interface_data_rx_tx_count = 0;
     for (i = 0; i < 4; i++)
@@ -254,8 +265,8 @@ void send_display_msg()
         msg.display_info.antenna_params[j].beam_width = 30;
         msg.display_info.antenna_params[j].azimuth = 45.67;
         msg.display_info.antenna_params[j].elevation = 12.34;
-        msg.display_info.antenna_params[j].eirp = 100.0;
-        msg.display_info.antenna_params[j].gt = 20.5;
+        msg.display_info.antenna_params[j].eirp = eirp++;
+        msg.display_info.antenna_params[j].gt = eirp++;
     }
     for (j = 0; j < 4; j++)
     {
@@ -285,8 +296,9 @@ void send_display_msg()
         if (j == 3)
             msg.display_info.channel_params[j].state = 0;
     }
-    send(display_fd, &msg, msg.len, 0);
+    //send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);
+    enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }
 
@@ -307,6 +319,7 @@ void generate_key_event(int type)
     memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
     send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);
+    //enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }
 
@@ -363,13 +376,13 @@ void select_file(show_t* msg)
             snprintf(filePath, sizeof(filePath), "%s/%s", directory, findData.cFileName);
 
             // 打开文件
-            display_state.file = fopen(filePath, "r");
+            display_state.file = fopen(filePath, "rb");
             if (display_state.file == NULL) {
                 plog("file can not open:%s\n", filePath);
                 FindClose(hFind);
                 return 1;
             }
-
+            printf("open file:%s\n", filePath);
             break;
         }
 
@@ -437,7 +450,7 @@ void find_data()
     ret=fread(&msg, 1, 4 + sizeof(display_t), display_state.file);
     if (ret == 0)
     {
-        //printf("read file error\n");
+        printf("read file error\n");
         return;
     }
     enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);

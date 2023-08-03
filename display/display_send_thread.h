@@ -175,7 +175,7 @@ static void init();
 
 void* display_send_thread(void* arg);
 void display_send_thread_init();
-void set_mode(int mode, int flag);
+
 void select_file(show_t* msg);
 void find_data();
 
@@ -190,7 +190,7 @@ void rep_rep_proc(show_t* msg);
 void rep_suspend_proc(show_t* msg);
 void rep_recover_proc(show_t* msg);
 
-
+void send_display_msg();
 void send_to_display(char* data, int len);
 void find_data();
 
