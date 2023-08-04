@@ -14,14 +14,9 @@ void* data_recv_thread(void* arg)
 	{
 		//plog("%d %d\n", i, FD[i].fd);
 	}
-	//uint64_t start, end;
-	//setNonBlocking(FD[0].fd);
-	//setNonBlocking(FD[1].fd);
     while (1)
     {
-
 		data_recv_proc();
-
     }
 }
 
