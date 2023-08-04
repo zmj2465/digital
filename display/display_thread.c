@@ -5,7 +5,6 @@
 void* display_thread(void* arg)
 {
 	pthread_detach(pthread_self());
-	int x = 0;
 
 	while (1)
 	{

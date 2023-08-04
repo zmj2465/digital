@@ -13,7 +13,6 @@ void* master_thread(void* arg)
     {
         /*控制队列处理*/
         
-        
         /*数据队列处理*/
         master_data_proc();
 

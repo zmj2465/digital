@@ -7,7 +7,6 @@ int mysql_test(void)
 
 	sql_init();
 
-
 	char sql[] = "select * from test1;";
 	sql_query(sql, sizeof(sql));
 	//char sql[] = "insert into test1 (id, type) values (3, 198);";
