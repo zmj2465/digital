@@ -98,7 +98,6 @@ int data_recv_proc(void)
 					ret = antenna_match(psy_msg, &msg, info.device_info.node_role);
 					if (ret == 1)
 					{
-
 						recv_time = my_get_time();
 						sub = recv_time - msg.head.send_t;
 						//plog("current slot = %d.%d, seq = %d, time = %lld, sub = %lldns\n", info.current_time_frame, info.current_slot, msg.head.seq, recv_time, sub);
