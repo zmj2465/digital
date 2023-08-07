@@ -162,6 +162,8 @@ typedef struct _show_t
 
         uint16_t file_seq;
         uint16_t data_seq;
+
+        uint16_t file_num;
     };
 }show_t;
 

@@ -30,7 +30,7 @@ void* display_send_thread(void* arg)
     init();
     /*以太网连接*/
     display_send_thread_init();
-
+    file_num(display_fd);
 
     while (1)
     {
@@ -47,6 +47,7 @@ void* display_send_thread(void* arg)
             printf("get display connect\n");
         }
     }
+
 
 }
 
@@ -460,6 +461,17 @@ void find_data()
 void send_to_display(char* data,int len)
 {
     send(display_fd, data, len, 0);
+}
+
+
+void file_num(int fd)
+{
+    show_t msg;
+    msg.type = 4;
+    msg.len = 6;
+    msg.file_num = get_file_num("C:\\Digital prototype\\data");
+    printf("file num:%d\n", msg.file_num);
+    send(fd, &msg, msg.len, 0);
 }
 
 
