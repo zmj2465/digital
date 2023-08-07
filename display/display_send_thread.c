@@ -93,7 +93,7 @@ void display_send_thread_init()
 
 void sim_beg_proc(show_t* msg)
 {
-
+    display_state.mode = SIM_MODE;
 }
 
 void sim_end_proc(show_t* msg)
@@ -112,7 +112,7 @@ void rep_sel_proc(show_t* msg)
 
 void rep_beg_proc(show_t* msg)
 {
-
+    display_state.mode = REPLAY_MODE;
 }
 
 void rep_rep_proc(show_t* msg)
@@ -122,12 +122,12 @@ void rep_rep_proc(show_t* msg)
 
 void rep_suspend_proc(show_t* msg)
 {
-
+    display_state.mode = NO_MODE;
 }
 
 void rep_recover_proc(show_t* msg)
 {
-
+    display_state.mode = REPLAY_MODE;
 }
 
 

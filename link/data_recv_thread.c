@@ -32,8 +32,8 @@ int data_recv_proc(void)
 	int num = 0;
 
 	struct timeval timeout;
-	timeout.tv_sec = 0;
-	timeout.tv_usec = 500000;
+	timeout.tv_sec = 1;
+	timeout.tv_usec = 5000;
 
 	FD_ZERO(&RSET);
 	int i = 0;
@@ -53,6 +53,11 @@ int data_recv_proc(void)
 		num = -1;
 		if (maxfd != 0)
 			printf("select error %d\n",maxfd);
+		else
+		{
+			Sleep(100);
+			//printf("0\n", maxfd);
+		}
 		return num;
 	}
 	else if (num == 0)
