@@ -96,21 +96,29 @@ typedef struct
     float quat_q1;              // 拦截器姿态四元数q1
     float quat_q2;              // 拦截器姿态四元数q2
     float quat_q3;              // 拦截器姿态四元数q3
+
+    /*待定*/
     uint16_t time_element_number;   // 时元号，当前时元号，每秒增加1（0~65535）
     uint8_t time_frame_number;  // 时帧号，当前帧号，每100ms增加1（0~9）
     uint16_t micro_time_slot_number;    // 微时隙号，当前微时隙号（0~499）
+    /*****/
+
     uint8_t node_role;          // 节点角色，0：M节点，1：Z节点
     uint8_t node_id;            // 节点ID号，0~4
+
+    /*待定*/
     uint8_t link_status;        // 链路连接状态，占用一个字节
+    /*****/
+
     uint16_t z1_m_distance[4];     // Z1节点与M节点距离，每节点2字节（0~655.35km）
     uint16_t z1_m_azimuth[4];      // Z1节点与M节点相对方位，每节点2字节
     uint16_t z1_m_elevation[4];    // Z1节点与M节点相对俯仰，每节点2字节
-    uint8_t comm_status_mode;   // 通信状态/工作模式，1字节，扫描、建链、通信、静默、小功率/大功率
 
+    /*待定*/
+    uint8_t comm_status_mode;   // 通信状态/工作模式，1字节，扫描、建链、通信、静默、小功率/大功率
     uint32_t z_proc_flight_control_data_rx_tx_count;    // Z与集成处理器飞控数据收发计数，Z与集成处理器飞控数据接收计数：2字节，Z与集成处理器飞控数据发送计数：2字节
     uint32_t z_proc_flight_control_data_rx_tx_timestamp;    // Z与集成处理器飞控数据收发时戳，Z与集成处理器飞控数据接收时戳：2字节，Z与集成处理器飞控数据发送时戳：2字节
     uint32_t z_m_send_recv_count[4];
-    
     uint8_t operation_status;   // 工作状态，定频、跳频
     uint32_t channel_coding_decoding_frame_count;    // 信道编译码帧计数，信道编码帧计数：2字节，信道译码帧计数：2字节
     uint32_t modulation_demodulation_frame_count;    // 调制解调帧计数，调制帧计数：2字节，解调帧计数：2字节
@@ -124,6 +132,8 @@ typedef struct
     uint32_t terminal_working_status_representation;   // 终端工作状态表征
     antenna_t antenna_params[6];    // 天线参数，与天线数量相对应的天线基本参数
     channel_t channel_params[4];    // 信道参数，与其它4个节点的数据传输的信道信息
+    /*****/
+
 } display_t;
 
 
