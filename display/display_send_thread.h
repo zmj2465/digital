@@ -173,6 +173,9 @@ extern display_state_t display_state;
 extern show_t show_msg;
 
 
+
+
+
 static void init();
 
 void* display_send_thread(void* arg);

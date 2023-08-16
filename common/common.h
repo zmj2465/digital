@@ -322,7 +322,11 @@ typedef struct _psy_msg_t
 }psy_msg_t;
 #pragma pack()
 
+
 extern fddi_info_t fddi_info;
+extern fddi_info_t overall_fddi_info[5];
+
+
 
 void queue_init();
 #endif

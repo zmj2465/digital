@@ -1,5 +1,6 @@
 #include "display_send_thread.h"
 #include "file_manage.h"
+#include "angle.h"
 
 display_state_t display_state;
 show_t show_msg;
@@ -186,15 +187,15 @@ void send_display_msg()
 
     pthread_mutex_lock(&display_state.mutex);
     msg.display_info.serial_number = display_state.seq;
-    printf("data seq:%d\n", display_state.seq);
     display_state.seq++;
     msg.display_info.system_time.tv_sec = x * 20 * 1000 + 1688610381000000000;// 假设系统时间为 2021-06-21 12:00:00
     msg.display_info.system_time.tv_nsec = 0;
-    msg.display_info.pos_x = posx;
-    msg.display_info.pos_y = posy;
-    msg.display_info.pos_z = posz;
-    posx += 2;
-    posz += 10;
+
+    //位置信息
+    msg.display_info.pos_x = fddi_info.pos.x;
+    msg.display_info.pos_y = fddi_info.pos.y;
+    msg.display_info.pos_z = fddi_info.pos.z;
+
     msg.display_info.vel_x = 1.0;
     msg.display_info.vel_y = 2.0;
     msg.display_info.vel_z = 3.0;
@@ -211,11 +212,26 @@ void send_display_msg()
     msg.display_info.node_role = 0;
     msg.display_info.node_id = 0;
     msg.display_info.link_status = 0;
-    for (j = 0; j < 4; j++) {
-        msg.display_info.z1_m_distance[j] = 0;
-        msg.display_info.z1_m_azimuth[j] = 0;
-        msg.display_info.z1_m_elevation[j] = 0;
+
+    //与其他节点信息
+    if (MY_INDEX == 0){
+        for (j = 0; j < 4; j++) {
+            double distance = caculate_distance(fddi_info.pos, overall_fddi_info[j+1].pos);
+            double alpha, beta;
+            Point3D pos2;
+            //对方位置转换到本节点载体坐标系
+            convertCoordinates(&overall_fddi_info[j + 1].pos, &fddi_info.q, &pos2);
+            //计算方位角俯仰角
+            calculateAngles(&pos2, &alpha, &beta);
+            msg.display_info.z1_m_distance[j+1] = distance;
+            msg.display_info.z1_m_azimuth[j+1] = alpha;
+            msg.display_info.z1_m_elevation[j+1] = beta;
+            if (j == 0)
+                printf("%f %f %f\n", distance, alpha, beta);
+        }
     }
+
+
     msg.display_info.comm_status_mode = 0;
     msg.display_info.z_proc_flight_control_data_rx_tx_count = (send_ << 16) | recv_;
     send_ += 2;
@@ -298,7 +314,7 @@ void send_display_msg()
             msg.display_info.channel_params[j].state = 0;
     }
     //send(display_fd, &msg, msg.len, 0);
-    todata(&msg, msg.len);
+    //todata(&msg, msg.len);
     enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }

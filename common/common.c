@@ -2,6 +2,7 @@
 
 info_t info;
 fddi_info_t fddi_info;
+fddi_info_t overall_fddi_info[5];
 
 uint64_t start_time;
 //pthread_spinlock_t start_spin;
