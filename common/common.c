@@ -1,6 +1,7 @@
 #include "common.h"
 
 info_t info;
+
 fddi_info_t fddi_info;
 fddi_info_t overall_fddi_info[5];
 

@@ -1,6 +1,9 @@
 #include "display_recv_thread.h"
 #include "display_send_thread.h"
 
+
+
+
 void* display_recv_thread(void* arg)
 {
 	pthread_detach(pthread_self());
@@ -12,6 +15,9 @@ void* display_recv_thread(void* arg)
 		send_to_display(&msg, msg.len);
 	}
 }
+
+
+
 
 
 

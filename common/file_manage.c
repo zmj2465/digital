@@ -21,7 +21,14 @@ void file_init()
     for (i = 0; i < sizeof(file_config) / sizeof(file_config[0]); i++)
     {
         create_file(&file_config[i].file, file_config[i].directory, file_config[i].name);
-        create_map(&file_config[i].file, 2);
+        if (i == 0)
+        {
+            create_map(&file_config[i].file, 10);
+        }
+        else
+        {
+            create_map(&file_config[i].file, 2);
+        }
     }
 }
 

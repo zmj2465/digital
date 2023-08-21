@@ -252,10 +252,6 @@ void send_display_msg()
     msg.display_info.m_node_beam_azimuth_direction = 50;
     msg.display_info.m_node_beam_elevation_direction = 0;
 
-    //for (int i = 0; i < 6; i++) {
-    //    msg.display_info.array_status[i] = 0;
-    //}
-
 
     msg.display_info.frequency_synthesizer_status = 0;
     msg.display_info.terminal_working_status_representation = 0;
@@ -470,6 +466,10 @@ void find_data()
         printf("read file error\n");
         return;
     }
+
+    if (msg.type == 0) msg.type = 6;
+    if (msg.type == 5) msg.type = 7;
+
     enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
 }
 
