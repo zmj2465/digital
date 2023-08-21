@@ -208,7 +208,7 @@ void tofile(int i, char* s, ...)
 void todata(char* data, int len)
 {
     pthread_mutex_lock(&file_config[0].file.lock);
-    if (file_config[0].file.ptr > 1024 * 1024 * 1.5)
+    if (file_config[0].file.ptr > 1024 * 1024 * 9.5)
     {
         printf("***************data full*****************\n");
         pthread_mutex_unlock(&file_config[0].file.lock);

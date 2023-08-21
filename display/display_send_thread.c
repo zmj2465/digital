@@ -180,6 +180,7 @@ int d25d31 = 0;
 void send_display_msg()
 {
     show_t msg;
+    memset(&msg, 0, sizeof(msg));
     int i;
     int j;
     msg.type = DISPLAY_INFO;
@@ -226,11 +227,10 @@ void send_display_msg()
             msg.display_info.z1_m_distance[j+1] = distance;
             msg.display_info.z1_m_azimuth[j+1] = alpha;
             msg.display_info.z1_m_elevation[j+1] = beta;
-            if (j == 0)
-                printf("%f %f %f\n", distance, alpha, beta);
+            //if (j == 0)
+                //printf("%f %f %f\n", distance, alpha, beta);
         }
     }
-
 
     msg.display_info.comm_status_mode = 0;
     msg.display_info.z_proc_flight_control_data_rx_tx_count = (send_ << 16) | recv_;
@@ -309,8 +309,8 @@ void send_display_msg()
         if (j == 3)
             msg.display_info.channel_params[j].state = 0;
     }
-    //send(display_fd, &msg, msg.len, 0);
-    //todata(&msg, msg.len);
+    send(display_fd, &msg, msg.len, 0);
+    todata(&msg, msg.len);
     enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }
