@@ -52,7 +52,10 @@ int data_send_proc(void)
                         msg.len = 1;
                         /*发送扫描请求帧*/
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+
+                        psy_send_(&pmsg,&msg);
+                        //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+
                         send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
                         plog("M send Z%d scan require, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         ///*打开扫描响应定时器*/
@@ -83,7 +86,8 @@ int data_send_proc(void)
                             msg.data[1] = info.current_time_frame + 1;
                             msg.len = 1;
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                            psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                            //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                            psy_send_(&pmsg, &msg);
                             send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
                             info.scan_flag_M[index] = 0;
                             info.time_frame_flag_m[index] = info.current_time_frame + 1;
@@ -101,7 +105,8 @@ int data_send_proc(void)
                                 msg.data[0] = 5;
                                 msg.len = 1;
                                 generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-                                psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                                //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                                psy_send_(&pmsg, &msg);
                                 send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
                                 plog("M send Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                             } 
@@ -116,7 +121,8 @@ int data_send_proc(void)
                         msg.data[0] = SCAN_REQ;
                         msg.len = 1;
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        psy_send_(&pmsg, &msg);
                         send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
                         plog("M send Z%d scan require, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         /*打开扫描响应定时器*/
@@ -137,7 +143,8 @@ int data_send_proc(void)
                         msg.data[0] = 6;
                         msg.len = 1;
                         generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], BEACON, &msg);
-                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        psy_send_(&pmsg, &msg);
                         send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
                         plog("M send Z%d beacon, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         return 0;
@@ -153,7 +160,8 @@ int data_send_proc(void)
                         msg.data[0] = DISTANCE_M;
                         msg.len = 1;
                         generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], DISTANCE, &msg);
-                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        psy_send_(&pmsg, &msg);
                         send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
                         plog("M send Z%d distance frame, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         info.distance_flag_M[i] = 0;
@@ -177,7 +185,8 @@ int data_send_proc(void)
                             msg.data[0] = 5;
                             msg.len = 1;
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-                            psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                            //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                            psy_send_(&pmsg, &msg);
                             send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
                             plog("M send Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         }
@@ -205,7 +214,8 @@ int data_send_proc(void)
                     msg.data[0] = SCAN_RES;
                     msg.len = 1;
                     generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                    psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                    //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                    psy_send_(&pmsg, &msg);
                     send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
                     plog("Z%d send scan response, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);                
 #ifdef _WIN32
@@ -226,7 +236,8 @@ int data_send_proc(void)
                     msg.data[0] = 6;
                     msg.len = 1;
                     generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], BEACON, &msg);
-                    psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                    //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                    psy_send_(&pmsg, &msg);
                     send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
                     plog("Z%d send M beacon, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                 }
@@ -238,7 +249,8 @@ int data_send_proc(void)
                     msg.data[0] = DISTANCE_Z;
                     msg.len = 1;
                     generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], DISTANCE, &msg);
-                    psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                    //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                    psy_send_(&pmsg, &msg);
                     send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
                     plog("Z%d send distance frame, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                 }
@@ -253,7 +265,8 @@ int data_send_proc(void)
                         msg.data[0] = 5;
                         msg.len = 1;
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-                        psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
+                        psy_send_(&pmsg, &msg);
                         send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
                         plog("Z%d send M data, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                     }

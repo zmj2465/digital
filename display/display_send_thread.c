@@ -216,20 +216,23 @@ void send_display_msg()
 
     //与其他节点信息
     if (MY_INDEX == 0){
-        for (j = 0; j < 4; j++) {
-            double distance = caculate_distance(fddi_info.pos, overall_fddi_info[j+1].pos);
+        //for (j = 0; j < 4; j++) {
+            double distance = caculate_distance(fddi_info.pos, overall_fddi_info[1].pos);
             double alpha, beta;
             Point3D pos2;
             //对方位置转换到本节点载体坐标系
-            convertCoordinates(&overall_fddi_info[j + 1].pos, &fddi_info.q, &pos2);
+            convertCoordinates(&overall_fddi_info[1].pos, &fddi_info.q, &pos2);
             //计算方位角俯仰角
             calculateAngles(&pos2, &alpha, &beta);
-            msg.display_info.z1_m_distance[j+1] = distance;
-            msg.display_info.z1_m_azimuth[j+1] = alpha;
-            msg.display_info.z1_m_elevation[j+1] = beta;
-            //if (j == 0)
-                //printf("%f %f %f\n", distance, alpha, beta);
-        }
+            msg.display_info.z1_m_distance[3] = distance;
+            msg.display_info.z1_m_azimuth[3] = alpha;
+            msg.display_info.z1_m_elevation[3] = beta;
+
+            //msg.display_info.z1_m_distance[3] = distance;
+            //msg.display_info.z1_m_azimuth[3] = alpha;
+            //msg.display_info.z1_m_elevation[3] = beta;
+            printf("%f %f %f\n", distance, alpha, beta);
+        //}
     }
 
     msg.display_info.comm_status_mode = 0;
@@ -249,8 +252,8 @@ void send_display_msg()
     msg.display_info.instruction_parsing_frame_count = 0;
     msg.display_info.m_node_time_freq_sync_status = 0;
     msg.display_info.m_node_downlink_link_status = 0;
-    msg.display_info.m_node_beam_azimuth_direction = 50;
-    msg.display_info.m_node_beam_elevation_direction = 0;
+    msg.display_info.m_node_beam_azimuth_direction = 0;
+    msg.display_info.m_node_beam_elevation_direction = 90;
 
 
     msg.display_info.frequency_synthesizer_status = 0;
