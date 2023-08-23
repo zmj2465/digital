@@ -20,7 +20,11 @@ link_directories("C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Lib")
 find_library(A NAMES rfm2gdll_stdc_64.lib PATHS "C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Lib")
 target_link_libraries(project ${A})
 
-
+#rs485
+include_directories(${PROJECT_SOURCE_DIR}/rs485/driver)
+link_directories(${PROJECT_SOURCE_DIR}/rs485/driver)
+find_library(B NAMES XDMA_MoreB.lib PATHS ${PROJECT_SOURCE_DIR}/rs485/driver)
+target_link_libraries(project ${B})
 
 include_directories(${PROJECT_SOURCE_DIR}/MySQL/include)
 link_directories(${PROJECT_SOURCE_DIR}/MySQL/lib)

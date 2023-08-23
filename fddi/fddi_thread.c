@@ -36,7 +36,7 @@ void* fddi_thread(void* arg)
         }
         else
         {
-#if 1
+#if 0
             char temp[40];
             memcpy(&fddi_info, data, sizeof(fddi_info_t));
             memcpy(&overall_fddi_info[1], data + sizeof(fddi_info_t), sizeof(fddi_info_t));

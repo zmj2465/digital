@@ -1,4 +1,5 @@
 #include "rs485_recv_thread.h"
+#include "xdmaDLL_public.h"
 
 #define MSGLEN   4
 #define FLAG_LEN 1
@@ -15,19 +16,17 @@ void msg_proc(char* get)
 void* rs_485_recv_thread(void* arg)
 {
     pthread_detach(pthread_self());
+    int ret = 0;
 
-    char get[MAX_DATA_LEN];
-    rs485_info_t* p = (rs485_info_t*)get;
-    int len = 0;
+    HANDLE recv_hdev;
+    HANDLE send_hdev;
+    char a[100];
+    ret = open_devices(&recv_hdev, GENERIC_READ, a, (const char*)XDMA_FILE_C2H_0);
+    ret = open_devices(&send_hdev, GENERIC_WRITE, a, (const char*)XDMA_FILE_H2C_0);
+
     while (1)
     {
-        dequeue(&info.thread_queue[RS485_RECV_THREAD], get, &len);
-        switch (p->type)
-        {
-            case SP:
-                enqueue_no_block(&info.thread_queue[DATA_SEND_THREAD], p->sp, SP_LEN);
-                break;
-        }
+
     }
 }
 
