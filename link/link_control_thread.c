@@ -1,14 +1,19 @@
 #include "link_control_thread.h"
+#include "fddi_thread.h"
 
 void* link_control_thread(void* arg)
 {
     pthread_detach(pthread_self());
 
+	wait_for_fddi();
+
+
 	link_init();
 
 	link_info_print();
 
-	//sem_post(&info.thread_create_semaphore);
+	sem_post(&info.thread_create_semaphore);
+
 
 	//init_complete_judge();
 

@@ -1,6 +1,7 @@
 #include "display_send_thread.h"
 #include "file_manage.h"
 #include "angle.h"
+#include "physical_simulation.h"
 
 display_state_t display_state;
 show_t show_msg;
@@ -210,8 +211,8 @@ void send_display_msg()
     msg.display_info.time_element_number = 0;
     msg.display_info.time_frame_number = 0;
     msg.display_info.micro_time_slot_number = 0;
-    msg.display_info.node_role = 0;
-    msg.display_info.node_id = 0;
+    msg.display_info.node_role = MY_INDEX;
+    msg.display_info.node_id = MY_INDEX;
     msg.display_info.link_status = 0;
 
     //与其他节点信息
@@ -224,14 +225,28 @@ void send_display_msg()
             convertCoordinates(&overall_fddi_info[1].pos, &fddi_info.q, &pos2);
             //计算方位角俯仰角
             calculateAngles(&pos2, &alpha, &beta);
+            //msg.display_info.z1_m_distance[2] = distance;
+            //msg.display_info.z1_m_azimuth[2] = alpha;
+            //msg.display_info.z1_m_elevation[2] = beta;
+
+            //msg.display_info.z1_m_distance[1] = distance;
+            //msg.display_info.z1_m_azimuth[1] = alpha;
+            //msg.display_info.z1_m_elevation[1] = beta;
+
+            //msg.display_info.z1_m_distance[0] = distance;
+            //msg.display_info.z1_m_azimuth[0] = alpha;
+            //msg.display_info.z1_m_elevation[0] = beta;
+
             msg.display_info.z1_m_distance[3] = distance;
             msg.display_info.z1_m_azimuth[3] = alpha;
             msg.display_info.z1_m_elevation[3] = beta;
-
+            //tosche("%f %f %f\n", distance, alpha, beta);
+            tosche("%d %d %d\n", msg.display_info.z1_m_distance[3],
+                msg.display_info.z1_m_azimuth[3], msg.display_info.z1_m_elevation[3]);
             //msg.display_info.z1_m_distance[3] = distance;
             //msg.display_info.z1_m_azimuth[3] = alpha;
             //msg.display_info.z1_m_elevation[3] = beta;
-            printf("%f %f %f\n", distance, alpha, beta);
+            //printf("%f %f %f\n", distance, alpha, beta);
         //}
     }
 
@@ -312,7 +327,7 @@ void send_display_msg()
         if (j == 3)
             msg.display_info.channel_params[j].state = 0;
     }
-    send(display_fd, &msg, msg.len, 0);
+    //send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);
     enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
@@ -333,11 +348,12 @@ void generate_key_event(int type)
     msg.key.system_time.tv_sec = my_get_time();
     msg.key.key = type;
     memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
-    send(display_fd, &msg, msg.len, 0);
+    //send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);
-    //enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
+    enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }
+
 
 
 

@@ -13,6 +13,7 @@ void* display_recv_thread(void* arg)
 	{
 		dequeue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, &len);
 		send_to_display(&msg, msg.len);
+		Sleep(5);
 	}
 }
 

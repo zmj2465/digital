@@ -27,4 +27,9 @@ bool channel_sim(psy_msg_t* data);
 
 bool new_angle_check(Point3D send_p, Point3D recv_p, Quaternion send_q, Quaternion recv_q, int send_r, int recv_r, int send_i, int recv_i);
 
+void fddi_load(fddi_info_t* fddi, psy_msg_t* msg);
+
+void convertCoordinates(const Point3D* p1, const Quaternion* quaternion,
+    Point3D* p2);
+
 #endif

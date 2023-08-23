@@ -1,4 +1,5 @@
 #include "physical_simulation.h"
+#include "angle.h"
 
 int prepare_simulation = 0;
 struct antenna_info_t antenna_info[6];
@@ -130,25 +131,6 @@ void convertCoordinates(const Point3D* p1, const Quaternion* quaternion,
 }
 
 
-//void convertCoordinates(const Point3D* p1, const Quaternion* quaternion, Point3D* p2) {
-//    double x1 = p1->x;
-//    double y1 = p1->y;
-//    double z1 = p1->z;
-//    double q0 = quaternion->q0;
-//    double q1 = quaternion->q1;
-//    double q2 = quaternion->q2;
-//    double q3 = quaternion->q3;
-//    // 计算转换矩阵R
-//    double R[3][3] = {
-//        {q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3, 2 * (q1 * q2 - q0 * q3), 2 * (q0 * q2 + q1 * q3)},
-//        {2 * (q1 * q2 + q0 * q3), q0 * q0 - q1 * q1 + q2 * q2 - q3 * q3, 2 * (q2 * q3 - q0 * q1)},
-//        {2 * (q1 * q3 - q0 * q2), 2 * (q0 * q1 + q2 * q3), q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3}
-//    };
-//    // 进行坐标转换
-//    p2->x = R[0][0] * x1 + R[0][1] * y1 + R[0][2] * z1;
-//    p2->y = R[1][0] * x1 + R[1][1] * y1 + R[1][2] * z1;
-//    p2->z = R[2][0] * x1 + R[2][1] * y1 + R[2][2] * z1;
-//}
 
 void convertCoordinates2(const Point3D* p1, const AntennaTransform* transform, Point3D* p2) {
     double x1 = p1->x;
@@ -310,10 +292,11 @@ int psy_send_(psy_msg_t* data, msg_t* msg)
     data->psy_head.role = info.device_info.node_role;
     data->psy_head.index = info.current_antenna;
     data->psy_head.flag = prepare_simulation;
-    data->psy_head.pos = fddi_info.pos;
+    //data->psy_head.pos = fddi_info.pos;
     data->psy_head.v = fddi_info.v;
     data->psy_head.rv = fddi_info.rv;
     data->psy_head.q = fddi_info.q;
+    memcpy(&data->psy_head.pos, &fddi_info.pos, sizeof(Point3D));
     data->psy_head.p_to = antenna_info[info.current_antenna].point_to;
     data->msg = *msg;
 }
@@ -357,6 +340,33 @@ bool channel_sim(psy_msg_t* data)
 {
     bool ret;
 
+    double c_n0 = C_NO(24, -36);
+    double snr;
+    //信噪比
+    if (MY_INDEX == 0)
+    {
+        snr = caculate_snr_(c_n0, 10 * 1000000);
+    }
+    else
+    {
+        snr = caculate_snr_(c_n0, 20 * 1000000);
+    }
+    //误码率
+    double ber = caculate_ber(snr);
+    //误帧率
+    double fer = 1 - pow(1 - ber, data->msg.len);
+
+    srand(time(NULL));
+    int temp = rand()%100;
+    int cmp = (1 - fer) * 100;
+    if (temp < cmp)
+    {
+        ret = true;
+    }
+    else
+    {
+        ret = false;
+    }
     return ret;
 }
 
@@ -396,6 +406,16 @@ bool new_angle_check(Point3D send_p, Point3D recv_p, Quaternion send_q, Quaterni
 
     return ret_send & ret_recv;
 }
+
+
+void fddi_load(fddi_info_t* fddi, psy_msg_t* msg)
+{
+    memcpy(&fddi->pos, &msg->psy_head.pos, sizeof(Point3D));
+    memcpy(&fddi->q, &msg->psy_head.q, sizeof(Quaternion));
+    //printf("%f %f %f\n", fddi->pos.x, fddi->pos.y, fddi->pos.z);
+}
+
+
 
 
 

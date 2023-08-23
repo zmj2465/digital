@@ -11,4 +11,9 @@ void calculateAngles(const Point3D* point, double* alpha, double* beta);
 
 double caculate_distance(Point3D a, Point3D b);
 
+
+double C_NO(double eirp, double gt);
+double caculate_snr_(double c_n0, double B);
+double caculate_ber(double SNR_dB);
+
 #endif

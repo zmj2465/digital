@@ -18,6 +18,8 @@
 
 void* fddi_thread(void* arg);
 void fddi_thread_init();
+void send_start();
+void wait_for_fddi();
 
 
 #endif

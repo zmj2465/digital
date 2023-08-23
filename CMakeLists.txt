@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.8)
 
 project(Project)
 
-add_executable(project "main.c" "main.h" "rs485/rs485_send_thread.c" "rs485/rs485_send_thread.h" "common/compatible.c" "common/compatible.h" "common/common.c" "common/common.h" "rs485/rs485_recv_thread.c" "rs485/rs485_recv_thread.h" "fddi/fddi_thread.c" "fddi/fddi_thread.h" "schedule/schedule_thread.c" "schedule/schedule_thread.h" "control/control_recv_thread.c" "control/control_recv_thread.h" "display/display_send_thread.c"  "master/master_thread.c" "master/master_thread.h" "link/link_control_thread.c" "link/link_control_thread.h" "link/data_send_thread.c" "link/data_send_thread.h" "link/data_recv_thread.c" "link/data_recv_thread.h" "common/queue.c" "common/queue.h" "link/physical_simulation.c" "link/physical_simulation.h" "master/protocol.h" "master/protocol.c"  "link/angle.h" "link/angle.c"   "common/mytime.c" "common/mytime.h"  "common/file_manage.c" "common/file_manage.h" "display/display_recv_thread.c" "display/display_recv_thread.h" "display/display_thread.c" "display/display_thread.h" "common/sql.c" "common/sql.h")
+add_executable(project "main.c" "main.h" "rs485/rs485_send_thread.c" "rs485/rs485_send_thread.h" "common/compatible.c" "common/compatible.h" "common/common.c" "common/common.h" "rs485/rs485_recv_thread.c" "rs485/rs485_recv_thread.h" "fddi/fddi_thread.c" "fddi/fddi_thread.h" "schedule/schedule_thread.c" "schedule/schedule_thread.h" "control/control_recv_thread.c" "control/control_recv_thread.h" "display/display_send_thread.c"  "master/master_thread.c" "master/master_thread.h" "link/link_control_thread.c" "link/link_control_thread.h" "link/data_send_thread.c" "link/data_send_thread.h" "link/data_recv_thread.c" "link/data_recv_thread.h" "common/queue.c" "common/queue.h" "link/physical_simulation.c" "link/physical_simulation.h" "master/protocol.h" "master/protocol.c"  "link/angle.h" "link/angle.c"   "common/mytime.c" "common/mytime.h"  "common/file_manage.c" "common/file_manage.h" "display/display_recv_thread.c" "display/display_recv_thread.h" "display/display_thread.c" "display/display_thread.h" "common/sql.c" "common/sql.h" "fddi/rm_thread.c" "fddi/rm_thread.h")
 #add_executable(project "main.c" "main.h" "rs485/rs485_send_thread.c" "rs485/rs485_send_thread.h" "common/compatible.c" "common/compatible.h" "common/common.c" "common/common.h" "rs485/rs485_recv_thread.c" "rs485/rs485_recv_thread.h" "fddi/fddi_thread.c" "fddi/fddi_thread.h" "schedule/schedule_thread.c" "schedule/schedule_thread.h" "control/control_recv_thread.c" "control/control_recv_thread.h" "display/display_send_thread.c"  "master/master_thread.c" "master/master_thread.h" "link/link_control_thread.c" "link/link_control_thread.h" "link/data_send_thread.c" "link/data_send_thread.h" "link/data_recv_thread.c" "link/data_recv_thread.h" "common/queue.c" "common/queue.h" "link/physical_simulation.c" "link/physical_simulation.h" "master/protocol.h" "master/protocol.c"  "link/angle.h" "link/angle.c"   "common/mytime.c" "common/mytime.h"  "common/file_manage.c" "common/file_manage.h" "common/sql.c" "common/sql.h")
 
 include_directories(${PROJECT_SOURCE_DIR}/rs485)
@@ -13,6 +13,14 @@ include_directories(${PROJECT_SOURCE_DIR}/display)
 include_directories(${PROJECT_SOURCE_DIR}/master)
 include_directories(${PROJECT_SOURCE_DIR}/link)
 include_directories(${PROJECT_SOURCE_DIR}/common)
+
+#反射内存卡
+include_directories("C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Inc")
+link_directories("C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Lib")
+find_library(A NAMES rfm2gdll_stdc_64.lib PATHS "C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Lib")
+target_link_libraries(project ${A})
+
+
 
 include_directories(${PROJECT_SOURCE_DIR}/MySQL/include)
 link_directories(${PROJECT_SOURCE_DIR}/MySQL/lib)
