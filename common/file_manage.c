@@ -21,7 +21,14 @@ void file_init()
     for (i = 0; i < sizeof(file_config) / sizeof(file_config[0]); i++)
     {
         create_file(&file_config[i].file, file_config[i].directory, file_config[i].name);
-        create_map(&file_config[i].file, 2);
+        if (i == 0)
+        {
+            create_map(&file_config[i].file, 10);
+        }
+        else
+        {
+            create_map(&file_config[i].file, 2);
+        }
     }
 }
 
@@ -201,7 +208,7 @@ void tofile(int i, char* s, ...)
 void todata(char* data, int len)
 {
     pthread_mutex_lock(&file_config[0].file.lock);
-    if (file_config[0].file.ptr > 1024 * 1024 * 1.5)
+    if (file_config[0].file.ptr > 1024 * 1024 * 9.5)
     {
         printf("***************data full*****************\n");
         pthread_mutex_unlock(&file_config[0].file.lock);

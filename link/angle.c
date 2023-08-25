@@ -212,10 +212,22 @@ double caculate_snr(double Pr_dBm, double C_dB, double N_dBm)
     return SNR_dB;
 }
 
-
+//ÎóÂëÂÊ
 double caculate_ber(double SNR_dB)
 {
     double SNR_linear = pow(10, SNR_dB / 10);
     double ber = 0.5 * erfc(sqrt(SNR_linear));
     return ber;
+}
+
+
+//C/N0
+double C_NO(double eirp,double gt)
+{
+    return eirp + gt - 0.5 - 0.5 - 0.5 + 228.6;
+}
+
+double caculate_snr_(double c_n0,double B)
+{
+    return c_n0 / B;
 }

@@ -1,4 +1,5 @@
 #include "data_recv_thread.h"
+#include "display_send_thread.h"
 
 /*
 功能：数据接收线程
@@ -46,7 +47,6 @@ int data_recv_proc(void)
 		}
 	}
 
-
 	num = select(maxfd + 1, &RSET, NULL, NULL, &timeout);
 	if (num < 0)
 	{
@@ -88,6 +88,8 @@ int data_recv_proc(void)
 				else
 				{
 					psy_msg_t* psy_msg = FD[i].recvBuffer;
+					//fddi_load(&overall_fddi_info[i], psy_msg);
+					//send_display_msg();
 					msg_t msg;
 					memset(&msg, 0, sizeof(msg_t));
 					int len;

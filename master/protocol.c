@@ -1,4 +1,5 @@
 #include "protocol.h"
+#include "fddi_thread.h"
 
 FSM_TYPE fsm_status = FSM_INIT;
 
@@ -126,7 +127,13 @@ int fsm_init2off_ed(int para)
 	if (MY_INDEX == 0)
 	{
 #ifdef _WIN32
-		Sleep(1);
+		generate_key_event(5);
+		Sleep(2000);
+		generate_key_event(5);
+		Sleep(2000);
+		generate_key_event(5);
+		Sleep(2000);
+		generate_key_event(5);
 #endif
 		msg_t msg;
 		int i;
@@ -141,6 +148,7 @@ int fsm_init2off_ed(int para)
 			generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
 			send(FD[i].fd, &msg, msg.len, 0);
 		}
+		send_start();
 		//plog("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
 		plog("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
 	}
@@ -180,6 +188,7 @@ int fsm_off2wsn_ed(int para)
 	/*计算建网时间，开始时刻*/
 	//clock_gettime(CLOCK_REALTIME, &info.set_network_st);
 	info.network_st = my_get_time();
+	generate_key_event(5);
 	return 0;
 }
 

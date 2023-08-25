@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <pthread.h>
+#include "rm_thread.h"
 #include "rs485_send_thread.h"
 #include "rs485_recv_thread.h"
 #include "fddi_thread.h"
@@ -31,6 +32,8 @@ pthread_mutex_t lock;
 
 int main()
 {
+
+
     /*ptp时钟初始化*/
     time_init();
 
@@ -52,6 +55,7 @@ int main()
     /*线程初始化*/
     thread_init();
 
+
     /*设置初始状态*/
     fsm_do(EVENT_INIT);
 
@@ -64,8 +68,18 @@ int main()
 
 void thread_init()
 {
+    sem_init(&info.thread_create_semaphore, 0, 0);
+
+
     int ret = 0;
     /*线程初始化*/
+    pthread_t temp;
+    ret = pthread_create(&temp, NULL, rm_thread, NULL);
+    if (ret != 0)
+    {
+        printf("error\n");
+    }
+
     ret = pthread_create(&info.rs_485_recv_thread_id, NULL, rs_485_recv_thread, NULL);
     if (ret != 0)
     {
@@ -136,7 +150,7 @@ void thread_init()
         printf("error\n");
     }
 
-    //sem_wait(&info.thread_create_semaphore);
+    sem_wait(&info.thread_create_semaphore);
 
     /**/
     ret = pthread_create(&info.data_send_thread_id, NULL, data_recv_thread, NULL);

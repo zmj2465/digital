@@ -1,6 +1,7 @@
 #include "display_send_thread.h"
 #include "file_manage.h"
 #include "angle.h"
+#include "physical_simulation.h"
 
 display_state_t display_state;
 show_t show_msg;
@@ -180,6 +181,7 @@ int d25d31 = 0;
 void send_display_msg()
 {
     show_t msg;
+    memset(&msg, 0, sizeof(msg));
     int i;
     int j;
     msg.type = DISPLAY_INFO;
@@ -209,28 +211,44 @@ void send_display_msg()
     msg.display_info.time_element_number = 0;
     msg.display_info.time_frame_number = 0;
     msg.display_info.micro_time_slot_number = 0;
-    msg.display_info.node_role = 0;
-    msg.display_info.node_id = 0;
+    msg.display_info.node_role = MY_INDEX;
+    msg.display_info.node_id = MY_INDEX;
     msg.display_info.link_status = 0;
 
     //与其他节点信息
     if (MY_INDEX == 0){
-        for (j = 0; j < 4; j++) {
-            double distance = caculate_distance(fddi_info.pos, overall_fddi_info[j+1].pos);
+        //for (j = 0; j < 4; j++) {
+            double distance = caculate_distance(fddi_info.pos, overall_fddi_info[1].pos);
             double alpha, beta;
             Point3D pos2;
             //对方位置转换到本节点载体坐标系
-            convertCoordinates(&overall_fddi_info[j + 1].pos, &fddi_info.q, &pos2);
+            convertCoordinates(&overall_fddi_info[1].pos, &fddi_info.q, &pos2);
             //计算方位角俯仰角
             calculateAngles(&pos2, &alpha, &beta);
-            msg.display_info.z1_m_distance[j+1] = distance;
-            msg.display_info.z1_m_azimuth[j+1] = alpha;
-            msg.display_info.z1_m_elevation[j+1] = beta;
-            if (j == 0)
-                printf("%f %f %f\n", distance, alpha, beta);
-        }
-    }
+            //msg.display_info.z1_m_distance[2] = distance;
+            //msg.display_info.z1_m_azimuth[2] = alpha;
+            //msg.display_info.z1_m_elevation[2] = beta;
 
+            //msg.display_info.z1_m_distance[1] = distance;
+            //msg.display_info.z1_m_azimuth[1] = alpha;
+            //msg.display_info.z1_m_elevation[1] = beta;
+
+            //msg.display_info.z1_m_distance[0] = distance;
+            //msg.display_info.z1_m_azimuth[0] = alpha;
+            //msg.display_info.z1_m_elevation[0] = beta;
+
+            msg.display_info.z1_m_distance[3] = distance;
+            msg.display_info.z1_m_azimuth[3] = alpha;
+            msg.display_info.z1_m_elevation[3] = beta;
+            //tosche("%f %f %f\n", distance, alpha, beta);
+            tosche("%d %d %d\n", msg.display_info.z1_m_distance[3],
+                msg.display_info.z1_m_azimuth[3], msg.display_info.z1_m_elevation[3]);
+            //msg.display_info.z1_m_distance[3] = distance;
+            //msg.display_info.z1_m_azimuth[3] = alpha;
+            //msg.display_info.z1_m_elevation[3] = beta;
+            //printf("%f %f %f\n", distance, alpha, beta);
+        //}
+    }
 
     msg.display_info.comm_status_mode = 0;
     msg.display_info.z_proc_flight_control_data_rx_tx_count = (send_ << 16) | recv_;
@@ -249,12 +267,8 @@ void send_display_msg()
     msg.display_info.instruction_parsing_frame_count = 0;
     msg.display_info.m_node_time_freq_sync_status = 0;
     msg.display_info.m_node_downlink_link_status = 0;
-    msg.display_info.m_node_beam_azimuth_direction = 50;
-    msg.display_info.m_node_beam_elevation_direction = 0;
-
-    //for (int i = 0; i < 6; i++) {
-    //    msg.display_info.array_status[i] = 0;
-    //}
+    msg.display_info.m_node_beam_azimuth_direction = 0;
+    msg.display_info.m_node_beam_elevation_direction = 90;
 
 
     msg.display_info.frequency_synthesizer_status = 0;
@@ -314,7 +328,7 @@ void send_display_msg()
             msg.display_info.channel_params[j].state = 0;
     }
     //send(display_fd, &msg, msg.len, 0);
-    //todata(&msg, msg.len);
+    todata(&msg, msg.len);
     enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }
@@ -334,11 +348,12 @@ void generate_key_event(int type)
     msg.key.system_time.tv_sec = my_get_time();
     msg.key.key = type;
     memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
-    send(display_fd, &msg, msg.len, 0);
+    //send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);
-    //enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
+    enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }
+
 
 
 
@@ -470,6 +485,10 @@ void find_data()
         printf("read file error\n");
         return;
     }
+
+    if (msg.type == 0) msg.type = 6;
+    if (msg.type == 5) msg.type = 7;
+
     enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
 }
 

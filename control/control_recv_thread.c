@@ -48,7 +48,7 @@ void control_recv_thread_init()
     info.control_system.addr_len = sizeof(info.control_system.addr);
     info.control_system.fd = accept(lfd, (struct sockaddr*)&(info.control_system.addr), &(info.control_system.addr_len));
 
-    plog("control_system connect success %d\n", info.control_system.fd);
+    printf("control_system connect success %d\n", info.control_system.fd);
 
 }
 
