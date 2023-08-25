@@ -27,11 +27,11 @@ int sql_init(void)
 	连接mysql
 	host主机IP:localhost
 	user用户名:root
-	password密码:mysql
+	password密码:123456
 	database数据库名:test
 	port端口:3306
 	*/
-	if (mysql_real_connect(&mysql, "localhost", "root", "mysql", "test", 3306, NULL, 0) == NULL)
+	if (mysql_real_connect(&mysql, "localhost", "root", "123456", "test", 3306, NULL, 0) == NULL)
 	{
 		printf("mysql connect fail:%d\n", mysql_errno(&mysql));
 	}
