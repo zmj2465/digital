@@ -10,6 +10,8 @@ static int lfd;
 
 typedef void (*display_proc_fun)(show_t*);
 
+int flag_ = 0;
+
 static display_proc_fun fun[] = {
     sim_beg_proc,
     sim_end_proc,
@@ -49,8 +51,6 @@ void* display_send_thread(void* arg)
             printf("get display connect\n");
         }
     }
-
-
 }
 
 
@@ -120,7 +120,10 @@ void rep_beg_proc(show_t* msg)
 
 void rep_rep_proc(show_t* msg)
 {
-    fseek(display_state.file, sizeof(show_t) * msg->data_seq, SEEK_SET);
+    int ret;
+    ret=fseek(display_state.file, (4+sizeof(display_t)) * msg->data_seq, SEEK_SET);
+    flag_ = 0;
+    printf("to seq:%d ret=%d\n", msg->data_seq, ret);
 }
 
 void rep_suspend_proc(show_t* msg)
@@ -181,7 +184,7 @@ int d25d31 = 0;
 void send_display_msg()
 {
     show_t msg;
-    memset(&msg, 0, sizeof(msg));
+    set_zero(&msg);
     int i;
     int j;
     msg.type = DISPLAY_INFO;
@@ -194,9 +197,9 @@ void send_display_msg()
     msg.display_info.system_time.tv_nsec = 0;
 
     //位置信息
-    msg.display_info.pos_x = fddi_info.pos.x;
-    msg.display_info.pos_y = fddi_info.pos.y;
-    msg.display_info.pos_z = fddi_info.pos.z;
+    msg.display_info.pos_x = overall_fddi_info[0].pos.x;
+    msg.display_info.pos_y = overall_fddi_info[0].pos.y;
+    msg.display_info.pos_z = overall_fddi_info[0].pos.z;
 
     msg.display_info.vel_x = 1.0;
     msg.display_info.vel_y = 2.0;
@@ -211,46 +214,64 @@ void send_display_msg()
     msg.display_info.time_element_number = 0;
     msg.display_info.time_frame_number = 0;
     msg.display_info.micro_time_slot_number = 0;
-    msg.display_info.node_role = MY_INDEX;
-    msg.display_info.node_id = MY_INDEX;
-    msg.display_info.link_status = 0;
+    msg.display_info.node_role = 0;
+    msg.display_info.node_id = 0;
+    msg.display_info.link_status = 1;
+
+
+    //for (j = 0; j < 5; j++)
+    //{
+    //    double distance = caculate_distance(fddi_info.pos, overall_fddi_info[1].pos);
+    //    double alpha, beta;
+    //    Point3D pos2;
+    //    convertCoordinates(&overall_fddi_info[1].pos, &fddi_info.q, &pos2);
+    //    calculateAngles(&pos2, &alpha, &beta);
+    //}
 
     //与其他节点信息
     if (MY_INDEX == 0){
-        //for (j = 0; j < 4; j++) {
-            double distance = caculate_distance(fddi_info.pos, overall_fddi_info[1].pos);
-            double alpha, beta;
-            Point3D pos2;
-            //对方位置转换到本节点载体坐标系
-            convertCoordinates(&overall_fddi_info[1].pos, &fddi_info.q, &pos2);
-            //计算方位角俯仰角
-            calculateAngles(&pos2, &alpha, &beta);
-            //msg.display_info.z1_m_distance[2] = distance;
-            //msg.display_info.z1_m_azimuth[2] = alpha;
-            //msg.display_info.z1_m_elevation[2] = beta;
+        double distance = caculate_distance(fddi_info.pos, overall_fddi_info[1].pos);
+        double alpha, beta;
+        Point3D pos2;
+        //对方位置转换到本节点载体坐标系
+        convertCoordinates(&overall_fddi_info[1].pos, &fddi_info.q, &pos2);
+        //计算方位角俯仰角
+        calculateAngles(&pos2, &alpha, &beta);
 
-            //msg.display_info.z1_m_distance[1] = distance;
-            //msg.display_info.z1_m_azimuth[1] = alpha;
-            //msg.display_info.z1_m_elevation[1] = beta;
+        msg.display_info.z1_m_distance[1] = distance/100;
+        msg.display_info.z1_m_azimuth[1] = alpha;
+        msg.display_info.z1_m_elevation[1] = beta;
+        //printf("%f %f %f\n", distance, alpha, beta);
+        //tosche("%f %f %f\n", msg.display_info.pos_x,
+        //    msg.display_info.pos_y,
+        //    msg.display_info.pos_z
+        //);
+        //printf("%f %f %f %f %f %f\n", msg.display_info.pos_x,
+        //    msg.display_info.pos_y,
+        //    msg.display_info.pos_z,
+        //    msg.display_info.z1_m_distance[1],
+        //    msg.display_info.z1_m_azimuth[1],
+        //    msg.display_info.z1_m_elevation[1]
+        //);
+    }
+    else if (MY_INDEX == 1)
+    {
+        double distance = caculate_distance(fddi_info.pos, overall_fddi_info[0].pos);
+        double alpha, beta;
+        Point3D pos2;
+        //对方位置转换到本节点载体坐标系
+        convertCoordinates(&overall_fddi_info[1].pos, &overall_fddi_info[0].q, &pos2);
+        //计算方位角俯仰角
+        calculateAngles(&pos2, &alpha, &beta);
 
-            //msg.display_info.z1_m_distance[0] = distance;
-            //msg.display_info.z1_m_azimuth[0] = alpha;
-            //msg.display_info.z1_m_elevation[0] = beta;
+        msg.display_info.z1_m_distance[1] = distance/100;
+        msg.display_info.z1_m_azimuth[1] = alpha;
+        msg.display_info.z1_m_elevation[1] = beta;
 
-            msg.display_info.z1_m_distance[3] = distance;
-            msg.display_info.z1_m_azimuth[3] = alpha;
-            msg.display_info.z1_m_elevation[3] = beta;
-            //tosche("%f %f %f\n", distance, alpha, beta);
-            tosche("%d %d %d\n", msg.display_info.z1_m_distance[3],
-                msg.display_info.z1_m_azimuth[3], msg.display_info.z1_m_elevation[3]);
-            //msg.display_info.z1_m_distance[3] = distance;
-            //msg.display_info.z1_m_azimuth[3] = alpha;
-            //msg.display_info.z1_m_elevation[3] = beta;
-            //printf("%f %f %f\n", distance, alpha, beta);
-        //}
     }
 
-    msg.display_info.comm_status_mode = 0;
+
+    msg.display_info.comm_status_mode = 2;
     msg.display_info.z_proc_flight_control_data_rx_tx_count = (send_ << 16) | recv_;
     send_ += 2;
     recv_++;
@@ -327,9 +348,9 @@ void send_display_msg()
         if (j == 3)
             msg.display_info.channel_params[j].state = 0;
     }
-    //send(display_fd, &msg, msg.len, 0);
+    send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);
-    enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
+    //enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }
 
@@ -343,14 +364,13 @@ void generate_key_event(int type)
     //
     pthread_mutex_lock(&display_state.mutex);
     msg.key.seq = display_state.seq;
-    printf("key seq:%d\n", display_state.seq);
     display_state.seq++;
     msg.key.system_time.tv_sec = my_get_time();
     msg.key.key = type;
     memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
-    //send(display_fd, &msg, msg.len, 0);
+    send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);
-    enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
+    //enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }
 
@@ -474,22 +494,38 @@ void select_file(show_t* msg)
     return;
 }
 
+void set_zero(show_t* msg)
+{
+    int i, j;
+    memset(msg, 0, sizeof(show_t));
+    for (i = 0; i < 5; i++)
+    {
+        for (j = 0; j < 6; j++)
+        {
+            msg->display_info.link_target[i][j] = -1;
+        }
+    }
+}
+
 
 void find_data()
 {
     show_t msg;
     int ret = 0;
-    ret=fread(&msg, 1, 4 + sizeof(display_t), display_state.file);
-    if (ret == 0)
+    if (flag_ == 1 && msg.len == 0)
     {
-        printf("read file error\n");
         return;
     }
+    ret=fread(&msg, 1, 4 + sizeof(display_t), display_state.file);
 
     if (msg.type == 0) msg.type = 6;
     if (msg.type == 5) msg.type = 7;
-
-    enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
+    printf("flag=%d len=%d\n", flag_, msg.len);
+    enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, ret);
+    if (msg.len == 0)
+    {
+        flag_ = 1;
+    }
 }
 
 
@@ -502,10 +538,18 @@ void send_to_display(char* data,int len)
 void file_num(int fd)
 {
     show_t msg;
+    memset(&msg, 0, sizeof(show_t));
+    int i;
     msg.type = 4;
-    msg.len = 6;
-    msg.file_num = get_file_num("C:\\Digital prototype\\data");
-    printf("file num:%d\n", msg.file_num);
+    msg.file_info.file_num = get_file_num("C:\\Digital prototype\\data");
+    msg.len = 6 + 30 * msg.file_info.file_num;
+    
+    for (i = 0; i < msg.file_info.file_num; i++)
+    {
+        sprintf(msg.file_info.file_name[i], "%d:", i);
+        printf("file name:%s\n", msg.file_info.file_name[i]);
+    }
+
     send(fd, &msg, msg.len, 0);
 }
 

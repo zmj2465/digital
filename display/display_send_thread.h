@@ -110,9 +110,10 @@ typedef struct
     uint8_t link_status;        // 链路连接状态，占用一个字节
     /*****/
 
-    uint16_t z1_m_distance[4];     // Z1节点与M节点距离，每节点2字节（0~655.35km）
-    uint16_t z1_m_azimuth[4];      // Z1节点与M节点相对方位，每节点2字节
-    uint16_t z1_m_elevation[4];    // Z1节点与M节点相对俯仰，每节点2字节
+    float z1_m_distance[5];     // Z1节点与M节点距离，每节点2字节（0~655.35km）
+    float z1_m_azimuth[5];      // Z1节点与M节点相对方位，每节点2字节
+    float z1_m_elevation[5];    // Z1节点与M节点相对俯仰，每节点2字节
+
 
     /*待定*/
     uint8_t comm_status_mode;   // 通信状态/工作模式，1字节，扫描、建链、通信、静默、小功率/大功率
@@ -133,6 +134,7 @@ typedef struct
     antenna_t antenna_params[6];    // 天线参数，与天线数量相对应的天线基本参数
     channel_t channel_params[4];    // 信道参数，与其它4个节点的数据传输的信道信息
     /*****/
+    int8_t link_target[5][6];
 
 } display_t;
 
@@ -157,6 +159,13 @@ typedef struct {
     float quat_q3;              // 拦截器姿态四元数q3
 }key_event_t;
 
+
+typedef struct _file_t
+{
+    uint16_t file_num;
+    uint8_t  file_name[100][30];
+}file_t;
+
 typedef struct _show_t
 {
     uint16_t type;
@@ -169,11 +178,10 @@ typedef struct _show_t
         /*文件序列*/
         key_event_t key;        //关键事件
 
-
         uint16_t file_seq;
         uint16_t data_seq;
 
-        uint16_t file_num;
+        file_t file_info;
     };
 }show_t;
 
@@ -208,5 +216,7 @@ void rep_recover_proc(show_t* msg);
 void send_display_msg();
 void send_to_display(char* data, int len);
 void find_data();
+
+
 
 #endif

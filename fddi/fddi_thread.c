@@ -74,13 +74,15 @@ void* fddi_thread(void* arg)
             if (MY_INDEX == 0)
             {
                 memcpy(&fddi_info, data, sizeof(fddi_info_t));
+                memcpy(&overall_fddi_info[0], data, sizeof(fddi_info_t));
                 memcpy(&overall_fddi_info[1], data + sizeof(fddi_info_t), sizeof(fddi_info_t));
-                //printf("%f %f %f\n", fddi_info.pos.x, fddi_info.pos.y, fddi_info.pos.z);
+                
             }
             else
             {
                 memcpy(&fddi_info, data + sizeof(fddi_info_t), sizeof(fddi_info_t));
-                memcpy(&overall_fddi_info[0], data + sizeof(fddi_info_t), sizeof(fddi_info_t));
+                memcpy(&overall_fddi_info[0], data, sizeof(fddi_info_t));
+                memcpy(&overall_fddi_info[1], data + sizeof(fddi_info_t), sizeof(fddi_info_t));
             }
 #endif
         }

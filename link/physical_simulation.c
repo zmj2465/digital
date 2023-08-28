@@ -418,4 +418,30 @@ void fddi_load(fddi_info_t* fddi, psy_msg_t* msg)
 
 
 
+int rett(int node,int antenna)
+{
+    int i;
+    for (i = 0; i < 5; i++)
+    {
+        //ÌìÏß×ª»»
+        overall_fddi_info[i].pos;
+
+        //
+    }
+}
+
+void temp()
+{
+    int i, j;
+    for (i = 0; i < 5; i++)
+    {
+        for (j = 0; j < 6; j++)
+        {
+            link_table[i][j] = x();
+        }
+    }
+}
+
+
+
 

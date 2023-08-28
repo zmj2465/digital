@@ -17,3 +17,4 @@ int sql_free(MYSQL* mysql, MYSQL_RES* mysqlRes);
 extern MYSQL mysql;
 
 #endif
+

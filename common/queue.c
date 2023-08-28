@@ -168,3 +168,4 @@ void destroy_msg_queue(msg_queue_t* queue, int max_size) {
 	pthread_cond_destroy(&queue->cond);
 	free(queue->node);
 }
+

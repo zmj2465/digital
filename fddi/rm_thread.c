@@ -51,4 +51,5 @@ void* rm_thread(void* arg)
     else {
         printf("\n数据读取成功：Value_Rcv=%1.7lf\n", Value_Rcv);
     }
+
 }

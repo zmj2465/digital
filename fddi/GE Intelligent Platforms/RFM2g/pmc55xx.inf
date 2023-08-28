@@ -1,0 +1,185 @@
+;/*++
+;
+;   Copyright:
+; 	  Copyright 2008 GE Intelligent Platforms Embedded Systems, Inc.
+;  License:
+; 	  This file is proprietary to GE Intelligent Platforms Embedded Systems, Inc.
+;
+;Module Name:
+;
+;    pmc55xx.INF
+;
+;Abstract:
+;    INF file for the PMC55xx RFM2g driver.
+;
+;--*/
+[Version]
+Signature	="$WINDOWS NT$"
+Class		=GEFHardwareClass
+ClassGUID	={6121C478-7B3F-45b8-A2E3-330F04991213}
+Provider	=%CompanyName%
+CatalogFile.NTAMD64 = pmc55xxamd64.cat
+CatalogFile.NTx86  = pmc55xxx86.cat
+DriverVer=04/07/2010,8.0.0.0
+
+[PMC55XX.Files_12]
+pmc55xx.sys
+
+[PMC55XX.Files_11_32]
+rfm2gdll_stdc_32.dll
+
+[PMC55XX.Files_11_64]
+rfm2gdll_stdc_64.dll
+
+[PMC55XX.Files_10_32]
+rfm2gdll_stdc_32.dll
+
+
+[DestinationDirs]
+PMC55XX.Files_12 = 12
+PMC55XX.Files_11_32 = 11 
+PMC55XX.Files_11_64 = 11 
+PMC55XX.Files_10_32 = 10,\SysWOW64		;sysWow64
+
+; source disk file info
+
+[SourceDisksNames.x86]
+1=%DISKNAME%,,,\setup
+2=%DISKNAME%,,,\Bin
+
+[SourceDisksNames.amd64]
+1=%DISKNAME%,,,\setup
+2=%DISKNAME%,,,\Bin
+3=%DISKNAME%,,,\Bin
+
+[SourceDisksFiles]
+pmc55xx.sys=1,,
+rfm2gdll_stdc_32.dll=2,, 
+rfm2gdll_stdc_64.dll=3,, 
+
+[ControlFlags]
+ExcludeFromSelect=*
+
+[Manufacturer]
+%CompanyName% = GE-IP,NTAMD64
+[ClassInstall32]
+Addreg=GEFHardwareClass
+
+[GEFHardwareClass]
+HKR,,,,%ClassName%
+HKR,,Icon,,"-5"
+
+;------------------------------------------------------
+; For AMD64 Arch
+[GE-IP.NTAMD64]
+; DisplayName           Section           DeviceId
+; -----------           -------           --------
+%Device.Description%=   pmc55xx_Inst_AMD64,     pci\ven_114a&dev_5565
+
+[pmc55xx_Inst_AMD64.NT]
+CopyFiles		= PMC55XX.Files_12,PMC55XX.Files_10_32,PMC55XX.Files_11_64
+Characteristics	= 0x04
+BusType			= 5
+
+;----------------------------------------------------------------------------------
+; For x86
+[GE-IP.NTx86]
+; DisplayName           Section           DeviceId
+; -----------           -------           --------
+%Device.Description%=   pmc55xx_Inst_x86,     pci\ven_114a&dev_5565
+
+[pmc55xx_Inst_x86.NT]
+CopyFiles		= PMC55XX.Files_12,PMC55XX.Files_11_32
+Characteristics=0x04
+BusType=5
+
+;--------------------common--------------------------------------------------------
+[pmc55xx_Inst_AMD64.NT.Services]
+AddService =PMC55XXSERV,%SPSVCINST_ASSOCSERVICE%,pmc55xx_Service
+
+[pmc55xx_Service]
+DisplayName   = "Rfm2g PCI5565 Driver"
+ServiceType    = %SERVICE_KERNEL_DRIVER%
+StartType      = %SERVICE_SYSTEM_START%
+ErrorControl   = %SERVICE_ERROR_NORMAL%
+ServiceBinary  = %12%\pmc55xx.sys
+AddReg		= pmc55xx_Parameters_AddReg
+LoadOrderGroup = "Base"
+
+[pmc55xx_Parameters_AddReg]
+HKR,Ndi,Service,0,"pmc55xx"
+
+;-------------- Coinstaller installation
+[DestinationDirs]
+CoInstaller_CopyFiles = 11
+
+[pmc55xx_Inst_AMD64.NT.CoInstallers]
+AddReg=CoInstaller_AddReg
+CopyFiles=CoInstaller_CopyFiles
+
+[pmc55xx_Inst_AMD64.NT.Wdf]
+KmdfService = PMC55XXSERV, pmc55xx_wdfsect
+
+;--------------------coinstaller common-----------------------------
+[CoInstaller_CopyFiles]
+WdfCoInstaller01005.dll
+
+[SourceDisksFiles]
+WdfCoInstaller01005.dll=1 ; make sure the number matches with SourceDisksNames
+
+[CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller01005.dll,WdfCoInstaller"
+
+[pmc55xx_wdfsect]
+KmdfLibraryVersion = 1.5
+;----------------------------------------------------------------------------
+; String substitutions
+;----------------------------------------------------------------------------
+[Strings]
+GE-IP            = "GE-IP"
+CompanyName     = "GE Intelligent Platforms Embedded Systems"
+ClassName = "Reflective memory device"
+
+Device.Description = "Rfm2g PCI/PMC 5565 Driver"
+DISKNAME="PMC5565 GE Embedded systems 2Gb/s Reflective Memory media"
+
+;
+; The "standard" defines
+;
+SPSVCINST_TAGTOFRONT               = 0x00000001
+SPSVCINST_ASSOCSERVICE             = 0x00000002
+SPSVCINST_DELETEEVENTLOGENTRY      = 0x00000004
+SPSVCINST_NOCLOBBER_DISPLAYNAME    = 0x00000008
+SPSVCINST_NOCLOBBER_STARTTYPE      = 0x00000010
+SPSVCINST_NOCLOBBER_ERRORCONTROL   = 0x00000020
+SPSVCINST_NOCLOBBER_LOADORDERGROUP = 0x00000040
+SPSVCINST_NOCLOBBER_DEPENDENCIES   = 0x00000080
+SPSVCINST_NOCLOBBER_DESCRIPTION    = 0x00000100
+
+COPYFLG_WARN_IF_SKIP         = 0x00000001
+COPYFLG_NOSKIP               = 0x00000002
+COPYFLG_NOVERSIONCHECK       = 0x00000004
+COPYFLG_FORCE_FILE_IN_USE    = 0x00000008
+COPYFLG_NO_OVERWRITE         = 0x00000010
+COPYFLG_NO_VERSION_DIALOG    = 0x00000020
+COPYFLG_OVERWRITE_OLDER_ONLY = 0x00000040
+COPYFLG_REPLACEONLY          = 0x00000400
+COPYFLG_REPLACE_BOOT_FILE    = 0x00001000
+COPYFLG_NOPRUNE              = 0x00002000
+
+SERVICE_KERNEL_DRIVER      = 0x00000001
+SERVICE_FILE_SYSTEM_DRIVER = 0x00000002
+
+SERVICE_BOOT_START   = 0x00000000
+SERVICE_SYSTEM_START = 0x00000001
+SERVICE_AUTO_START   = 0x00000002
+SERVICE_DEMAND_START = 0x00000003
+SERVICE_DISABLED     = 0x00000004
+
+SERVICE_ERROR_IGNORE   = 0x00000000
+SERVICE_ERROR_NORMAL   = 0x00000001
+SERVICE_ERROR_SEVERE   = 0x00000002
+SERVICE_ERROR_CRITICAL = 0x00000003
+
+
+

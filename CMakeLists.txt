@@ -15,9 +15,13 @@ include_directories(${PROJECT_SOURCE_DIR}/link)
 include_directories(${PROJECT_SOURCE_DIR}/common)
 
 #反射内存卡
-include_directories("C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Inc")
-link_directories("C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Lib")
-find_library(A NAMES rfm2gdll_stdc_64.lib PATHS "C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Lib")
+#include_directories("C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Inc")
+#link_directories("C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Lib")
+#find_library(A NAMES rfm2gdll_stdc_64.lib PATHS "C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Lib")
+#target_link_libraries(project ${A})
+include_directories("${PROJECT_SOURCE_DIR}/fddi/GE Intelligent Platforms/RFM2g/Inc")
+link_directories("${PROJECT_SOURCE_DIR}/fddi/GE Intelligent Platforms/RFM2g/Lib")
+find_library(A NAMES rfm2gdll_stdc_64.lib PATHS "${PROJECT_SOURCE_DIR}/fddi/GE Intelligent Platforms/RFM2g/Lib")
 target_link_libraries(project ${A})
 
 #rs485

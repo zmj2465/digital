@@ -127,13 +127,7 @@ int fsm_init2off_ed(int para)
 	if (MY_INDEX == 0)
 	{
 #ifdef _WIN32
-		generate_key_event(5);
-		Sleep(2000);
-		generate_key_event(5);
-		Sleep(2000);
-		generate_key_event(5);
-		Sleep(2000);
-		generate_key_event(5);
+		Sleep(1000);
 #endif
 		msg_t msg;
 		int i;
@@ -148,9 +142,17 @@ int fsm_init2off_ed(int para)
 			generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
 			send(FD[i].fd, &msg, msg.len, 0);
 		}
-		send_start();
 		//plog("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
 		plog("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
+		generate_key_event(0);
+		Sleep(1000);
+		generate_key_event(1);
+		Sleep(1000);
+		generate_key_event(2);
+		Sleep(1000);
+		send_start();
+		generate_key_event(3);
+		Sleep(1000);
 	}
 	return 0;
 }
@@ -206,7 +208,14 @@ int fsm_off2wan_st(int para)
 	//{
 	//	clock_gettime(CLOCK_REALTIME, &str_m);
 	//}
-
+	generate_key_event(0);
+	Sleep(1000);
+	generate_key_event(1);
+	Sleep(1000);
+	generate_key_event(2);
+	Sleep(1000);
+	generate_key_event(3);
+	Sleep(1000);
 	uint64_t str;
 	str = my_get_time();
 	while (str < (info.str.base_t + info.str.start_time * 1000000000))
