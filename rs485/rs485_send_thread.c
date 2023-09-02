@@ -9,8 +9,7 @@ void* rs_485_send_thread(void* arg)
 
     char data[MAX_DATA_LEN];
     int len;
-    rs485_info_t* p = (rs485_info_t*)data;
-    p->type = 0x60;
+
 
     while (1)
     {

@@ -60,13 +60,13 @@ void fsm_do(int event)
 			if (con == 0 && oprst == 0)//0表示满足转移条件
 			{
 				fsm_status = ptr[i].next;//设置新状态	
-				plog("fsm new status : %s, event : %d\r\n", fsm[fsm_status].name, ptr[i].event);
+				printf("fsm new status : %s, event : %d\r\n", fsm[fsm_status].name, ptr[i].event);
 				opred = (*ptr[i].opred)(event);
 				break;
 			}
 			else
 			{
-				plog("oprst error,status transition failed\r\n");
+				printf("oprst error,status transition failed\r\n");
 			}
 		}
 	}
@@ -143,7 +143,7 @@ int fsm_init2off_ed(int para)
 			send(FD[i].fd, &msg, msg.len, 0);
 		}
 		//plog("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
-		plog("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
+		printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
 		generate_key_event(0);
 		Sleep(1000);
 		generate_key_event(1);
@@ -177,6 +177,7 @@ int fsm_off2wsn_st(int para)
 	{
 		str = my_get_time();
 	}
+	printf("M start,send scan ask\n");
 	return 0;
 }
 

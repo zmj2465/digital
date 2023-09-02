@@ -30,7 +30,7 @@ void* rm_thread(void* arg)
     result = RFM2gWrite(Handle, OFFSET, (void*)&Value, sizeof(double));
     if (result == RFM2G_SUCCESS)
     {
-        printf("3.1415926成功写入到反射内存卡中。");
+        printf("3.1415926成功写入到反射内存卡中.\n");
     }
     else
     {

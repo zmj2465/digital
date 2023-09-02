@@ -23,6 +23,8 @@ enum
     FILE_SEQ,
     IMP_EVENT,
 
+    NET_NUM=10,
+
     SIM_START_ = 101,
     SIM_END_,
     REPLAY_SELECT_,
@@ -134,7 +136,7 @@ typedef struct
     antenna_t antenna_params[6];    // 天线参数，与天线数量相对应的天线基本参数
     channel_t channel_params[4];    // 信道参数，与其它4个节点的数据传输的信道信息
     /*****/
-    int8_t link_target[5][6];
+    //int8_t link_target[5][6];
 
 } display_t;
 

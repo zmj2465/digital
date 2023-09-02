@@ -33,7 +33,6 @@ pthread_mutex_t lock;
 int main()
 {
 
-
     /*ptp时钟初始化*/
     time_init();
 
@@ -54,7 +53,6 @@ int main()
 
     /*线程初始化*/
     thread_init();
-
 
     /*设置初始状态*/
     fsm_do(EVENT_INIT);

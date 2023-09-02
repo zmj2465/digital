@@ -92,7 +92,7 @@ int master_data_proc(void)
                     {                                
                         info.str.start_time = msg.data[1];
                         info.str.base_t = msg.head.send_t;
-                        plog("Z%d base time=%lld ns, start time = %d s\n", MY_INDEX, info.str.base_t, info.str.start_time);
+                        printf("Z%d base time=%lld ns, start time = %d s\n", MY_INDEX, info.str.base_t, info.str.start_time);
                         //info.str.base_time = msg.head.send_time;
                         //plog("Z%d base time=%lld, %ld, start_time = %d\n", MY_INDEX, info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
                         /*响应主机的发令枪帧*/

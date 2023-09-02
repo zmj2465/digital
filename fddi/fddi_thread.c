@@ -76,7 +76,6 @@ void* fddi_thread(void* arg)
                 memcpy(&fddi_info, data, sizeof(fddi_info_t));
                 memcpy(&overall_fddi_info[0], data, sizeof(fddi_info_t));
                 memcpy(&overall_fddi_info[1], data + sizeof(fddi_info_t), sizeof(fddi_info_t));
-                
             }
             else
             {

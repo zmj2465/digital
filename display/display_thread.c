@@ -4,7 +4,7 @@
 #include "physical_simulation.h"
 
 int flag = 0;
-
+double te;
 void* display_thread(void* arg)
 {
 	pthread_detach(pthread_self());
@@ -14,15 +14,27 @@ void* display_thread(void* arg)
 		if (display_state.mode == SIM_MODE)
 		{
 			send_display_msg();
-			double distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[1].pos)/100;
-			//printf("distance=%f\n", distance);
+			double distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[1].pos)/20;
+			//printf("%f\n", te=fmax(te, overall_fddi_info[0].pos.y));
+			//printf("%f\n", overall_fddi_info[0].pos.y);
 			if (flag == 0)
 			{
 				if (distance > 0.01)
 				{
+					//printf("distance=%f\n", overall_fddi_info[0].pos.y);
 					Sleep(1);
 					generate_key_event(4);
 					flag = 1;
+				}
+			}
+			else if (flag == 1)
+			{
+				if (distance > 1)
+				{
+					Sleep(2);
+					generate_key_event(5);
+					Sleep(2);
+					//flag = 2;
 				}
 			}
 			Sleep(100);

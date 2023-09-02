@@ -166,6 +166,8 @@ static double eirp = 0;
 static uint16_t send_= 0;
 static uint16_t recv_ = 0;
 
+static double pr = 0.1;
+static double er = 0.1;
 
 int x = 0;
 int d0 = 1;
@@ -183,6 +185,7 @@ int d24 = 1;
 int d25d31 = 0;
 void send_display_msg()
 {
+    static float p=0, pp=0;
     show_t msg;
     set_zero(&msg);
     int i;
@@ -197,9 +200,10 @@ void send_display_msg()
     msg.display_info.system_time.tv_nsec = 0;
 
     //位置信息
-    msg.display_info.pos_x = overall_fddi_info[0].pos.x;
+    msg.display_info.pos_x = overall_fddi_info[0].pos.x/100;
     msg.display_info.pos_y = overall_fddi_info[0].pos.y;
-    msg.display_info.pos_z = overall_fddi_info[0].pos.z;
+    msg.display_info.pos_z = overall_fddi_info[0].pos.z/100;
+    //printf("%f\n", overall_fddi_info[0].pos.y);
 
     msg.display_info.vel_x = 1.0;
     msg.display_info.vel_y = 2.0;
@@ -238,9 +242,16 @@ void send_display_msg()
         //计算方位角俯仰角
         calculateAngles(&pos2, &alpha, &beta);
 
-        msg.display_info.z1_m_distance[1] = distance/100;
-        msg.display_info.z1_m_azimuth[1] = alpha;
-        msg.display_info.z1_m_elevation[1] = beta;
+        msg.display_info.z1_m_distance[1] = distance/20;
+        /*msg.display_info.z1_m_azimuth[1] = alpha+90;
+        msg.display_info.z1_m_elevation[1] = beta;*/
+        msg.display_info.z1_m_azimuth[1] = fmin(p++,45);
+        msg.display_info.z1_m_elevation[1] = fmin(pp++, 45);
+
+        //msg.display_info.z1_m_distance[4] = distance / 20;
+        //msg.display_info.z1_m_azimuth[4] = fmin(p++, 45);
+        //msg.display_info.z1_m_elevation[3] = fmin(pp++, 45);
+
         //printf("%f %f %f\n", distance, alpha, beta);
         //tosche("%f %f %f\n", msg.display_info.pos_x,
         //    msg.display_info.pos_y,
@@ -264,10 +275,12 @@ void send_display_msg()
         //计算方位角俯仰角
         calculateAngles(&pos2, &alpha, &beta);
 
-        msg.display_info.z1_m_distance[1] = distance/100;
+        msg.display_info.z1_m_distance[1] = distance/20;
         msg.display_info.z1_m_azimuth[1] = alpha;
         msg.display_info.z1_m_elevation[1] = beta;
 
+        msg.display_info.z1_m_distance[4] = distance / 20;
+        msg.display_info.z1_m_distance[5] = distance / 20;
     }
 
 
@@ -323,8 +336,17 @@ void send_display_msg()
     for (j = 0; j < 4; j++)
     {
         msg.display_info.channel_params[j].node = 1;
-        msg.display_info.channel_params[j].packet_loss_rate = 0.05;
-        msg.display_info.channel_params[j].error_rate = 0.1;
+        msg.display_info.channel_params[j].packet_loss_rate = pr;
+        msg.display_info.channel_params[j].error_rate = pr;
+        pr += 0.01;
+        if (pr < 0.9)
+        {
+            pr += 0.01;
+        }
+        else
+        {
+            pr -= 0.8;
+        }
         msg.display_info.channel_params[j].snr = 20.5;
         msg.display_info.channel_params[j].received_signal_power = -70.2;
         msg.display_info.channel_params[j].spreading_gain = 12.3;
@@ -358,6 +380,7 @@ void send_display_msg()
 void generate_key_event(int type)
 {
     show_t msg;
+    memset(&msg, 0, sizeof(msg));
     msg.type = IMP_EVENT;
     msg.len = 4 + sizeof(display_t);
 
@@ -367,7 +390,14 @@ void generate_key_event(int type)
     display_state.seq++;
     msg.key.system_time.tv_sec = my_get_time();
     msg.key.key = type;
+    msg.key.node = 1;
+
     memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
+    msg.key.pos_x = overall_fddi_info[0].pos.x / 100;
+    msg.key.pos_y = overall_fddi_info[0].pos.y;
+    msg.key.pos_z = overall_fddi_info[0].pos.z / 100;
+    printf("key event:%d\n", msg.key.key);
+
     send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);
     //enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
@@ -498,13 +528,13 @@ void set_zero(show_t* msg)
 {
     int i, j;
     memset(msg, 0, sizeof(show_t));
-    for (i = 0; i < 5; i++)
-    {
-        for (j = 0; j < 6; j++)
-        {
-            msg->display_info.link_target[i][j] = -1;
-        }
-    }
+    //for (i = 0; i < 5; i++)
+    //{
+    //    for (j = 0; j < 6; j++)
+    //    {
+    //        msg->display_info.link_target[i][j] = -1;
+    //    }
+    //}
 }
 
 
@@ -529,10 +559,12 @@ void find_data()
 }
 
 
+
 void send_to_display(char* data,int len)
 {
     send(display_fd, data, len, 0);
 }
+
 
 
 void file_num(int fd)
@@ -547,7 +579,7 @@ void file_num(int fd)
     for (i = 0; i < msg.file_info.file_num; i++)
     {
         sprintf(msg.file_info.file_name[i], "%d:", i);
-        printf("file name:%s\n", msg.file_info.file_name[i]);
+        //printf("file name:%s\n", msg.file_info.file_name[i]);
     }
 
     send(fd, &msg, msg.len, 0);
