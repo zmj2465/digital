@@ -13,7 +13,7 @@ void* display_thread(void* arg)
 	{
 		if (display_state.mode == SIM_MODE)
 		{
-			send_display_msg();
+			//send_display_msg();
 			double distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[1].pos)/20;
 			//printf("%f\n", te=fmax(te, overall_fddi_info[0].pos.y));
 			printf("%f\n", overall_fddi_info[0].pos.y);

@@ -459,7 +459,6 @@ void rs_M2ZTom_proc(char* data)
     //crc
     rbody->m2z_tom_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M2Z_TOM_FRAME_SP_LEN);
     send_to_rs(RS_M2Z_TOM_FRAME_SP_LEN, 0, res);
-
 }
 
 void rs_M2ZPlan_proc(char* data)
