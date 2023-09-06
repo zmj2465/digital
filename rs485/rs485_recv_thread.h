@@ -8,17 +8,34 @@
 #include "common.h"
 #include "queue.h"
 
-#define RS_MAX_LEN 1024
+#define RS_MAX_LEN 2048
 
+//addressa addressb type
+#define ADD_TYPE_LEN (3+(MY_INDEX==0?1:0))
 
 //body len
 #define CONFIG_INFO_LEN 20
-#define SHORT_FRAME_LEN sizeof(struct short_frame_t)-1 //65
+#define SHORT_FRAME_LEN sizeof(struct short_frame_t) //65
 #define SHORT_FRAME_SP_LEN sizeof(struct short_frame_sp_t) //66
 #define LONG_FRAME_GUI_LEN    sizeof(struct long_frame_gui_t)-RS_TAIL_LEN //166=65+1+100
 #define LONG_FRAME_TOM_LEN    sizeof(struct long_frame_tom_t)-RS_TAIL_LEN //588=65+1+522
 #define LONG_FRAME_SP_GUI_LEN sizeof(struct long_frame_gui_sp_t)-RS_TAIL_LEN //153=66+87
 #define LONG_FRAME_SP_TOM_LEN sizeof(struct long_frame_tom_sp_t)-RS_TAIL_LEN //582=66+516
+
+#define M2Z_GUI_FRAME_LEN sizeof(struct m2z_gui_frame_t)-RS_TAIL_LEN
+#define M2Z_TOM_FRAME_LEN sizeof(struct m2z_tom_frame_t)-RS_TAIL_LEN
+#define M2Z_PLAN_FRAME_LEN sizeof(struct m2z_plan_frame_t)-RS_TAIL_LEN
+
+#define M2Z_GUI_FRAME_SP_LEN sizeof(struct m2z_gui_frame_sp_t)-RS_TAIL_LEN
+#define M2Z_TOM_FRAME_SP_LEN sizeof(struct m2z_tom_frame_sp_t)-RS_TAIL_LEN
+#define M2Z_PLAN_FRAME_SP_LEN sizeof(struct m2z_plan_frame_sp_t)-RS_TAIL_LEN
+
+//struct m2z_gui_frame_t m2z_gui_frame;
+//struct m2z_gui_frame_sp_t m2z_gui_frame_sp;
+//struct m2z_tom_frame_t m2z_tom_frame;
+//struct m2z_tom_frame_sp_t m2z_tom_frame_sp;
+//struct m2z_plan_frame_t m2z_plan_frame;
+//struct m2z_plan_frame_sp_t m2z_plan_frame_sp;
 
 //
 #define RS_HEAD_LEN sizeof(rs_head_t)-(MY_INDEX==0?0:1)
@@ -33,6 +50,15 @@
 
 #define RS_LONG_FRAME_SP_GUI_LEN RS_HEAD_LEN+LONG_FRAME_SP_GUI_LEN+RS_TAIL_LEN //7++6
 #define RS_LONG_FRAME_SP_TOM_LEN RS_HEAD_LEN+LONG_FRAME_SP_TOM_LEN+RS_TAIL_LEN //7++6
+
+
+#define RS_M2Z_GUI_FRAME_LEN RS_HEAD_LEN+M2Z_GUI_FRAME_LEN+RS_TAIL_LEN
+#define RS_M2Z_TOM_FRAME_LEN RS_HEAD_LEN+M2Z_TOM_FRAME_LEN+RS_TAIL_LEN
+#define RS_M2Z_PLAN_FRAME_LEN RS_HEAD_LEN+M2Z_PLAN_FRAME_LEN+RS_TAIL_LEN
+
+#define RS_M2Z_GUI_FRAME_SP_LEN RS_HEAD_LEN+M2Z_GUI_FRAME_SP_LEN+RS_TAIL_LEN
+#define RS_M2Z_TOM_FRAME_SP_LEN RS_HEAD_LEN+M2Z_TOM_FRAME_SP_LEN+RS_TAIL_LEN
+#define RS_M2Z_PLAN_FRAME_SP_LEN RS_HEAD_LEN+M2Z_PLAN_FRAME_SP_LEN+RS_TAIL_LEN
 
 typedef struct _long_frame_buffer_t {
 	char data[2048];
@@ -52,13 +78,24 @@ enum {
 	RS_LONG_FRAME=0x60,           //≥§÷°√¸¡Ó
 };
 
+enum {
+	RS_M2Z_GUI = 0x0001,
+	RS_M2Z_TOM = 0x0002,
+	RS_M2Z_PLAN = 0x0003,
+	RS_Z2M_GUI_SP = 0x001A,
+	RS_Z2M_TOM_SP = 0x001B,
+	RS_Z2M_PLAN_SP = 0x001C,
+};
+
 
 typedef struct _rs_head_t{
 	uint8_t flag[4];
 	uint8_t address_a;
 	uint8_t address_b;
-	uint8_t typea;
-	uint8_t typeb;
+	union {
+		uint8_t typea;
+		uint16_t type;
+	};
 }rs_head_t;
 
 typedef struct _rs_tail_t {
@@ -78,7 +115,8 @@ struct config_load_t {
 	uint8_t node_list;
 	uint8_t freqC;
 	uint8_t freqP;
-	uint8_t reserve[13];
+	uint16_t freq_fix;
+	uint8_t reserve[12];
 	rs_tail_t tail;
 };
 
@@ -92,7 +130,7 @@ struct short_frame_t {
 	Point3D v;
 	Point3D rv;
 	Quaternion q;
-	uint8_t qzt;
+	//uint8_t qzt;
 	//rs_tail_t tail;
 };
 
@@ -234,6 +272,49 @@ struct long_frame_tom_sp_t {
 	rs_tail_t tail;
 };
 
+struct m2z_gui_frame_t {
+
+	uint8_t content[132];
+
+	rs_tail_t tail;
+};
+
+struct m2z_gui_frame_sp_t {
+
+	uint8_t content[188];
+
+	rs_tail_t tail;
+};
+
+struct m2z_tom_frame_t {
+
+	uint8_t content[1828];
+
+	rs_tail_t tail;
+};
+
+struct m2z_tom_frame_sp_t {
+
+	uint8_t content[1876];
+
+	rs_tail_t tail;
+};
+
+struct m2z_plan_frame_t {
+
+	uint8_t content[376];
+
+	rs_tail_t tail;
+};
+
+struct m2z_plan_frame_sp_t {
+
+	uint8_t content[188];
+
+	rs_tail_t tail;
+};
+
+
 typedef union _rs_body_t {
 	rs_tail_t body_tail;
 	struct result1_ack_t result1_ack;
@@ -246,6 +327,14 @@ typedef union _rs_body_t {
 	struct long_frame_tom_t long_frame_tom;
 	struct long_frame_gui_sp_t long_frame_sp_gui;
 	struct long_frame_tom_sp_t long_frame_sp_tom;
+
+	struct m2z_gui_frame_t m2z_gui_frame;
+	struct m2z_gui_frame_sp_t m2z_gui_frame_sp;
+	struct m2z_tom_frame_t m2z_tom_frame;
+	struct m2z_tom_frame_sp_t m2z_tom_frame_sp;
+	struct m2z_plan_frame_t m2z_plan_frame;
+	struct m2z_plan_frame_sp_t m2z_plan_frame_sp;
+
 }rs_body_t;
 
 
@@ -266,6 +355,10 @@ void rs_ConfigLoad_proc(char* data);
 void rs_Link_proc(char* data);
 void rs_ShortFrame_proc(char* data);
 void rs_LongFrame_proc(char* data, int len);
+
+void rs_M2ZGui_proc(char* data);
+void rs_M2ZTom_proc(char* data);
+void rs_M2ZPlan_proc(char* data);
 
 void head_load(char* data, char* res);
 uint8_t crc_check(char* start_address, int len, uint16_t get_crc);

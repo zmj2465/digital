@@ -16,7 +16,7 @@ void* display_thread(void* arg)
 			send_display_msg();
 			double distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[1].pos)/20;
 			//printf("%f\n", te=fmax(te, overall_fddi_info[0].pos.y));
-			//printf("%f\n", overall_fddi_info[0].pos.y);
+			printf("%f\n", overall_fddi_info[0].pos.y);
 			if (flag == 0)
 			{
 				if (distance > 0.01)
@@ -34,10 +34,10 @@ void* display_thread(void* arg)
 					Sleep(2);
 					generate_key_event(5);
 					Sleep(2);
-					//flag = 2;
+					flag = 2;
 				}
 			}
-			Sleep(100);
+			Sleep(20);
 		}
 		else if (display_state.mode == REPLAY_MODE)
 		{

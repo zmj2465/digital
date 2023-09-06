@@ -135,6 +135,7 @@ void* rs_485_recv_thread(void* arg)
         printf("\n");
 
         
+        //Z-M
         switch (head->typea)
         {
         case RS_SELF_CHECK:
@@ -152,6 +153,24 @@ void* rs_485_recv_thread(void* arg)
         case RS_LONG_FRAME:
             rs_LongFrame_proc(data,ret);
             break;
+        case RS_START_LINK:
+            rs_Link_proc(data);
+            break;
+
+        }
+        //M
+        switch (head->type)
+        {
+        case RS_M2Z_GUI:
+            rs_M2ZGui_proc(data);
+            break;
+        case RS_M2Z_TOM:
+            rs_M2ZTom_proc(data);
+            break;
+        case RS_M2Z_PLAN:
+            rs_M2ZPlan_proc(data);
+            break;
+
         }
     }
 #endif
@@ -164,7 +183,7 @@ void send_to_rs(int len, long offset, char* data)
     int i;
     rs_head_t* rhead = (rs_head_t*)data;
 
-    printf("*****send:%d type:%x*****\n", ret, rhead->typea);
+    printf("*****send:%d type:%x*****\n", len, rhead->typea);
     for (i = 0; i < len; i++)
     {
         printf("%02x ", (uint8_t)data[i]);
@@ -187,7 +206,7 @@ void rs_SelfCheck_proc(char* data)
     rs_head_t* rhead = (rs_head_t*)res;
     rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
     //crc校验
-    if (crc_check((uint8_t*)head->flag + 4, 3, body->body_tail.crc) == 1)
+    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN, body->body_tail.crc) == 1)
     {
         printf("self check crc fail\n");
         return;
@@ -198,7 +217,7 @@ void rs_SelfCheck_proc(char* data)
 
     memcpy(&rbody->body_tail, &body->body_tail, RS_TAIL_LEN);
 
-    rbody->body_tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, 3);
+    rbody->body_tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN);
 
     send_to_rs(RS_SELF_CHECK_LEN, 0, res);
 }
@@ -213,7 +232,7 @@ void rs_SelfCheckResult_proc(char* data)
     rs_head_t* rhead = (rs_head_t*)res;
     rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
     //crc校验
-    if (crc_check((uint8_t*)head->flag + 4, 3, body->body_tail.crc) == 1)
+    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN, body->body_tail.crc) == 1)
     {
         printf("self check result crc fail\n");
         return;
@@ -223,7 +242,7 @@ void rs_SelfCheckResult_proc(char* data)
     rbody->result1_ack.ack = 0;
     memcpy(&rbody->result1_ack.tail, &body->body_tail, RS_TAIL_LEN);
 
-    rbody->result1_ack.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, 3 + 2);
+    rbody->result1_ack.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + 2);
     send_to_rs(RS_RESULT_LEN, 0, res);
 }
 
@@ -237,7 +256,7 @@ void rs_ConfigLoad_proc(char* data)
     rs_head_t* rhead = (rs_head_t*)res;
     rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
     //crc校验
-    if (crc_check((uint8_t*)head->flag + 4, 3 + CONFIG_INFO_LEN, body->config_load.tail.crc) == 1)
+    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + CONFIG_INFO_LEN, body->config_load.tail.crc) == 1)
     {
         printf("config load crc fail\n");
         return;
@@ -247,11 +266,11 @@ void rs_ConfigLoad_proc(char* data)
 
     memcpy(&rbody->config_load, &body->config_load, CONFIG_INFO_LEN + RS_TAIL_LEN);
 
-    rbody->config_load.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, 3 + CONFIG_INFO_LEN);
+    rbody->config_load.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + CONFIG_INFO_LEN);
     send_to_rs(RS_CONFIG_LEN, 0, res);
 
-    MY_INDEX = body->config_load.node_id;
-    FD_NUM = body->config_load.node_num;
+    //MY_INDEX = body->config_load.node_id;
+    //FD_NUM = body->config_load.node_num;
 
 }
 
@@ -263,7 +282,18 @@ void rs_Link_proc(char* data)
     rs_body_t* body = (rs_body_t*)(data + RS_HEAD_LEN);
     rs_head_t* rhead = (rs_head_t*)res;
     rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+    //crc校验
+    uint16_t get_crc = body->body_tail.crc;
+    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN, get_crc) == 1)
+    {
+        printf("link start crc fail\n");
+        return;
+    }
+    //头部
     head_load(data, res);
+    //内容
+    //尾部
+
 }
 
 //短帧回复
@@ -277,7 +307,7 @@ void rs_ShortFrame_proc(char* data)
     rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
     //crc校验
     uint16_t get_crc = *(uint16_t*)((char*)&body->short_frmae + SHORT_FRAME_LEN);
-    if (crc_check((uint8_t*)head->flag + 4, 3 + SHORT_FRAME_LEN, get_crc) == 1)
+    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + SHORT_FRAME_LEN, get_crc) == 1)
     {
         printf("short frame crc fail\n");
         return;
@@ -289,12 +319,12 @@ void rs_ShortFrame_proc(char* data)
     //尾部加载
     memcpy((char*)&rbody->short_frmae_sp + SHORT_FRAME_SP_LEN, (char*)&body->short_frmae + SHORT_FRAME_LEN, RS_TAIL_LEN);
     //crc加载
-    *(uint16_t*)((char*)&rbody->short_frmae_sp + SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, 3 + SHORT_FRAME_SP_LEN);
+    *(uint16_t*)((char*)&rbody->short_frmae_sp + SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + SHORT_FRAME_SP_LEN);
     send_to_rs(RS_SHORT_FRAME_SP_LEN, 0, res);
 
 
     //处理
-    memcpy(&overall_fddi_info[MY_INDEX], (uint8_t*)&head->flag + 4, sizeof(fddi_info_t));
+    memcpy(&overall_fddi_info[MY_INDEX], (uint8_t*)&head->flag + 4 + ADD_TYPE_LEN, sizeof(fddi_info_t));
     printf("x:%f y:%f z:%f\n", overall_fddi_info[MY_INDEX].pos.x,
                                overall_fddi_info[MY_INDEX].pos.x,
                                overall_fddi_info[MY_INDEX].pos.z);
@@ -311,64 +341,38 @@ void rs_LongFrame_proc(char* data,int len)
     rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
     //头部装载
     head_load(data, res);
-
+     
     if (body->long_frame_gui.typec == 0x33) {
         //crc校验
-        if (crc_check((uint8_t*)head->flag + 4, 3 + LONG_FRAME_GUI_LEN, body->long_frame_gui.tail.crc) == 1)
+        if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + LONG_FRAME_GUI_LEN, body->long_frame_gui.tail.crc) == 1)
         {
-            printf("long frame crc fail\n");
+            printf("long frame gui crc fail\n");
             return;
         }
+
+        rbody->long_frame_sp_gui.typec = 0x33;
 
         //尾部装载
         memcpy(&rbody->long_frame_sp_gui.tail, &body->long_frame_gui.tail, RS_TAIL_LEN);
         //crc加载
-        rbody->long_frame_sp_gui.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, 3 + LONG_FRAME_SP_GUI_LEN);
+        rbody->long_frame_sp_gui.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + LONG_FRAME_SP_GUI_LEN);
         send_to_rs(RS_LONG_FRAME_SP_GUI_LEN, 0, res);
     }
     else if(body->long_frame_tom.typec == 0x66){
         //crc校验
-        if (crc_check((uint8_t*)head->flag + 4, 3 + LONG_FRAME_TOM_LEN, body->long_frame_tom.tail.crc) == 1)
+        if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + LONG_FRAME_TOM_LEN, body->long_frame_tom.tail.crc) == 1)
         {
-            printf("long frame crc fail\n");
+            printf("long frame tom crc fail\n");
             return;
         }
 
-
+        rbody->long_frame_sp_gui.typec = 0x66;
         //尾部装载
         memcpy(&rbody->long_frame_sp_tom.tail, &body->long_frame_tom.tail, RS_TAIL_LEN);
         //crc加载
-        rbody->long_frame_sp_tom.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, 3 + LONG_FRAME_SP_TOM_LEN);
+        rbody->long_frame_sp_tom.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + LONG_FRAME_SP_TOM_LEN);
         send_to_rs(RS_LONG_FRAME_SP_TOM_LEN, 0, res);
     }
-
-
-
-//
-//
-//    //crc校验
-//    if (crc_check((uint8_t*)head->flag + 4, 3 + LONG_FRAME_LEN, body->long_frame.tail.crc) == 1)
-//    {
-//        printf("long frame crc fail\n");
-//        return;
-//    }
-//    //crc校验
-//    //if (crc_check((uint8_t*)head->flag + 4, len - 4 - 6, *(uint16_t*)(data + len - 6)) == 1)
-//    //{
-//    //    printf("long frame crc fail\n");
-//    //    return;
-//    //}
-//
-//
-//    head_load(data, res);
-//
-//    memcpy(&rbody->long_frame_sp.tail, &body->long_frame.tail, RS_TAIL_LEN);
-//
-//    rbody->long_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, 3 + LONG_FRAME_SP_LEN);
-//    send_to_rs(RS_LONG_FRAME_SP_LEN, 0, res);
-//
-//    //memcpy(&z2m_data.data, data + 4, len - 4 - 6);
-//
 }
 
 void head_load(char* data,char* res)
@@ -384,14 +388,108 @@ void head_load(char* data,char* res)
 
 uint8_t crc_check(char* start_address, int len, uint16_t get_crc)
 {
+    int i = 0;
     uint16_t crc = CalCRC16_V2(start_address, len);
-    printf("get crc:%x,crc:%x\n", get_crc, crc);
+    //printf("crc check:");
+    //for (i = 0; i < len; i++)
+    //{
+    //    printf("%02x ", (uint8_t)start_address[i]);
+    //}
+    //printf("\n");
+    printf("crc len:%d get crc:%x,crc:%x\n", len, get_crc, crc);
     if (crc != get_crc)
     {
         return 1;
     }
     return 0;
 }
+
+
+//**********************************//
+void rs_M2ZGui_proc(char* data)
+{
+    char res[RS_MAX_LEN];
+    memset(res, 0, RS_MAX_LEN);
+    rs_head_t* head = (rs_head_t*)data;
+    rs_body_t* body = (rs_body_t*)(data + RS_HEAD_LEN);
+    rs_head_t* rhead = (rs_head_t*)res;
+    rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+    //crc
+    uint16_t get_crc = body->m2z_gui_frame.tail.crc;
+    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + M2Z_GUI_FRAME_LEN, get_crc) == 1)
+    {
+        printf("M2ZGui crc fail\n");
+        return;
+    }
+    //头部
+    head_load(data, res);
+    rhead->type = RS_Z2M_GUI_SP;
+    //内容
+     
+    //尾部
+    memset(&rbody->m2z_gui_frame_sp.tail.flag, 0x7e, 4);
+
+    //crc加载
+    rbody->m2z_gui_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M2Z_GUI_FRAME_SP_LEN);
+    send_to_rs(RS_M2Z_GUI_FRAME_SP_LEN, 0, res);
+}
+
+void rs_M2ZTom_proc(char* data)
+{
+    char res[RS_MAX_LEN];
+    memset(res, 0, RS_MAX_LEN);
+    rs_head_t* head = (rs_head_t*)data;
+    rs_body_t* body = (rs_body_t*)(data + RS_HEAD_LEN);
+    rs_head_t* rhead = (rs_head_t*)res;
+    rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+    //crc
+    uint16_t get_crc = body->m2z_tom_frame.tail.crc;
+    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + M2Z_TOM_FRAME_LEN, get_crc) == 1)
+    {
+        printf("M2ZTom crc fail\n");
+        return;
+    }
+    //头部
+    head_load(data, res);
+    rhead->type = RS_Z2M_TOM_SP;
+    //内容
+
+    //尾部
+    memset(&rbody->m2z_tom_frame_sp.tail.flag, 0x7e, 4);
+    //crc
+    rbody->m2z_tom_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M2Z_TOM_FRAME_SP_LEN);
+    send_to_rs(RS_M2Z_TOM_FRAME_SP_LEN, 0, res);
+
+}
+
+void rs_M2ZPlan_proc(char* data)
+{
+    char res[RS_MAX_LEN];
+    memset(res, 0, RS_MAX_LEN);
+    rs_head_t* head = (rs_head_t*)data;
+    rs_body_t* body = (rs_body_t*)(data + RS_HEAD_LEN);
+    rs_head_t* rhead = (rs_head_t*)res;
+    rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+    //crc
+    uint16_t get_crc = body->m2z_plan_frame.tail.crc;
+    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + M2Z_PLAN_FRAME_LEN, get_crc) == 1)
+    {
+        printf("M2ZPlan crc fail\n");
+        return;
+    }
+    //头部
+    head_load(data, res);
+    rhead->type = RS_Z2M_PLAN_SP;
+    //内容
+
+    //尾部
+    memset(&rbody->m2z_plan_frame_sp.tail.flag, 0x7e, 4);
+    //crc
+    rbody->m2z_plan_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M2Z_PLAN_FRAME_SP_LEN);
+    send_to_rs(RS_M2Z_PLAN_FRAME_SP_LEN, 0, res);
+}
+
+
 
 
 

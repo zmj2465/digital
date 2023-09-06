@@ -286,9 +286,6 @@ extern AntennaTransform transform[12];
 #pragma pack(1)
 typedef struct _fddi_info_t
 {
-	char a;
-	char b;
-	char c;
 	char ad;  //1
 	int rti;  //4
 	int tf;   //4

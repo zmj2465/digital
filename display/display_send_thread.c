@@ -370,6 +370,12 @@ void send_display_msg()
         if (j == 3)
             msg.display_info.channel_params[j].state = 0;
     }
+
+
+    msg.display_info.link_target[0][2] = 2;
+    msg.display_info.link_target[1][4] = 1;
+
+
     send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);
     //enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
@@ -390,7 +396,10 @@ void generate_key_event(int type)
     display_state.seq++;
     msg.key.system_time.tv_sec = my_get_time();
     msg.key.key = type;
-    msg.key.node = 1;
+    //msg.key.node = 1;
+    //msg.key.node = 2;
+    //msg.key.node = 3;
+    //msg.key.node = 4;
 
     memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
     msg.key.pos_x = overall_fddi_info[0].pos.x / 100;
