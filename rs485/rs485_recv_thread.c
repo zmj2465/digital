@@ -357,6 +357,9 @@ void rs_LongFrame_proc(char* data,int len)
         //crc加载
         rbody->long_frame_sp_gui.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + LONG_FRAME_SP_GUI_LEN);
         send_to_rs(RS_LONG_FRAME_SP_GUI_LEN, 0, res);
+
+
+        enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_gui.typec, 1+45);
     }
     else if(body->long_frame_tom.typec == 0x66){
         //crc校验
@@ -372,6 +375,8 @@ void rs_LongFrame_proc(char* data,int len)
         //crc加载
         rbody->long_frame_sp_tom.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + LONG_FRAME_SP_TOM_LEN);
         send_to_rs(RS_LONG_FRAME_SP_TOM_LEN, 0, res);
+
+        enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_tom.typec, 1 + 467);
     }
 }
 
@@ -432,6 +437,10 @@ void rs_M2ZGui_proc(char* data)
     //crc加载
     rbody->m2z_gui_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M2Z_GUI_FRAME_SP_LEN);
     send_to_rs(RS_M2Z_GUI_FRAME_SP_LEN, 0, res);
+
+
+    enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_gui_frame.content, 132);
+
 }
 
 void rs_M2ZTom_proc(char* data)
@@ -459,6 +468,9 @@ void rs_M2ZTom_proc(char* data)
     //crc
     rbody->m2z_tom_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M2Z_TOM_FRAME_SP_LEN);
     send_to_rs(RS_M2Z_TOM_FRAME_SP_LEN, 0, res);
+
+
+    enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_tom_frame.content, 1828);
 }
 
 void rs_M2ZPlan_proc(char* data)

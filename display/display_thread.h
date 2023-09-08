@@ -7,10 +7,11 @@
 #include "compatible.h"
 #include <stdlib.h>
 #include "common.h"
+#include "display_send_thread.h"
 
 
 void* display_thread(void* arg);
 
-
+void create_table(show_t* msg);
 
 #endif

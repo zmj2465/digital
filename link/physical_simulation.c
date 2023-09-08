@@ -167,25 +167,25 @@ void convertCoordinates2(const Point3D* p1, const AntennaTransform* transform, P
 * index:选择的天线号
 * 天线指向存在数组中
 */
-void select_antenna(int my_role, Quaternion my_quaternion, Point3D pos, int* index)
+int select_antenna(int my_role, Quaternion my_quaternion, Point3D pos)
 {
     Point3D pos2, pos3;
+    Point3D null = { 0,0,1 };
     double a, b;
     int add = (my_role == 0) ? 0 : 6;
     int i;
+    double angle;
     convertCoordinates(&pos, &my_quaternion, &pos2);
     for (i = 0; i < 6; i++)
     {
         convertCoordinates2(&pos2, &transform[i + add], &pos3);
-        calculateAngles(&pos3, &a, &b);
-        if (a<ALPHA_MAX && a>ALPHA_MIN && b<BETA_MAX && b>BETA_MIN)
+        angle = calculateAngle(&pos3, &null);
+        if (angle < 90)
         {
-            antenna_info[i].point_to.x = pos3.x;
-            antenna_info[i].point_to.y = pos3.y;
-            antenna_info[i].point_to.z = pos3.z;
             return i;
         }
     }
+    printf("\n");
     return -1;
 }
 

@@ -17,6 +17,8 @@ struct antenna_info_t {
 extern struct antenna_info_t antenna_info[6];
 
 
+int select_antenna(int my_role, Quaternion my_quaternion, Point3D pos);
+
 bool psy_recv_(psy_msg_t* data, msg_t* msg);
 int psy_send_(psy_msg_t* data, msg_t* msg);
 

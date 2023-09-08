@@ -144,14 +144,14 @@ int fsm_init2off_ed(int para)
 		}
 		//plog("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
 		printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
-		generate_key_event(0);
+		generate_key_event(0,0,0);
 		Sleep(1000);
-		generate_key_event(1);
+		generate_key_event(1,0,0);
 		Sleep(1000);
-		generate_key_event(2);
+		generate_key_event(2,0,0);
 		Sleep(1000);
 		send_start();
-		generate_key_event(3);
+		generate_key_event(3,0,0);
 		Sleep(1000);
 	}
 	return 0;
@@ -191,7 +191,7 @@ int fsm_off2wsn_ed(int para)
 	/*计算建网时间，开始时刻*/
 	//clock_gettime(CLOCK_REALTIME, &info.set_network_st);
 	info.network_st = my_get_time();
-	generate_key_event(5);
+	generate_key_event(5,0,0);
 	return 0;
 }
 
@@ -209,13 +209,13 @@ int fsm_off2wan_st(int para)
 	//{
 	//	clock_gettime(CLOCK_REALTIME, &str_m);
 	//}
-	generate_key_event(0);
+	generate_key_event(0,0,0);
 	Sleep(1000);
-	generate_key_event(1);
+	generate_key_event(1,0,0);
 	Sleep(1000);
-	generate_key_event(2);
+	generate_key_event(2,0,0);
 	Sleep(1000);
-	generate_key_event(3);
+	generate_key_event(3,0,0);
 	Sleep(1000);
 	uint64_t str;
 	str = my_get_time();

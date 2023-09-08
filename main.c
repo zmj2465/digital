@@ -172,6 +172,7 @@ void config_init()
     ret = load_config(INFO_SET_DESK_FILE);
     if (ret == -1) printf("folder config\n");
     else printf("desktop config\n");
+    online_state[MY_INDEX] = 1;
 }
 
 /*

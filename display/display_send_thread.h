@@ -145,7 +145,10 @@ typedef struct {
     uint16_t seq;
     struct timespec system_time;
     uint8_t key;
-    uint8_t node;
+    uint8_t role;
+    uint8_t id;
+    uint8_t target_role;
+    uint8_t target_id;
     float pos_x;                // À¹½ØÆ÷Î»ÖÃx
     float pos_y;                // À¹½ØÆ÷Î»ÖÃy
     float pos_z;                // À¹½ØÆ÷Î»ÖÃz
@@ -168,6 +171,11 @@ typedef struct _file_t
     uint8_t  file_name[100][30];
 }file_t;
 
+typedef struct {
+    uint8_t m_num;
+    uint8_t z_num;
+}net_t;
+
 typedef struct _show_t
 {
     uint16_t type;
@@ -184,6 +192,8 @@ typedef struct _show_t
         uint16_t data_seq;
 
         file_t file_info;
+
+        net_t num;
     };
 }show_t;
 
@@ -204,7 +214,7 @@ void display_send_thread_init();
 void select_file(show_t* msg);
 void find_data();
 
-void generate_key_event(int type);
+void generate_key_event(int type, int id, int role);
 
 
 void sim_beg_proc(show_t* msg);

@@ -2,6 +2,7 @@
 #include "file_manage.h"
 #include "angle.h"
 #include "physical_simulation.h"
+#include "display_thread.h"
 
 display_state_t display_state;
 show_t show_msg;
@@ -34,7 +35,9 @@ void* display_send_thread(void* arg)
     init();
     /*以太网连接*/
     display_send_thread_init();
-    file_num(display_fd);
+    //file_num(display_fd);
+    net_num(display_fd, 1, 1);
+
 
     while (1)
     {
@@ -279,8 +282,6 @@ void send_display_msg()
         msg.display_info.z1_m_azimuth[1] = alpha;
         msg.display_info.z1_m_elevation[1] = beta;
 
-        msg.display_info.z1_m_distance[4] = distance / 20;
-        msg.display_info.z1_m_distance[5] = distance / 20;
     }
 
 
@@ -372,8 +373,22 @@ void send_display_msg()
     }
 
 
-    msg.display_info.link_target[0][2] = 2;
-    msg.display_info.link_target[1][4] = 1;
+    create_table(&msg);
+    for (i = 0; i < 5; i++)
+    {
+        printf("%d ", online_state[i]);
+    }
+    printf("\n");
+
+    for (i = 0; i < 2; i++)
+    {
+        for (j = 0; j < 6; j++)
+        {
+            printf("%d ", msg.display_info.link_target[i][j]);
+        }
+        printf("\n");
+    }
+    printf("****\n");
 
 
     send(display_fd, &msg, msg.len, 0);
@@ -383,8 +398,9 @@ void send_display_msg()
 }
 
 
-void generate_key_event(int type)
+void generate_key_event(int type,int id,int role)
 {
+    int i;
     show_t msg;
     memset(&msg, 0, sizeof(msg));
     msg.type = IMP_EVENT;
@@ -396,10 +412,24 @@ void generate_key_event(int type)
     display_state.seq++;
     msg.key.system_time.tv_sec = my_get_time();
     msg.key.key = type;
-    //msg.key.node = 1;
-    //msg.key.node = 2;
-    //msg.key.node = 3;
-    //msg.key.node = 4;
+    
+    msg.key.role = info.device_info.node_role;
+    msg.key.id = MY_INDEX;
+    msg.key.target_role = role;
+    msg.key.target_id = id;
+    if (type == 5)
+    {
+        online_state[id] = 1;
+    }
+    else if (type == 6)
+    {
+        online_state[id] = 0;
+    }
+    else if (type == 7)
+    {
+        online_state[id] = 1;
+    }
+
 
     memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
     msg.key.pos_x = overall_fddi_info[0].pos.x / 100;
@@ -591,6 +621,17 @@ void file_num(int fd)
         //printf("file name:%s\n", msg.file_info.file_name[i]);
     }
 
+    send(fd, &msg, msg.len, 0);
+}
+
+void net_num(int fd, int m, int z)
+{
+    show_t msg;
+    memset(&msg, 0, sizeof(show_t));
+    msg.type = 10;
+    msg.len = 6;
+    msg.num.m_num = m;
+    msg.num.z_num = z;
     send(fd, &msg, msg.len, 0);
 }
 

@@ -323,6 +323,7 @@ typedef struct _psy_msg_t
 extern fddi_info_t fddi_info;
 extern fddi_info_t overall_fddi_info[5];
 extern int8_t link_table[5][6];
+extern int online_state[5];
 
 
 
