@@ -36,7 +36,7 @@ void* display_send_thread(void* arg)
     /*以太网连接*/
     display_send_thread_init();
     //file_num(display_fd);
-    net_num(display_fd, 1, 1);
+    //net_num(display_fd, 1, 1);
 
 
     while (1)
@@ -398,7 +398,7 @@ void send_display_msg()
 }
 
 
-void generate_key_event(int type,int id,int role)
+void generate_key_event(int type,int id_znum,int role_mnum)
 {
     int i;
     show_t msg;
@@ -415,19 +415,19 @@ void generate_key_event(int type,int id,int role)
     
     msg.key.role = info.device_info.node_role;
     msg.key.id = MY_INDEX;
-    msg.key.target_role = role;
-    msg.key.target_id = id;
+    msg.key.target_role = role_mnum;
+    msg.key.target_id = id_znum;
     if (type == 5)
     {
-        online_state[id] = 1;
+        online_state[id_znum] = 1;
     }
     else if (type == 6)
     {
-        online_state[id] = 0;
+        online_state[id_znum] = 0;
     }
     else if (type == 7)
     {
-        online_state[id] = 1;
+        online_state[id_znum] = 1;
     }
 
 

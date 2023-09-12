@@ -148,7 +148,7 @@ int fsm_init2off_ed(int para)
 		Sleep(1000);
 		generate_key_event(1,0,0);
 		Sleep(1000);
-		generate_key_event(2,0,0);
+		generate_key_event(2,1,1);
 		Sleep(1000);
 		send_start();
 		generate_key_event(3,0,0);
@@ -213,7 +213,7 @@ int fsm_off2wan_st(int para)
 	Sleep(1000);
 	generate_key_event(1,0,0);
 	Sleep(1000);
-	generate_key_event(2,0,0);
+	generate_key_event(2,1,1);
 	Sleep(1000);
 	generate_key_event(3,0,0);
 	Sleep(1000);
