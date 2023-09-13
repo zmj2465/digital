@@ -1,5 +1,6 @@
 #include "rs485_recv_thread.h"
 #include "xdmaDLL_public.h"
+#include "display_send_thread.h"
 #include "stddef.h"
 #include <string.h>
 #include "crc.h"
@@ -42,7 +43,6 @@ void rs485_init()
 
 
 
-
 void* rs_485_recv_thread(void* arg)
 {
     pthread_detach(pthread_self());
@@ -51,8 +51,8 @@ void* rs_485_recv_thread(void* arg)
 
     rs485_init();
 
-    uint8_t data[1024];
-    char res[1024];
+    uint8_t data[2048];
+    char res[2048];
 
     printf("rs485 recv0x10000000\n");
 
@@ -123,7 +123,7 @@ void* rs_485_recv_thread(void* arg)
 #else
     while (1)
     {
-        ret = read_device(recv_hdev, 0x10000000, 1024, data);
+        ret = read_device(recv_hdev, 0x10000000, 2048, data);
         ret = last_packetSize(user_hdev);
 
         rs_head_t* head = (rs_head_t*)data;
@@ -220,6 +220,7 @@ void rs_SelfCheck_proc(char* data)
     rbody->body_tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN);
 
     send_to_rs(RS_SELF_CHECK_LEN, 0, res);
+    generate_key_event(KEY_SELF_CHECK,0,0);
 }
 
 //自检结果下传1回复
@@ -246,6 +247,7 @@ void rs_SelfCheckResult_proc(char* data)
     send_to_rs(RS_RESULT_LEN, 0, res);
 }
 
+
 //参数装订回复
 void rs_ConfigLoad_proc(char* data)
 {
@@ -271,6 +273,18 @@ void rs_ConfigLoad_proc(char* data)
 
     //MY_INDEX = body->config_load.node_id;
     //FD_NUM = body->config_load.node_num;
+    
+    int i = 0;
+    int x = body->config_load.node_list;
+    int z_num = 0;
+    int m_num = 0;
+    for (i = 0; i < 4; i++)
+    {
+        if((x&(1<<i))==1) z_num++;
+    }
+    if ((x & (1 << 4)) == 1) m_num++;
+
+    generate_key_event(KEY_CONFIG_LOAD, z_num, m_num);
 
 }
 

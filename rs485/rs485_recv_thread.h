@@ -15,7 +15,7 @@
 
 //body len
 #define CONFIG_INFO_LEN 20
-#define SHORT_FRAME_LEN sizeof(struct short_frame_t) //65
+#define SHORT_FRAME_LEN sizeof(struct short_frame_t) //66
 #define SHORT_FRAME_SP_LEN sizeof(struct short_frame_sp_t) //66
 #define LONG_FRAME_GUI_LEN    sizeof(struct long_frame_gui_t)-RS_TAIL_LEN //166=65+1+100
 #define LONG_FRAME_TOM_LEN    sizeof(struct long_frame_tom_t)-RS_TAIL_LEN //588=65+1+522
@@ -130,7 +130,7 @@ struct short_frame_t {
 	Point3D v;
 	Point3D rv;
 	Quaternion q;
-	//uint8_t qzt;
+	uint8_t qzt;
 	//rs_tail_t tail;
 };
 

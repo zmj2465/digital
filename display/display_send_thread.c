@@ -91,9 +91,9 @@ void display_send_thread_init()
     info.display_system.addr_len = sizeof(info.display_system.addr); //**
     display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
     printf("display_system connect success %d\n", display_fd);
+    generate_key_event(KEY_POWER_ON, 0, 0);
 
 }
-
 
 
 
@@ -204,7 +204,7 @@ void send_display_msg()
 
     //位置信息
     msg.display_info.pos_x = overall_fddi_info[0].pos.x/100;
-    msg.display_info.pos_y = overall_fddi_info[0].pos.y;
+    msg.display_info.pos_y = overall_fddi_info[0].pos.y*3;
     msg.display_info.pos_z = overall_fddi_info[0].pos.z/100;
     //printf("%f\n", overall_fddi_info[0].pos.y);
 
@@ -250,6 +250,7 @@ void send_display_msg()
         msg.display_info.z1_m_elevation[1] = beta;*/
         msg.display_info.z1_m_azimuth[1] = fmin(p++,45);
         msg.display_info.z1_m_elevation[1] = fmin(pp++, 45);
+
 
         //msg.display_info.z1_m_distance[4] = distance / 20;
         //msg.display_info.z1_m_azimuth[4] = fmin(p++, 45);
@@ -374,21 +375,21 @@ void send_display_msg()
 
 
     create_table(&msg);
-    for (i = 0; i < 5; i++)
-    {
-        printf("%d ", online_state[i]);
-    }
-    printf("\n");
+    //for (i = 0; i < 5; i++)
+    //{
+    //    printf("%d ", online_state[i]);
+    //}
+    //printf("\n");
 
-    for (i = 0; i < 2; i++)
-    {
-        for (j = 0; j < 6; j++)
-        {
-            printf("%d ", msg.display_info.link_target[i][j]);
-        }
-        printf("\n");
-    }
-    printf("****\n");
+    //for (i = 0; i < 2; i++)
+    //{
+    //    for (j = 0; j < 6; j++)
+    //    {
+    //        printf("%d ", msg.display_info.link_target[i][j]);
+    //    }
+    //    printf("\n");
+    //}
+    //printf("****\n");
 
 
     send(display_fd, &msg, msg.len, 0);
@@ -417,6 +418,13 @@ void generate_key_event(int type,int id_znum,int role_mnum)
     msg.key.id = MY_INDEX;
     msg.key.target_role = role_mnum;
     msg.key.target_id = id_znum;
+
+    if (type == 2)
+    {
+        msg.key.m_num = role_mnum;
+        msg.key.z_num = id_znum;
+    }
+
     if (type == 5)
     {
         online_state[id_znum] = 1;

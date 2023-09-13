@@ -35,6 +35,18 @@ enum
     REPLAY_SPEED,
 };
 
+
+enum {
+    KEY_POWER_ON,
+    KEY_SELF_CHECK,
+    KEY_CONFIG_LOAD,
+    KEY_PRE_SEPARATE,
+    KEY_SEPARATE,
+    KEY_LINK_ON,
+    KEY_LINK_OFF,
+    KEY_RELINK_ON,
+};
+
 #pragma pack(1)
 
 typedef struct
@@ -147,6 +159,8 @@ typedef struct {
     uint8_t key;
     uint8_t role;
     uint8_t id;
+    uint8_t m_num;
+    uint8_t z_num;
     uint8_t target_role;
     uint8_t target_id;
     float pos_x;                // À¹½ØÆ÷Î»ÖÃx
