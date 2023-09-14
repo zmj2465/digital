@@ -138,25 +138,30 @@ void* rs_485_recv_thread(void* arg)
         //Z-M
         switch (head->typea)
         {
-        case RS_SELF_CHECK:
+        case RS_SELF_CHECK: //自检
             rs_SelfCheck_proc(data);
             break;
-        case RS_SLEF_CHECK_RESULT:
+        case RS_SLEF_CHECK_RESULT: //自检结果
             rs_SelfCheckResult_proc(data);
             break;
-        case RS_CONFIG_LOAD:
+        case RS_CONFIG_LOAD: //参数装订
             rs_ConfigLoad_proc(data);
             break;
-        case RS_SHORT_FRAME:
+        case RS_SHORT_FRAME: //短帧
             rs_ShortFrame_proc(data);
             break;
-        case RS_LONG_FRAME:
+        case RS_LONG_FRAME: //长帧
             rs_LongFrame_proc(data,ret);
             break;
-        case RS_START_LINK:
+        case RS_START_LINK: //建链
             rs_Link_proc(data);
             break;
-
+        case RS_LINK_RESULT: //建链结果
+            rs_Link_result_proc(data);
+            break;
+        case RS_WORK_MODE: //工作模式
+            work_mode_proc(data);
+            break;
         }
         //M
         switch (head->type)
@@ -288,6 +293,35 @@ void rs_ConfigLoad_proc(char* data)
 
 }
 
+//工作模式回复
+void work_mode_proc(char* data)
+{
+    char res[RS_MAX_LEN];
+    memset(res, 0, RS_MAX_LEN);
+    rs_head_t* head = (rs_head_t*)data;
+    rs_body_t* body = (rs_body_t*)(data + RS_HEAD_LEN);
+    rs_head_t* rhead = (rs_head_t*)res;
+    rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+    //crc校验
+    uint16_t get_crc = body->work_mode.tail.crc;
+    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + 2, get_crc) == 1)
+    {
+        printf("work mode crc fail\n");
+        return;
+    }
+    //头部
+    head_load(data, res);
+    //内容
+    
+    //尾部
+    memset(rbody->work_modes_sp.tail.flag, 0x7e, 4);
+    //crc
+    rbody->work_modes_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + 1);
+
+    send_to_rs(RS_WORK_MODE_SP_LEN, 0, res);
+}
+
+//建链回复
 void rs_Link_proc(char* data)
 {
     char res[RS_MAX_LEN];
@@ -306,9 +340,74 @@ void rs_Link_proc(char* data)
     //头部
     head_load(data, res);
     //内容
+    
     //尾部
+    memset(rbody->body_tail.flag, 0x7e, 4);
+    //crc
+    rbody->body_tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN);
 
+    send_to_rs(RS_LINK_START_LEN, 0, res);
 }
+
+//建链结果回复
+void rs_Link_result_proc(char* data)
+{
+    char res[RS_MAX_LEN];
+    memset(res, 0, RS_MAX_LEN);
+    rs_head_t* head = (rs_head_t*)data;
+    rs_body_t* body = (rs_body_t*)(data + RS_HEAD_LEN);
+    rs_head_t* rhead = (rs_head_t*)res;
+    rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+    //crc校验
+    uint16_t get_crc = body->body_tail.crc;
+    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN, get_crc) == 1)
+    {
+        printf("link result crc fail\n");
+        return;
+    }
+    //头部
+    head_load(data, res);
+    //内容
+    
+    //尾部
+    memset(rbody->link_result_sp.tail.flag, 0x7e, 4);
+    //crc加载
+    rbody->link_result_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + LINK_RESULT_SP_LEN);
+
+    send_to_rs(RS_LINK_RESULT_SP_LEN, 0, res);
+}
+
+void rs_PreSeparate_proc(char* data)
+{
+    char res[RS_MAX_LEN];
+    memset(res, 0, RS_MAX_LEN);
+    rs_head_t* head = (rs_head_t*)data;
+    rs_body_t* body = (rs_body_t*)(data + RS_HEAD_LEN);
+    rs_head_t* rhead = (rs_head_t*)res;
+    rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+    //crc校验
+    uint16_t get_crc = body->body_tail.crc;
+    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN, get_crc) == 1)
+    {
+        printf("pre separate crc fail\n");
+        return;
+    }
+    //头部
+    head_load(data, res);
+
+    //内容
+
+    //尾部
+    memset(rbody->body_tail.flag, 0x7e, 4);
+    //crc加载
+    rbody->body_tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN);
+
+    send_to_rs(RS_PRE_SEPARATE_SP_LEN, 0, res);
+
+    generate_key_event(KEY_PRE_SEPARATE, 0, 0);
+}
+
+
 
 //短帧回复
 void rs_ShortFrame_proc(char* data)
@@ -319,29 +418,45 @@ void rs_ShortFrame_proc(char* data)
     rs_body_t* body = (rs_body_t*)(data + RS_HEAD_LEN);
     rs_head_t* rhead = (rs_head_t*)res;
     rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
-    //crc校验
-    uint16_t get_crc = *(uint16_t*)((char*)&body->short_frmae + SHORT_FRAME_LEN);
-    if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + SHORT_FRAME_LEN, get_crc) == 1)
-    {
-        printf("short frame crc fail\n");
-        return;
-    }
+
     //头部加载
     head_load(data, res);
-    //内容加载
-    
-    //尾部加载
-    memcpy((char*)&rbody->short_frmae_sp + SHORT_FRAME_SP_LEN, (char*)&body->short_frmae + SHORT_FRAME_LEN, RS_TAIL_LEN);
-    //crc加载
-    *(uint16_t*)((char*)&rbody->short_frmae_sp + SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + SHORT_FRAME_SP_LEN);
-    send_to_rs(RS_SHORT_FRAME_SP_LEN, 0, res);
 
+    if (MY_INDEX == 0) //M
+    {
+        //crc
+        uint16_t get_crc = *(uint16_t*)((uint8_t*)&body->m_short_frmae + M_SHORT_FRAME_LEN);
+        if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + M_SHORT_FRAME_LEN, get_crc) == 1)
+        {
+            printf("m short frame crc fail\n");
+            return;
+        }
+        //内容
+        
+        //尾部加载
+        memset((uint8_t*)&body->m_short_frmae_sp + M_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
+        //crc加载
+        *(uint16_t*)((uint8_t*)&body->m_short_frmae_sp + M_SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M_SHORT_FRAME_SP_LEN);
 
-    //处理
-    memcpy(&overall_fddi_info[MY_INDEX], (uint8_t*)&head->flag + 4 + ADD_TYPE_LEN, sizeof(fddi_info_t));
-    printf("x:%f y:%f z:%f\n", overall_fddi_info[MY_INDEX].pos.x,
-                               overall_fddi_info[MY_INDEX].pos.x,
-                               overall_fddi_info[MY_INDEX].pos.z);
+        send_to_rs(RS_M_SHORT_FRAME_SP_LEN, 0, res);
+    }
+    else //Z
+    {
+        uint16_t get_crc = *(uint16_t*)((uint8_t*)&body->z_short_frmae + Z_SHORT_FRAME_LEN);
+        if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + Z_SHORT_FRAME_LEN, get_crc) == 1)
+        {
+            printf("z short frame crc fail\n");
+            return;
+        }
+        //内容
+
+        //尾部加载
+        memset((uint8_t*)&body->z_short_frmae_sp + Z_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
+        //crc加载
+        *(uint16_t*)((uint8_t*)&body->z_short_frmae_sp + Z_SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + Z_SHORT_FRAME_SP_LEN);
+
+        send_to_rs(RS_Z_SHORT_FRAME_SP_LEN, 0, res);
+    }
 }
 
 //长帧回复

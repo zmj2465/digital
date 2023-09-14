@@ -246,15 +246,9 @@ void send_display_msg()
         calculateAngles(&pos2, &alpha, &beta);
 
         msg.display_info.z1_m_distance[1] = distance/20;
-        /*msg.display_info.z1_m_azimuth[1] = alpha+90;
-        msg.display_info.z1_m_elevation[1] = beta;*/
         msg.display_info.z1_m_azimuth[1] = fmin(p++,45);
         msg.display_info.z1_m_elevation[1] = fmin(pp++, 45);
 
-
-        //msg.display_info.z1_m_distance[4] = distance / 20;
-        //msg.display_info.z1_m_azimuth[4] = fmin(p++, 45);
-        //msg.display_info.z1_m_elevation[3] = fmin(pp++, 45);
 
         //printf("%f %f %f\n", distance, alpha, beta);
         //tosche("%f %f %f\n", msg.display_info.pos_x,
