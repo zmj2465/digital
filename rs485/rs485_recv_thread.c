@@ -1,6 +1,7 @@
 #include "rs485_recv_thread.h"
 #include "xdmaDLL_public.h"
 #include "display_send_thread.h"
+#include "data_send_thread.h"
 #include "stddef.h"
 #include <string.h>
 #include "crc.h"
@@ -492,7 +493,9 @@ void rs_LongFrame_proc(char* data,int len)
         send_to_rs(RS_LONG_FRAME_SP_GUI_LEN, 0, res);
 
 
-        enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_gui.typec, 1+45);
+        //enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_gui.typec, 1+45);
+        put(&common_data[Z_GUI_SEND], body->long_frame_gui.typec, Z_GUI_SEND_LEN,0);
+
     }
     else if(body->long_frame_tom.typec == 0x66){
         //crcÐ£Ñé
@@ -509,7 +512,8 @@ void rs_LongFrame_proc(char* data,int len)
         rbody->long_frame_sp_tom.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + LONG_FRAME_SP_TOM_LEN);
         send_to_rs(RS_LONG_FRAME_SP_TOM_LEN, 0, res);
 
-        enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_tom.typec, 1 + 467);
+        //enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_tom.typec, 1 + 467);
+        put(&common_data[Z_TOM_SEND], body->long_frame_tom.typec, Z_TOM_SEND_LEN, 0);
     }
 }
 
@@ -572,7 +576,8 @@ void rs_M2ZGui_proc(char* data)
     send_to_rs(RS_M2Z_GUI_FRAME_SP_LEN, 0, res);
 
 
-    enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_gui_frame.content, 132);
+    //enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_gui_frame.content, 132);
+    put(&common_data[M_GUI_SEND], body->m2z_gui_frame.content, 4 * M_GUI_SEND_LEN, 0);
 
 }
 
@@ -603,7 +608,8 @@ void rs_M2ZTom_proc(char* data)
     send_to_rs(RS_M2Z_TOM_FRAME_SP_LEN, 0, res);
 
 
-    enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_tom_frame.content, 1828);
+    //enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_tom_frame.content, 1828);
+    put(&common_data[M_TOM_SEND], body->m2z_tom_frame.content, 4 * M_TOM_SEND_LEN, 0);
 }
 
 void rs_M2ZPlan_proc(char* data)

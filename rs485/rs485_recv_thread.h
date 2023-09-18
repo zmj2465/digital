@@ -370,7 +370,7 @@ struct m2z_gui_frame_sp_t {
 
 struct m2z_tom_frame_t {
 
-	uint8_t content[1828];
+	uint8_t content[1824];
 
 	rs_tail_t tail;
 };
