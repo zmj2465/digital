@@ -33,7 +33,8 @@ extern uint64_t end_time;
 #define MAX_DATA_LEN	2048	//最大数据长度
 #define START_GUN_TIME	10		//仿真开始时间：10s
 #define TIMER_DELAY		300  	//定时器时间：300ms
-#define MY_INDEX		info.link_index						
+#define MY_INDEX		info.link_index
+#define MY_ROLE         info.my_role
 #define FD				info.simulated_link					
 #define FD_NUM			info.simulated_link_num				//连接仿真系统的装置数目
 #define RSET			info.rset							
@@ -157,6 +158,7 @@ typedef struct _info_t
 	fd_set wset;
 	int simulated_link_num;
 	int link_index;
+	int my_role;
 	char ip[IP_LEN];				//样机设备ip
 	int port;
 	
@@ -325,7 +327,6 @@ extern fddi_info_t overall_fddi_info[5];
 extern int8_t link_table[5][6];
 extern int online_state[5];
 
-
-
 void queue_init();
+
 #endif

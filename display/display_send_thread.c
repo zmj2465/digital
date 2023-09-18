@@ -35,8 +35,6 @@ void* display_send_thread(void* arg)
     init();
     /*以太网连接*/
     display_send_thread_init();
-    //file_num(display_fd);
-    //net_num(display_fd, 1, 1);
 
 
     while (1)
@@ -92,6 +90,8 @@ void display_send_thread_init()
     display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
     printf("display_system connect success %d\n", display_fd);
     generate_key_event(KEY_POWER_ON, 0, 0);
+    Sleep(5);
+    generate_key_event(KEY_CONFIG_LOAD, 1, 1);
 
 }
 
@@ -221,8 +221,8 @@ void send_display_msg()
     msg.display_info.time_element_number = 0;
     msg.display_info.time_frame_number = 0;
     msg.display_info.micro_time_slot_number = 0;
-    msg.display_info.node_role = 0;
-    msg.display_info.node_id = 0;
+    msg.display_info.node_role = MY_ROLE;
+    msg.display_info.node_id = MY_INDEX - MY_ROLE;
     msg.display_info.link_status = 1;
 
 
@@ -273,9 +273,9 @@ void send_display_msg()
         //计算方位角俯仰角
         calculateAngles(&pos2, &alpha, &beta);
 
-        msg.display_info.z1_m_distance[1] = distance/20;
-        msg.display_info.z1_m_azimuth[1] = alpha;
-        msg.display_info.z1_m_elevation[1] = beta;
+        msg.display_info.z1_m_distance[0] = distance / 20;
+        msg.display_info.z1_m_azimuth[0] = fmin(p++, 45);
+        msg.display_info.z1_m_elevation[0] = 180 - fmin(pp++, 45);
 
     }
 
@@ -408,10 +408,10 @@ void generate_key_event(int type,int id_znum,int role_mnum)
     msg.key.system_time.tv_sec = my_get_time();
     msg.key.key = type;
     
-    msg.key.role = info.device_info.node_role;
-    msg.key.id = MY_INDEX;
+    msg.key.role = MY_ROLE;
+    msg.key.id = MY_INDEX-MY_ROLE;
     msg.key.target_role = role_mnum;
-    msg.key.target_id = id_znum;
+    msg.key.target_id = id_znum - role_mnum;
 
     if (type == 2)
     {

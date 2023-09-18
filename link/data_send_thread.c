@@ -2,6 +2,17 @@
 #include "file_manage.h"
 
 
+m2z_gui_send_t m2z_gui_send;
+m2z_gui_recv_t m2z_gui_recv;
+m2z_tom_send_t m2z_tom_send;
+m2z_tom_recv_t m2z_tom_recv;
+
+z2m_gui_send_t z2m_gui_send;
+z2m_gui_recv_t z2m_gui_recv;
+z2m_tom_send_t z2m_tom_send;
+z2m_tom_recv_t z2m_tom_recv;
+
+
 /*
 功能：发送数据线程
 参数：无
@@ -355,4 +366,24 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
 
     msg->len = msg->len + sizeof(head_t) + sizeof(int);//加上包头长度
     /*位置信息待补充*/
+}
+
+
+
+
+
+//m2z_gui_send_t m2z_gui_send;
+//m2z_gui_recv_t m2z_gui_recv;
+//m2z_tom_send_t m2z_tom_send;
+//m2z_tom_recv_t m2z_tom_recv;
+//
+//z2m_gui_send_t z2m_gui_send;
+//z2m_gui_recv_t z2m_gui_recv;
+//z2m_tom_send_t z2m_tom_send;
+//z2m_tom_recv_t z2m_tom_recv;
+
+
+void get_m2z_gui_send(char* buff,int index)
+{
+
 }

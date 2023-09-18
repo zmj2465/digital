@@ -435,6 +435,13 @@ typedef union _rs_body_t {
 
 
 
+
+
+
+
+
+
+
 void* rs_485_recv_thread(void* arg);
 
 
@@ -444,6 +451,9 @@ void rs_ConfigLoad_proc(char* data);
 void work_mode_proc(char* data);
 void rs_Link_proc(char* data);
 void rs_Link_result_proc(char* data);
+void rs_PreSeparate_proc(char* data);
+
+
 void rs_ShortFrame_proc(char* data);
 void rs_LongFrame_proc(char* data, int len);
 

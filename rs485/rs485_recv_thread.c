@@ -162,6 +162,9 @@ void* rs_485_recv_thread(void* arg)
         case RS_WORK_MODE: //工作模式
             work_mode_proc(data);
             break;
+        case RS_PRE_SEPARATE: //预分离
+            rs_PreSeparate_proc(data);
+            break;
         }
         //M
         switch (head->type)
@@ -377,6 +380,7 @@ void rs_Link_result_proc(char* data)
     send_to_rs(RS_LINK_RESULT_SP_LEN, 0, res);
 }
 
+//预分离
 void rs_PreSeparate_proc(char* data)
 {
     char res[RS_MAX_LEN];

@@ -173,6 +173,14 @@ void config_init()
     if (ret == -1) printf("folder config\n");
     else printf("desktop config\n");
     online_state[MY_INDEX] = 1;
+    if (MY_INDEX == 0)
+    {
+        MY_ROLE = 0;
+    }
+    else
+    {
+        MY_ROLE = 1;
+    }
 }
 
 /*
