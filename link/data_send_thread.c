@@ -381,64 +381,64 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
 //z_tom_recv_t z_tom_recv;
 
 
-void get_m_gui_send(char* buff,int index)
-{
-    pthread_mutex_lock(&m_gui_send.lock);
-    memcpy(buff, &m_gui_send.data[index * M_GUI_SEND_LEN], M_GUI_SEND_LEN);
-    pthread_mutex_unlock(&m_gui_send.lock);
-}
-
-void put_m_gui_send(char* buff, int index)
-{
-    pthread_mutex_lock(&m_gui_recv.lock);
-    memcpy(&m_gui_recv.data[index * M_GUI_RECV_LEN], buff, M_GUI_RECV_LEN);
-    pthread_mutex_lock(&m_gui_recv.lock);
-}
-
-
-void get_m_tom_send(char* buff, int index)
-{
-    pthread_mutex_lock(&m_tom_send.lock);
-    memcpy(buff, &m_tom_send.data[index * M_TOM_SEND_LEN], M_TOM_SEND_LEN);
-    pthread_mutex_lock(&m_tom_send.lock);
-}
-
-void put_m_tom_send(char* buff, int index)
-{
-    pthread_mutex_lock(&m_tom_recv.lock);
-    memcpy(&m_tom_recv.data[index * M_TOM_RECV_LEN], buff, M_TOM_RECV_LEN);
-    pthread_mutex_lock(&m_tom_recv.lock);
-}
-
-
-void get_z_gui_send(char* buff)
-{
-    pthread_mutex_lock(&z_gui_send.lock);
-    memcpy(buff, z_gui_send.data, Z_GUI_SEND_LEN);
-    pthread_mutex_lock(&z_gui_send.lock);
-}
-
-void put_z_gui_send(char* buff)
-{
-    pthread_mutex_lock(&z_gui_recv.lock);
-    memcpy(z_gui_recv.data, buff, Z_GUI_RECV_LEN);
-    pthread_mutex_lock(&z_gui_recv.lock);
-}
-
-
-void get_z_tom_send(char* buff)
-{
-    pthread_mutex_lock(&z_tom_send.lock);
-    memcpy(buff, z_tom_send.data, Z_TOM_SEND_LEN);
-    pthread_mutex_lock(&z_tom_send.lock);
-}
-
-void put_z_tom_send(char* buff)
-{
-    pthread_mutex_lock(&z_tom_recv.lock);
-    memcpy(z_tom_recv.data, buff, Z_TOM_RECV_LEN);
-    pthread_mutex_lock(&z_tom_recv.lock);
-}
+//void get_m_gui_send(char* buff,int index)
+//{
+//    pthread_mutex_lock(&m_gui_send.lock);
+//    memcpy(buff, &m_gui_send.data[index * M_GUI_SEND_LEN], M_GUI_SEND_LEN);
+//    pthread_mutex_unlock(&m_gui_send.lock);
+//}
+//
+//void put_m_gui_send(char* buff, int index)
+//{
+//    pthread_mutex_lock(&m_gui_recv.lock);
+//    memcpy(&m_gui_recv.data[index * M_GUI_RECV_LEN], buff, M_GUI_RECV_LEN);
+//    pthread_mutex_lock(&m_gui_recv.lock);
+//}
+//
+//
+//void get_m_tom_send(char* buff, int index)
+//{
+//    pthread_mutex_lock(&m_tom_send.lock);
+//    memcpy(buff, &m_tom_send.data[index * M_TOM_SEND_LEN], M_TOM_SEND_LEN);
+//    pthread_mutex_lock(&m_tom_send.lock);
+//}
+//
+//void put_m_tom_send(char* buff, int index)
+//{
+//    pthread_mutex_lock(&m_tom_recv.lock);
+//    memcpy(&m_tom_recv.data[index * M_TOM_RECV_LEN], buff, M_TOM_RECV_LEN);
+//    pthread_mutex_lock(&m_tom_recv.lock);
+//}
+//
+//
+//void get_z_gui_send(char* buff)
+//{
+//    pthread_mutex_lock(&z_gui_send.lock);
+//    memcpy(buff, z_gui_send.data, Z_GUI_SEND_LEN);
+//    pthread_mutex_lock(&z_gui_send.lock);
+//}
+//
+//void put_z_gui_send(char* buff)
+//{
+//    pthread_mutex_lock(&z_gui_recv.lock);
+//    memcpy(z_gui_recv.data, buff, Z_GUI_RECV_LEN);
+//    pthread_mutex_lock(&z_gui_recv.lock);
+//}
+//
+//
+//void get_z_tom_send(char* buff)
+//{
+//    pthread_mutex_lock(&z_tom_send.lock);
+//    memcpy(buff, z_tom_send.data, Z_TOM_SEND_LEN);
+//    pthread_mutex_lock(&z_tom_send.lock);
+//}
+//
+//void put_z_tom_send(char* buff)
+//{
+//    pthread_mutex_lock(&z_tom_recv.lock);
+//    memcpy(z_tom_recv.data, buff, Z_TOM_RECV_LEN);
+//    pthread_mutex_lock(&z_tom_recv.lock);
+//}
 
 
 void get(common_data_t* src,char* dst,int len,int index)
