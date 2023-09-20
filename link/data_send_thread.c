@@ -11,6 +11,7 @@ z_gui_send_t z_gui_send;
 z_gui_recv_t z_gui_recv;
 z_tom_send_t z_tom_send;
 z_tom_recv_t z_tom_recv;
+
 common_data_t common_data[MZ_DATA];
 
 
