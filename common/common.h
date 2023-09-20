@@ -72,6 +72,8 @@ enum FRAME_TYPE
 	SLEF_TEST_RESULT = 0x10, //自检结果
 	PARAMETER_LOAD	 = 0xcc, //参数装订
 	SHORT_FRAME		 = 0x30, //短帧
+	GUI_FRAME		 = 0x33, //制导
+	TOM_FRAME        = 0x66, //TOM
 	LONG_FRAME		 = 0x40, //长帧
 	START_GUN		 = 0x50, //发令枪
 	SCAN			 = 0x60, //扫描
