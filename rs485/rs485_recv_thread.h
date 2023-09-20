@@ -202,6 +202,7 @@ struct z_short_frame_sp_t {
 };
 
 struct m_short_frame_t {
+	uint8_t en;
 	uint8_t ad;
 	uint32_t rti;
 	int32_t tf;

@@ -439,9 +439,9 @@ void rs_ShortFrame_proc(char* data)
         //内容
         
         //尾部加载
-        memset((uint8_t*)&body->m_short_frmae_sp + M_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
+        memset((uint8_t*)&rbody->m_short_frmae_sp + M_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
         //crc加载
-        *(uint16_t*)((uint8_t*)&body->m_short_frmae_sp + M_SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M_SHORT_FRAME_SP_LEN);
+        *(uint16_t*)((uint8_t*)&rbody->m_short_frmae_sp + M_SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M_SHORT_FRAME_SP_LEN);
 
         send_to_rs(RS_M_SHORT_FRAME_SP_LEN, 0, res);
     }
@@ -456,9 +456,9 @@ void rs_ShortFrame_proc(char* data)
         //内容
 
         //尾部加载
-        memset((uint8_t*)&body->z_short_frmae_sp + Z_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
+        memset((uint8_t*)&rbody->z_short_frmae_sp + Z_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
         //crc加载
-        *(uint16_t*)((uint8_t*)&body->z_short_frmae_sp + Z_SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + Z_SHORT_FRAME_SP_LEN);
+        *(uint16_t*)((uint8_t*)&rbody->z_short_frmae_sp + Z_SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + Z_SHORT_FRAME_SP_LEN);
 
         send_to_rs(RS_Z_SHORT_FRAME_SP_LEN, 0, res);
     }
@@ -606,6 +606,7 @@ void rs_M2ZTom_proc(char* data)
     //crc
     rbody->m2z_tom_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M2Z_TOM_FRAME_SP_LEN);
     send_to_rs(RS_M2Z_TOM_FRAME_SP_LEN, 0, res);
+
 
 
     //enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_tom_frame.content, 1828);
