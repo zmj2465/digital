@@ -53,6 +53,15 @@ int master_data_proc(void)
                 break;
             case LONG_FRAME:
                 index = inquire_address(msg.head.src);
+
+                if (msg.data[0] == GUI_FRAME)//制导
+                {
+                    put(&common_data[M_GUI_RECV], msg.data, msg.len, index);
+                }
+                if (msg.data[0] == TOM_FRAME)//TOM
+                {
+                    put(&common_data[M_TOM_RECV], msg.data, msg.len, index);
+                }
                 plog("M recv Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, msg.head.seq);
                 break;
             case START_GUN:
@@ -131,6 +140,14 @@ int master_data_proc(void)
                     plog("Z%d recv M beacon, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
                     break;
                 case LONG_FRAME:
+                    if (msg.data[0] == GUI_FRAME)//制导
+                    {
+                        put(&common_data[Z_GUI_RECV], msg.data, msg.len, 0);
+                    }
+                    if (msg.data[0] == TOM_FRAME)//TOM
+                    {
+                        put(&common_data[Z_TOM_RECV], msg.data, msg.len, 0);
+                    }
                     plog("Z%d recv M data, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);       
                     break;
                 case DISTANCE:
