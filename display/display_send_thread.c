@@ -47,9 +47,10 @@ void* display_send_thread(void* arg)
         }
         else
         {
-            printf("lost display connect\n");
-            display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len));
-            printf("get display connect\n");
+            //printf("lost display connect\n");
+            //display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len));
+            //printf("get display connect\n");
+            exit(0);
         }
     }
 }
@@ -194,7 +195,7 @@ void send_display_msg()
     int i;
     int j;
     msg.type = DISPLAY_INFO;
-    msg.len = 4 + sizeof(display_t);
+    msg.len = MAX_SEND_LEN;
 
     pthread_mutex_lock(&display_state.mutex);
     msg.display_info.serial_number = display_state.seq;
@@ -399,7 +400,9 @@ void generate_key_event(int type,int id_znum,int role_mnum)
     show_t msg;
     memset(&msg, 0, sizeof(msg));
     msg.type = IMP_EVENT;
-    msg.len = 4 + sizeof(display_t);
+    //msg.len = 4 + sizeof(display_t);
+
+    msg.len = MAX_SEND_LEN;
 
     //
     pthread_mutex_lock(&display_state.mutex);
@@ -437,7 +440,7 @@ void generate_key_event(int type,int id_znum,int role_mnum)
     msg.key.pos_x = overall_fddi_info[0].pos.x / 100;
     msg.key.pos_y = overall_fddi_info[0].pos.y;
     msg.key.pos_z = overall_fddi_info[0].pos.z / 100;
-    printf("key event:%d\n", msg.key.key);
+    printf("key event:%d len=%d\n", msg.key.key,msg.len);
 
     send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);

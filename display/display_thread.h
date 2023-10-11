@@ -10,6 +10,8 @@
 #include "display_send_thread.h"
 
 
+#define MAX_SEND_LEN 1024
+
 void* display_thread(void* arg);
 
 void create_table(show_t* msg);

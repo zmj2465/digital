@@ -1,13 +1,15 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MemoryMap", "MemoryMap\MemoryMap.vcproj", "{C5ADEC07-7416-4DB5-ABD0-BDF794B0ACF6}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33423.256
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MemoryMap", "MemoryMap\MemoryMap.vcxproj", "{C5ADEC07-7416-4DB5-ABD0-BDF794B0ACF6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "receiver", "Receiver\receiver.vcproj", "{01A825AC-79A4-4AEA-AB0F-F2E565962CF8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "receiver", "Receiver\receiver.vcxproj", "{01A825AC-79A4-4AEA-AB0F-F2E565962CF8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sender", "Sender\sender.vcproj", "{6AB48F9B-81B9-4E67-ACDD-E7B254CF168D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sender", "Sender\sender.vcxproj", "{6AB48F9B-81B9-4E67-ACDD-E7B254CF168D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "util", "Util\util.vcproj", "{781E8DCC-43C1-4D4B-A0CE-9341DD96F0B7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "util", "Util\util.vcxproj", "{781E8DCC-43C1-4D4B-A0CE-9341DD96F0B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,5 +54,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A5F5D5B7-849A-4DF7-830C-10C2DF63E182}
 	EndGlobalSection
 EndGlobal

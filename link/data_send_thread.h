@@ -85,7 +85,7 @@ typedef struct _z_tom_recv_t
 
 
 typedef struct _common_data_t {
-	uint8_t data[2048];
+	uint8_t data[4096];
 	pthread_mutex_t lock;
 }common_data_t;
 

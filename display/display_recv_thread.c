@@ -7,6 +7,7 @@
 void* display_recv_thread(void* arg)
 {
 	pthread_detach(pthread_self());
+
 	show_t msg;
 	int len = 0;
 	while (1)
