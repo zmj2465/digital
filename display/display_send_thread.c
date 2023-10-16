@@ -3,6 +3,7 @@
 #include "angle.h"
 #include "physical_simulation.h"
 #include "display_thread.h"
+#include "math.h"
 
 display_state_t display_state;
 show_t show_msg;
@@ -187,6 +188,10 @@ int d2022 = 3;
 int d23 = 1;
 int d24 = 1;
 int d25d31 = 0;
+
+double lastx=0;
+double lasty=0;
+double lastz=0;
 void send_display_msg()
 {
     static float p=0, pp=0;
@@ -195,6 +200,7 @@ void send_display_msg()
     int i;
     int j;
     msg.type = DISPLAY_INFO;
+    //msg.len = 4 + sizeof(display_t);
     msg.len = MAX_SEND_LEN;
 
     pthread_mutex_lock(&display_state.mutex);
@@ -205,10 +211,20 @@ void send_display_msg()
 
     //位置信息
     msg.display_info.pos_x = overall_fddi_info[0].pos.x/100;
-    msg.display_info.pos_y = overall_fddi_info[0].pos.y*3;
+    msg.display_info.pos_y = overall_fddi_info[0].pos.y;
     msg.display_info.pos_z = overall_fddi_info[0].pos.z/100;
-    //printf("%f\n", overall_fddi_info[0].pos.y);
 
+    double delta_x = (msg.display_info.pos_x - lastx);
+    double delta_y = (msg.display_info.pos_y - lasty);
+    double delta_z = (msg.display_info.pos_z - lastz);
+    double ddistance = sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
+    double speed = ddistance / 0.005;
+    lastx = msg.display_info.pos_x;
+    lasty = msg.display_info.pos_y;
+    lastz = msg.display_info.pos_z;
+    //printf("%f %f %f\n", msg.display_info.pos_x, msg.display_info.pos_y, msg.display_info.pos_z);
+    //printf("%f %f %f\n", delta_x, delta_y, delta_z);
+    printf("ddistance=%f v=%f\n", ddistance, speed);
     msg.display_info.vel_x = 1.0;
     msg.display_info.vel_y = 2.0;
     msg.display_info.vel_z = 3.0;
@@ -225,7 +241,6 @@ void send_display_msg()
     msg.display_info.node_role = MY_ROLE;
     msg.display_info.node_id = MY_INDEX - MY_ROLE;
     msg.display_info.link_status = 1;
-
 
     //for (j = 0; j < 5; j++)
     //{
@@ -250,7 +265,6 @@ void send_display_msg()
         msg.display_info.z1_m_azimuth[1] = fmin(p++,45);
         msg.display_info.z1_m_elevation[1] = fmin(pp++, 45);
 
-
         //printf("%f %f %f\n", distance, alpha, beta);
         //tosche("%f %f %f\n", msg.display_info.pos_x,
         //    msg.display_info.pos_y,
@@ -263,6 +277,7 @@ void send_display_msg()
         //    msg.display_info.z1_m_azimuth[1],
         //    msg.display_info.z1_m_elevation[1]
         //);
+
     }
     else if (MY_INDEX == 1)
     {
@@ -386,7 +401,7 @@ void send_display_msg()
     //}
     //printf("****\n");
 
-
+    //printf("y=%f\n", msg.display_info.pos_y);
     send(display_fd, &msg, msg.len, 0);
     todata(&msg, msg.len);
     //enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
@@ -638,6 +653,17 @@ void net_num(int fd, int m, int z)
     msg.num.m_num = m;
     msg.num.z_num = z;
     send(fd, &msg, msg.len, 0);
+}
+
+void role_id_config()
+{
+    show_t msg;
+    memset(&msg, 0, sizeof(show_t));
+    msg.type = ROLE_CONFIG;
+    msg.len = 1024;
+    msg.roleid.role = MY_ROLE;
+    msg.roleid.id = MY_INDEX - MY_ROLE;
+    send(display_fd, &msg, msg.len, 0);
 }
 
 

@@ -351,6 +351,12 @@ void rs_Link_proc(char* data)
     rbody->body_tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN);
 
     send_to_rs(RS_LINK_START_LEN, 0, res);
+
+    if (MY_INDEX == 0)
+        generate_key_event(5, 1, 1);
+    else
+        generate_key_event(5, 0, 0);
+
 }
 
 //建链结果回复
@@ -486,13 +492,14 @@ void rs_LongFrame_proc(char* data,int len)
 
         rbody->long_frame_sp_gui.typec = 0x33;
 
+        get(&common_data[Z_GUI_RECV], rbody->long_frame_sp_gui.typec, Z_GUI_RECV_LEN, 0);
         //尾部装载
         memcpy(&rbody->long_frame_sp_gui.tail, &body->long_frame_gui.tail, RS_TAIL_LEN);
         //crc加载
         rbody->long_frame_sp_gui.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + LONG_FRAME_SP_GUI_LEN);
         send_to_rs(RS_LONG_FRAME_SP_GUI_LEN, 0, res);
 
-
+        
         //enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_gui.typec, 1+45);
         put(&common_data[Z_GUI_SEND], body->long_frame_gui.typec, Z_GUI_SEND_LEN,0);
 
@@ -505,7 +512,9 @@ void rs_LongFrame_proc(char* data,int len)
             return;
         }
 
-        rbody->long_frame_sp_gui.typec = 0x66;
+        rbody->long_frame_sp_tom.typec = 0x66;
+
+        get(&common_data[Z_TOM_RECV], rbody->long_frame_sp_tom.typec, Z_TOM_RECV_LEN, 0);
         //尾部装载
         memcpy(&rbody->long_frame_sp_tom.tail, &body->long_frame_tom.tail, RS_TAIL_LEN);
         //crc加载
@@ -567,7 +576,7 @@ void rs_M2ZGui_proc(char* data)
     head_load(data, res);
     rhead->type = RS_Z2M_GUI_SP;
     //内容
-     
+    get(&common_data[M_GUI_RECV], body->m2z_gui_frame_sp.content, 4 * M_GUI_RECV_LEN, 0);
     //尾部
     memset(&rbody->m2z_gui_frame_sp.tail.flag, 0x7e, 4);
 
@@ -600,13 +609,12 @@ void rs_M2ZTom_proc(char* data)
     head_load(data, res);
     rhead->type = RS_Z2M_TOM_SP;
     //内容
-
+    get(&common_data[M_TOM_RECV], body->m2z_tom_frame_sp.content, 4 * M_TOM_RECV_LEN, 0);
     //尾部
     memset(&rbody->m2z_tom_frame_sp.tail.flag, 0x7e, 4);
     //crc
     rbody->m2z_tom_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M2Z_TOM_FRAME_SP_LEN);
     send_to_rs(RS_M2Z_TOM_FRAME_SP_LEN, 0, res);
-
 
 
     //enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_tom_frame.content, 1828);

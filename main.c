@@ -33,7 +33,9 @@ pthread_mutex_t lock;
 int main()
 {
 
-    system("C:\\Users\\MRGT\\Desktop\\start.bat");
+    //system("C:\\Users\\MRGT\\Desktop\\start.bat");
+
+
 
     /*ptp ±÷”≥ı ºªØ*/
     time_init();

@@ -22,7 +22,7 @@ enum
     SIM_END,
     FILE_SEQ,
     IMP_EVENT,
-
+    ROLE_CONFIG=8,
     NET_NUM=10,
 
     SIM_START_ = 101,
@@ -190,6 +190,11 @@ typedef struct {
     uint8_t z_num;
 }net_t;
 
+typedef struct {
+    uint8_t role;
+    uint8_t id;
+}roleid_t;
+
 typedef struct _show_t
 {
     uint16_t type;
@@ -208,6 +213,7 @@ typedef struct _show_t
         file_t file_info;
 
         net_t num;
+        roleid_t roleid;
     };
 }show_t;
 
@@ -242,6 +248,8 @@ void rep_recover_proc(show_t* msg);
 void send_display_msg();
 void send_to_display(char* data, int len);
 void find_data();
+
+void role_id_config();
 
 
 

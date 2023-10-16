@@ -30,8 +30,10 @@ void* fddi_thread(void* arg)
         len = recv(info.fddi_system.fd, data, 200, 0);
         if (len <= 0)
         {
+            display_state.mode = NO_MODE;
             info.fddi_system.fd = accept(lfd, (struct sockaddr*)&(info.fddi_system.addr), &(info.fddi_system.addr_len));
             printf("fddi_system connect success %d\n", info.fddi_system.fd);
+            display_state.mode = SIM_MODE;
             h = 0;
         }
         else
