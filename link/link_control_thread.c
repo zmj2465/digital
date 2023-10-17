@@ -5,7 +5,7 @@ void* link_control_thread(void* arg)
 {
     pthread_detach(pthread_self());
 
-	wait_for_fddi();
+	//wait_for_fddi();
 
 
 	link_init();

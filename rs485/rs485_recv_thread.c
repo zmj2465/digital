@@ -128,14 +128,45 @@ void* rs_485_recv_thread(void* arg)
         ret = last_packetSize(user_hdev);
 
         rs_head_t* head = (rs_head_t*)data;
-        printf("-----get len=%d type:%x-----\n", ret, head->typea);
+        printf("-----get len=%d type:%x mtype=%x-----\n", ret, head->typea, head->type);
         for (i = 0; i < ret; i++)
         {
             printf("%02x ", data[i]);
         }
         printf("\n");
 
-        
+        if (head->type == 0x0100)
+        {
+            rs_M2ZGui_proc(data);
+            continue;
+        }
+        else if (head->type == 0x0200)
+        {
+            rs_M2ZTom_proc(data);
+            continue;
+        }
+        else if (head->type == 0x0300)
+        {
+            rs_M2ZPlan_proc(data);
+            continue;
+        }
+
+        ////M
+        //switch (head->type)
+        //{
+        //case 0x0100://RS_M2Z_GUI:
+        //    rs_M2ZGui_proc(data);
+        //    break;
+        //case 0x0200:
+        //    rs_M2ZTom_proc(data);
+        //    break;
+        //case 0x0300:
+        //    rs_M2ZPlan_proc(data);
+        //    break;
+        //}
+
+
+
         //Z-M
         switch (head->typea)
         {
@@ -167,20 +198,7 @@ void* rs_485_recv_thread(void* arg)
             rs_PreSeparate_proc(data);
             break;
         }
-        //M
-        switch (head->type)
-        {
-        case RS_M2Z_GUI:
-            rs_M2ZGui_proc(data);
-            break;
-        case RS_M2Z_TOM:
-            rs_M2ZTom_proc(data);
-            break;
-        case RS_M2Z_PLAN:
-            rs_M2ZPlan_proc(data);
-            break;
-
-        }
+        
     }
 #endif
 }
@@ -575,6 +593,7 @@ void rs_M2ZGui_proc(char* data)
     //头部
     head_load(data, res);
     rhead->type = RS_Z2M_GUI_SP;
+    rhead->type = 0x1a00;
     //内容
     get(&common_data[M_GUI_RECV], body->m2z_gui_frame_sp.content, 4 * M_GUI_RECV_LEN, 0);
     //尾部
@@ -583,7 +602,6 @@ void rs_M2ZGui_proc(char* data)
     //crc加载
     rbody->m2z_gui_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M2Z_GUI_FRAME_SP_LEN);
     send_to_rs(RS_M2Z_GUI_FRAME_SP_LEN, 0, res);
-
 
     //enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_gui_frame.content, 132);
     put(&common_data[M_GUI_SEND], body->m2z_gui_frame.content, 4 * M_GUI_SEND_LEN, 0);

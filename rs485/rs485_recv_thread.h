@@ -364,7 +364,7 @@ struct m2z_gui_frame_t {
 
 struct m2z_gui_frame_sp_t {
 
-	uint8_t content[188];
+	uint8_t content[184];
 
 	rs_tail_t tail;
 };
