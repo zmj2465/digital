@@ -118,9 +118,9 @@ int data_send_proc(void)
                                 /*测试帧*/
                                 //msg.data[0] = 5;
                                 
-                                msg.len = M_TOM_SEND_LEN;//TOM数据
+                                msg.len = M_GUI_SEND_LEN;//TOM数据
                                 /*长帧发送*/
-                                get(&common_data[M_TOM_SEND], msg.data, msg.len, index);
+                                get(&common_data[M_GUI_SEND], msg.data, msg.len, index);
 
                                 generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                                 //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
@@ -203,9 +203,9 @@ int data_send_proc(void)
                             //测试帧
                             //msg.data[0] = 5;
                             
-                            msg.len = M_TOM_SEND_LEN;
+                            msg.len = M_GUI_SEND_LEN;
                             //长帧发送
-                            get(&common_data[M_TOM_SEND], msg.data, msg.len, index);
+                            get(&common_data[M_GUI_SEND], msg.data, msg.len, index);
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             psy_send_(&pmsg, &msg);
@@ -288,8 +288,8 @@ int data_send_proc(void)
                         //msg.data[0] = 5;
                         
                         //长帧发送
-                        msg.len = Z_TOM_SEND_LEN;
-                        get(&common_data[Z_TOM_SEND], msg.data, msg.len, 0);
+                        msg.len = Z_GUI_SEND_LEN;
+                        get(&common_data[Z_GUI_SEND], msg.data, msg.len, 0);
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                         //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         psy_send_(&pmsg, &msg);
