@@ -118,7 +118,7 @@ int data_send_proc(void)
                                 /*测试帧*/
                                 //msg.data[0] = 5;
                                 
-                                msg.len = M_GUI_SEND_LEN;//TOM数据
+                                msg.len = M_GUI_SEND_LEN;//ZD数据
                                 /*长帧发送*/
                                 get(&common_data[M_GUI_SEND], msg.data, msg.len, index);
 
