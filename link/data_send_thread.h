@@ -110,6 +110,9 @@ extern common_data_t common_data[MZ_DATA];
 
 void get(common_data_t* src, char* dst, int len, int index);
 void put(common_data_t* dst, char* src, int len, int index);
+void mget(common_data_t* src, char* dst, int len);
+void mput(common_data_t* dst, char* src, int len);
+void ppp(common_data_t* content, int len, int index);
 
 
 void* data_send_thread(void* arg);

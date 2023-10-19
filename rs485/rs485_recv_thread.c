@@ -124,6 +124,7 @@ void* rs_485_recv_thread(void* arg)
 #else
     while (1)
     {
+        //printf("ready for recv\n");
         ret = read_device(recv_hdev, 0x10000000, 2048, data);
         ret = last_packetSize(user_hdev);
 
@@ -135,37 +136,22 @@ void* rs_485_recv_thread(void* arg)
         }
         printf("\n");
 
-        if (head->type == 0x0100)
+        //M
+        if (head->type == RS_M2Z_GUI)
         {
             rs_M2ZGui_proc(data);
             continue;
         }
-        else if (head->type == 0x0200)
+        else if (head->type == RS_M2Z_TOM)
         {
             rs_M2ZTom_proc(data);
             continue;
         }
-        else if (head->type == 0x0300)
+        else if (head->type == RS_M2Z_PLAN)
         {
             rs_M2ZPlan_proc(data);
             continue;
         }
-
-        ////M
-        //switch (head->type)
-        //{
-        //case 0x0100://RS_M2Z_GUI:
-        //    rs_M2ZGui_proc(data);
-        //    break;
-        //case 0x0200:
-        //    rs_M2ZTom_proc(data);
-        //    break;
-        //case 0x0300:
-        //    rs_M2ZPlan_proc(data);
-        //    break;
-        //}
-
-
 
         //Z-M
         switch (head->typea)
@@ -198,7 +184,6 @@ void* rs_485_recv_thread(void* arg)
             rs_PreSeparate_proc(data);
             break;
         }
-        
     }
 #endif
 }
@@ -210,12 +195,12 @@ void send_to_rs(int len, long offset, char* data)
     int i;
     rs_head_t* rhead = (rs_head_t*)data;
 
-    printf("*****send:%d type:%x*****\n", len, rhead->typea);
-    for (i = 0; i < len; i++)
-    {
-        printf("%02x ", (uint8_t)data[i]);
-    }
-    printf("\n");
+    //printf("*****send:%d type:%x*****\n", len, rhead->typea);
+    //for (i = 0; i < len; i++)
+    //{
+    //    printf("%02x ", (uint8_t)data[i]);
+    //}
+    //printf("\n");
 
     ret = write_device(send_hdev, offset, len, data);
     
@@ -484,6 +469,7 @@ void rs_ShortFrame_proc(char* data)
         //crc加载
         *(uint16_t*)((uint8_t*)&rbody->z_short_frmae_sp + Z_SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + Z_SHORT_FRAME_SP_LEN);
 
+
         send_to_rs(RS_Z_SHORT_FRAME_SP_LEN, 0, res);
     }
 }
@@ -508,9 +494,9 @@ void rs_LongFrame_proc(char* data,int len)
             return;
         }
 
+        get(&common_data[Z_GUI_RECV], &rbody->long_frame_sp_gui.typec, Z_GUI_RECV_LEN, 0);
         rbody->long_frame_sp_gui.typec = 0x33;
-
-        get(&common_data[Z_GUI_RECV], rbody->long_frame_sp_gui.typec, Z_GUI_RECV_LEN, 0);
+        
         //尾部装载
         memcpy(&rbody->long_frame_sp_gui.tail, &body->long_frame_gui.tail, RS_TAIL_LEN);
         //crc加载
@@ -519,7 +505,7 @@ void rs_LongFrame_proc(char* data,int len)
 
         
         //enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_gui.typec, 1+45);
-        put(&common_data[Z_GUI_SEND], body->long_frame_gui.typec, Z_GUI_SEND_LEN,0);
+        put(&common_data[Z_GUI_SEND], &body->long_frame_gui.typec, Z_GUI_SEND_LEN,0);
 
     }
     else if(body->long_frame_tom.typec == 0x66){
@@ -530,9 +516,9 @@ void rs_LongFrame_proc(char* data,int len)
             return;
         }
 
+        get(&common_data[Z_TOM_RECV], &rbody->long_frame_sp_tom.typec, Z_TOM_RECV_LEN, 0);
         rbody->long_frame_sp_tom.typec = 0x66;
 
-        get(&common_data[Z_TOM_RECV], rbody->long_frame_sp_tom.typec, Z_TOM_RECV_LEN, 0);
         //尾部装载
         memcpy(&rbody->long_frame_sp_tom.tail, &body->long_frame_tom.tail, RS_TAIL_LEN);
         //crc加载
@@ -540,7 +526,7 @@ void rs_LongFrame_proc(char* data,int len)
         send_to_rs(RS_LONG_FRAME_SP_TOM_LEN, 0, res);
 
         //enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_tom.typec, 1 + 467);
-        put(&common_data[Z_TOM_SEND], body->long_frame_tom.typec, Z_TOM_SEND_LEN, 0);
+        put(&common_data[Z_TOM_SEND], &body->long_frame_tom.typec, Z_TOM_SEND_LEN, 0);
     }
 }
 
@@ -593,9 +579,9 @@ void rs_M2ZGui_proc(char* data)
     //头部
     head_load(data, res);
     rhead->type = RS_Z2M_GUI_SP;
-    rhead->type = 0x1a00;
     //内容
-    get(&common_data[M_GUI_RECV], body->m2z_gui_frame_sp.content, 4 * M_GUI_RECV_LEN, 0);
+    mget(&common_data[M_GUI_RECV], rbody->m2z_gui_frame_sp.content, 4 * M_GUI_RECV_LEN);
+
     //尾部
     memset(&rbody->m2z_gui_frame_sp.tail.flag, 0x7e, 4);
 
@@ -604,7 +590,8 @@ void rs_M2ZGui_proc(char* data)
     send_to_rs(RS_M2Z_GUI_FRAME_SP_LEN, 0, res);
 
     //enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_gui_frame.content, 132);
-    put(&common_data[M_GUI_SEND], body->m2z_gui_frame.content, 4 * M_GUI_SEND_LEN, 0);
+    mput(&common_data[M_GUI_SEND], body->m2z_gui_frame.content, M_GUI_SEND_LEN);
+    //ppp(&common_data[M_GUI_SEND], M_GUI_SEND_LEN*4, 0);
 
 }
 
@@ -627,16 +614,16 @@ void rs_M2ZTom_proc(char* data)
     head_load(data, res);
     rhead->type = RS_Z2M_TOM_SP;
     //内容
-    get(&common_data[M_TOM_RECV], body->m2z_tom_frame_sp.content, 4 * M_TOM_RECV_LEN, 0);
+    mget(&common_data[M_TOM_RECV], rbody->m2z_tom_frame_sp.content, 4 * M_TOM_RECV_LEN);
+
     //尾部
     memset(&rbody->m2z_tom_frame_sp.tail.flag, 0x7e, 4);
     //crc
     rbody->m2z_tom_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M2Z_TOM_FRAME_SP_LEN);
     send_to_rs(RS_M2Z_TOM_FRAME_SP_LEN, 0, res);
 
-
     //enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_tom_frame.content, 1828);
-    put(&common_data[M_TOM_SEND], body->m2z_tom_frame.content, 4 * M_TOM_SEND_LEN, 0);
+    mput(&common_data[M_TOM_SEND], body->m2z_tom_frame.content, 4 * M_TOM_SEND_LEN);
 }
 
 void rs_M2ZPlan_proc(char* data)
