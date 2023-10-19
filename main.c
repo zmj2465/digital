@@ -36,7 +36,6 @@ int main()
     //system("C:\\Users\\MRGT\\Desktop\\start.bat");
 
 
-
     /*ptp ±÷”≥ı ºªØ*/
     time_init();
 

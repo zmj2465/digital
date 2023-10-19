@@ -211,7 +211,7 @@ void send_display_msg()
 
     //位置信息
     msg.display_info.pos_x = overall_fddi_info[0].pos.x/100;
-    msg.display_info.pos_y = overall_fddi_info[0].pos.y;
+    msg.display_info.pos_y = overall_fddi_info[0].pos.y*100;
     msg.display_info.pos_z = overall_fddi_info[0].pos.z/100;
 
     double delta_x = (msg.display_info.pos_x - lastx);

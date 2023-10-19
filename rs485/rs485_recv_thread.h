@@ -96,12 +96,12 @@ enum {
 };
 
 enum {
-	RS_M2Z_GUI = 0x0001,
-	RS_M2Z_TOM = 0x0002,
-	RS_M2Z_PLAN = 0x0003,
-	RS_Z2M_GUI_SP = 0x001A,
-	RS_Z2M_TOM_SP = 0x001B,
-	RS_Z2M_PLAN_SP = 0x001C,
+	RS_M2Z_GUI = 0x0100,
+	RS_M2Z_TOM = 0x0200,
+	RS_M2Z_PLAN = 0x0300,
+	RS_Z2M_GUI_SP = 0x1A00,
+	RS_Z2M_TOM_SP = 0x1B00,
+	RS_Z2M_PLAN_SP = 0x1C00,
 };
 
 
@@ -364,7 +364,7 @@ struct m2z_gui_frame_t {
 
 struct m2z_gui_frame_sp_t {
 
-	uint8_t content[188];
+	uint8_t content[184];
 
 	rs_tail_t tail;
 };
@@ -378,7 +378,7 @@ struct m2z_tom_frame_t {
 
 struct m2z_tom_frame_sp_t {
 
-	uint8_t content[1876];
+	uint8_t content[1872];
 
 	rs_tail_t tail;
 };

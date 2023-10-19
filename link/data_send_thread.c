@@ -206,6 +206,7 @@ int data_send_proc(void)
                             msg.len = M_GUI_SEND_LEN;
                             //长帧发送
                             get(&common_data[M_GUI_SEND], msg.data, msg.len, index);
+                            printf("m send type=%02x\n", msg.data[0]);
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                             psy_send_(&pmsg, &msg);
@@ -290,6 +291,7 @@ int data_send_proc(void)
                         //长帧发送
                         msg.len = Z_GUI_SEND_LEN;
                         get(&common_data[Z_GUI_SEND], msg.data, msg.len, 0);
+                        printf("z send type %02x\n", msg.data[0]);
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                         //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
                         psy_send_(&pmsg, &msg);
@@ -468,5 +470,31 @@ void put(common_data_t* dst, char* src, int len, int index)
     pthread_mutex_lock(&dst->lock);
     memcpy(dst->data + index * len, src, len);
     pthread_mutex_unlock(&dst->lock);
+}
+
+
+void mget(common_data_t* src, char* dst, int len)
+{
+    pthread_mutex_lock(&src->lock);
+    memcpy(dst, src->data + len / 4, len);
+    pthread_mutex_unlock(&src->lock);
+}
+
+
+void mput(common_data_t* dst, char* src, int len)
+{
+    pthread_mutex_lock(&dst->lock);
+    memcpy(dst->data + len / 4, src, len);
+    pthread_mutex_unlock(&dst->lock);
+}
+
+void ppp(common_data_t* content,int len,int index)
+{
+    int i = 0;
+    for (i = 0; i < len; i++)
+    {
+        printf("%02x ", content->data[i + index * len]);
+    }
+    printf("\n");
 }
 

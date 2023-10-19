@@ -56,11 +56,13 @@ int master_data_proc(void)
 
                 if (msg.data[0] == GUI_FRAME)//制导
                 {
-                    put(&common_data[M_GUI_RECV], msg.data, msg.len, index);
+                    printf("m get gui\n");
+                    put(&common_data[M_GUI_RECV], msg.data, M_GUI_RECV_LEN, index);
                 }
                 if (msg.data[0] == TOM_FRAME)//TOM
                 {
-                    put(&common_data[M_TOM_RECV], msg.data, msg.len, index);
+                    printf("m get tom\n");
+                    put(&common_data[M_TOM_RECV], msg.data, M_TOM_RECV_LEN, index);
                 }
                 plog("M recv Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, msg.head.seq);
                 break;
@@ -142,13 +144,15 @@ int master_data_proc(void)
                 case LONG_FRAME:
                     if (msg.data[0] == GUI_FRAME)//制导
                     {
-                        put(&common_data[Z_GUI_RECV], msg.data, msg.len, 0);
+                        printf("z get gui\n");
+                        put(&common_data[Z_GUI_RECV], msg.data, Z_GUI_RECV_LEN, 0);
                     }
                     if (msg.data[0] == TOM_FRAME)//TOM
                     {
-                        put(&common_data[Z_TOM_RECV], msg.data, msg.len, 0);
+                        printf("z get tom\n");
+                        put(&common_data[Z_TOM_RECV], msg.data, Z_TOM_RECV_LEN, 0);
                     }
-                    plog("Z%d recv M data, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);       
+                    plog("Z%d recv M data, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
                     break;
                 case DISTANCE:
                     plog("Z%d recv M distance frame, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
