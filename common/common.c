@@ -54,6 +54,7 @@ void queue_init()
     int i;
     for (i = 0; i < END_THREAD; i++)
     {
-        init_msg_queue(&info.thread_queue[i], 6);
+        init_msg_queue(&info.thread_queue[i], 20);
+        printf("que:%d %x\n", i, &info.thread_queue[i]);
     }
 }

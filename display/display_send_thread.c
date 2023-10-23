@@ -91,6 +91,8 @@ void display_send_thread_init()
     info.display_system.addr_len = sizeof(info.display_system.addr); //**
     display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
     printf("display_system connect success %d\n", display_fd);
+    role_id_config();
+    Sleep(5);
     generate_key_event(KEY_POWER_ON, 0, 0);
     Sleep(5);
     generate_key_event(KEY_CONFIG_LOAD, 1, 1);
@@ -403,7 +405,7 @@ void send_display_msg()
 
     //printf("y=%f\n", msg.display_info.pos_y);
     send(display_fd, &msg, msg.len, 0);
-    todata(&msg, msg.len);
+    //todata(&msg, msg.len);
     //enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
     pthread_mutex_unlock(&display_state.mutex);
 }
@@ -451,10 +453,6 @@ void generate_key_event(int type,int id_znum,int role_mnum)
     }
 
 
-    memcpy(&msg.key.pos_x, &fddi_info.pos.x, sizeof(float) * 13);
-    msg.key.pos_x = overall_fddi_info[0].pos.x / 100;
-    msg.key.pos_y = overall_fddi_info[0].pos.y;
-    msg.key.pos_z = overall_fddi_info[0].pos.z / 100;
     printf("key event:%d len=%d\n", msg.key.key,msg.len);
 
     send(display_fd, &msg, msg.len, 0);
@@ -660,7 +658,7 @@ void role_id_config()
     show_t msg;
     memset(&msg, 0, sizeof(show_t));
     msg.type = ROLE_CONFIG;
-    msg.len = 1024;
+    msg.len = MAX_SEND_LEN;
     msg.roleid.role = MY_ROLE;
     msg.roleid.id = MY_INDEX - MY_ROLE;
     send(display_fd, &msg, msg.len, 0);

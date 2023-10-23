@@ -503,7 +503,6 @@ void rs_LongFrame_proc(char* data,int len)
         rbody->long_frame_sp_gui.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + LONG_FRAME_SP_GUI_LEN);
         send_to_rs(RS_LONG_FRAME_SP_GUI_LEN, 0, res);
 
-        
         //enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_gui.typec, 1+45);
         put(&common_data[Z_GUI_SEND], &body->long_frame_gui.typec, Z_GUI_SEND_LEN,0);
 
