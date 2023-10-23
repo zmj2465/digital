@@ -195,12 +195,12 @@ void send_to_rs(int len, long offset, char* data)
     int i;
     rs_head_t* rhead = (rs_head_t*)data;
 
-    //printf("*****send:%d type:%x*****\n", len, rhead->typea);
-    //for (i = 0; i < len; i++)
-    //{
-    //    printf("%02x ", (uint8_t)data[i]);
-    //}
-    //printf("\n");
+    printf("*****send:%d type:%x*****\n", len, rhead->typea);
+    for (i = 0; i < len; i++)
+    {
+        printf("%02x ", (uint8_t)data[i]);
+    }
+    printf("\n");
 
     ret = write_device(send_hdev, offset, len, data);
     
@@ -497,6 +497,10 @@ void rs_LongFrame_proc(char* data,int len)
         get(&common_data[Z_GUI_RECV], &rbody->long_frame_sp_gui.typec, Z_GUI_RECV_LEN, 0);
         rbody->long_frame_sp_gui.typec = 0x33;
         
+        rbody->long_frame_sp_gui.z_short_frame_sp.node_id = MY_INDEX;
+        rbody->long_frame_sp_gui.framec = 0x20;
+
+
         //Î²²¿×°ÔØ
         memcpy(&rbody->long_frame_sp_gui.tail, &body->long_frame_gui.tail, RS_TAIL_LEN);
         //crc¼ÓÔØ
@@ -589,7 +593,7 @@ void rs_M2ZGui_proc(char* data)
     send_to_rs(RS_M2Z_GUI_FRAME_SP_LEN, 0, res);
 
     //enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_gui_frame.content, 132);
-    mput(&common_data[M_GUI_SEND], body->m2z_gui_frame.content, M_GUI_SEND_LEN);
+    mput(&common_data[M_GUI_SEND], body->m2z_gui_frame.content, 4 * M_GUI_SEND_LEN);
     //ppp(&common_data[M_GUI_SEND], M_GUI_SEND_LEN*4, 0);
 
 }
