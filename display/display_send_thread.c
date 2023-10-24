@@ -91,11 +91,15 @@ void display_send_thread_init()
     info.display_system.addr_len = sizeof(info.display_system.addr); //**
     display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
     printf("display_system connect success %d\n", display_fd);
+    Sleep(10000);
     role_id_config();
     Sleep(5);
     generate_key_event(KEY_POWER_ON, 0, 0);
-    Sleep(5);
-    generate_key_event(KEY_CONFIG_LOAD, 1, 1);
+    //while (1)
+    //{
+        Sleep(500);
+        generate_key_event(KEY_CONFIG_LOAD, 1, 1);
+    //}
 
 }
 
@@ -213,7 +217,7 @@ void send_display_msg()
 
     //位置信息
     msg.display_info.pos_x = overall_fddi_info[0].pos.x/100;
-    msg.display_info.pos_y = overall_fddi_info[0].pos.y*100;
+    msg.display_info.pos_y = overall_fddi_info[0].pos.y;
     msg.display_info.pos_z = overall_fddi_info[0].pos.z/100;
 
     double delta_x = (msg.display_info.pos_x - lastx);
@@ -658,7 +662,7 @@ void role_id_config()
     show_t msg;
     memset(&msg, 0, sizeof(show_t));
     msg.type = ROLE_CONFIG;
-    msg.len = MAX_SEND_LEN;
+    msg.len = 1024;
     msg.roleid.role = MY_ROLE;
     msg.roleid.id = MY_INDEX - MY_ROLE;
     send(display_fd, &msg, msg.len, 0);

@@ -13,7 +13,7 @@ z_tom_send_t z_tom_send;
 z_tom_recv_t z_tom_recv;
 
 common_data_t common_data[MZ_DATA];
-
+int send_flag;
 
 /*
 功能：发送数据线程
@@ -200,12 +200,19 @@ int data_send_proc(void)
                     {
                         if (info.current_time_frame >= info.time_frame_flag_m[index])
                         {
-                            //测试帧
-                            //msg.data[0] = 5;
-                            
-                            msg.len = M_GUI_SEND_LEN;
+
                             //长帧发送
-                            get(&common_data[M_GUI_SEND], msg.data, msg.len, index);
+                            if (send_flag == M_GUI_SEND_LEN)
+                            {
+                                msg.len = M_GUI_SEND_LEN;
+                                get(&common_data[M_GUI_SEND], msg.data, msg.len, index);
+                            }
+                            else if (send_flag == M_TOM_SEND_LEN)
+                            {
+                                msg.len = M_TOM_SEND_LEN;
+                                get(&common_data[M_TOM_SEND], msg.data, msg.len, index);
+                            }
+
                             printf("m send type=%02x\n", msg.data[0]);
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                             //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);
@@ -285,12 +292,20 @@ int data_send_proc(void)
                 {
                     if (info.current_time_frame >= info.time_frame_flag_z)
                     {
-                        //测试帧
-                        //msg.data[0] = 5;
-                        
+
                         //长帧发送
-                        msg.len = Z_GUI_SEND_LEN;
-                        get(&common_data[Z_GUI_SEND], msg.data, msg.len, 0);
+                        if (send_flag == Z_GUI_SEND_LEN)
+                        {
+                            msg.len = Z_GUI_SEND_LEN;
+                            get(&common_data[Z_GUI_SEND], msg.data, msg.len, 0);
+                        }
+                        else if (send_flag == Z_TOM_SEND_LEN)
+                        {
+                            msg.len = Z_TOM_SEND_LEN;
+                            get(&common_data[Z_TOM_SEND], msg.data, msg.len, 0);
+                        }
+
+
                         printf("z send type %02x\n", msg.data[0]);
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
                         //psy_send(msg.len, &pmsg, &msg, info.current_antenna, info.device_info.node_role);

@@ -508,7 +508,9 @@ void rs_LongFrame_proc(char* data,int len)
         send_to_rs(RS_LONG_FRAME_SP_GUI_LEN, 0, res);
 
         //enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_gui.typec, 1+45);
+        
         put(&common_data[Z_GUI_SEND], &body->long_frame_gui.typec, Z_GUI_SEND_LEN,0);
+        send_flag = Z_GUI_SEND_LEN;
 
     }
     else if(body->long_frame_tom.typec == 0x66){
@@ -530,6 +532,7 @@ void rs_LongFrame_proc(char* data,int len)
 
         //enqueue(&info.thread_queue[MASTER_THREAD], body->long_frame_tom.typec, 1 + 467);
         put(&common_data[Z_TOM_SEND], &body->long_frame_tom.typec, Z_TOM_SEND_LEN, 0);
+        send_flag = Z_TOM_SEND_LEN;
     }
 }
 
@@ -594,6 +597,7 @@ void rs_M2ZGui_proc(char* data)
 
     //enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_gui_frame.content, 132);
     mput(&common_data[M_GUI_SEND], body->m2z_gui_frame.content, 4 * M_GUI_SEND_LEN);
+    send_flag = M_GUI_SEND_LEN;
     //ppp(&common_data[M_GUI_SEND], M_GUI_SEND_LEN*4, 0);
 
 }
@@ -627,6 +631,7 @@ void rs_M2ZTom_proc(char* data)
 
     //enqueue(&info.thread_queue[MASTER_THREAD], body->m2z_tom_frame.content, 1828);
     mput(&common_data[M_TOM_SEND], body->m2z_tom_frame.content, 4 * M_TOM_SEND_LEN);
+    send_flag = M_TOM_SEND_LEN;
 }
 
 void rs_M2ZPlan_proc(char* data)
@@ -654,6 +659,7 @@ void rs_M2ZPlan_proc(char* data)
     //crc
     rbody->m2z_plan_frame_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M2Z_PLAN_FRAME_SP_LEN);
     send_to_rs(RS_M2Z_PLAN_FRAME_SP_LEN, 0, res);
+
 }
 
 
