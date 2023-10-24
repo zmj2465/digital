@@ -91,6 +91,7 @@ void display_send_thread_init()
     info.display_system.addr_len = sizeof(info.display_system.addr); //**
     display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
     printf("display_system connect success %d\n", display_fd);
+    Sleep(10000);
     role_id_config();
     Sleep(5);
     generate_key_event(KEY_POWER_ON, 0, 0);
@@ -216,7 +217,7 @@ void send_display_msg()
 
     //位置信息
     msg.display_info.pos_x = overall_fddi_info[0].pos.x/100;
-    msg.display_info.pos_y = overall_fddi_info[0].pos.y*100;
+    msg.display_info.pos_y = overall_fddi_info[0].pos.y;
     msg.display_info.pos_z = overall_fddi_info[0].pos.z/100;
 
     double delta_x = (msg.display_info.pos_x - lastx);
