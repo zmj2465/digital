@@ -106,6 +106,7 @@ extern z_tom_recv_t z_tom_recv;
 
 
 extern common_data_t common_data[MZ_DATA];
+extern int send_flag;
 
 
 void get(common_data_t* src, char* dst, int len, int index);

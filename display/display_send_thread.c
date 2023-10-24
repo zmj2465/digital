@@ -94,8 +94,11 @@ void display_send_thread_init()
     role_id_config();
     Sleep(5);
     generate_key_event(KEY_POWER_ON, 0, 0);
-    Sleep(5);
-    generate_key_event(KEY_CONFIG_LOAD, 1, 1);
+    //while (1)
+    //{
+        Sleep(500);
+        generate_key_event(KEY_CONFIG_LOAD, 1, 1);
+    //}
 
 }
 
@@ -658,7 +661,7 @@ void role_id_config()
     show_t msg;
     memset(&msg, 0, sizeof(show_t));
     msg.type = ROLE_CONFIG;
-    msg.len = MAX_SEND_LEN;
+    msg.len = 1024;
     msg.roleid.role = MY_ROLE;
     msg.roleid.id = MY_INDEX - MY_ROLE;
     send(display_fd, &msg, msg.len, 0);
