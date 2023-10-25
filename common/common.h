@@ -14,7 +14,7 @@
 //#include <dirent.h>
 
 
-#if(1)
+#if(0)
 #define plog(format, ...) tofile(LOG,format,##__VA_ARGS__)
 #else
 #define plog(format, ...) printf(format, ##__VA_ARGS__)
@@ -68,17 +68,21 @@ enum
 
 enum FRAME_TYPE
 {
-	SLEF_TEST		 = 0x00, //自检
-	SLEF_TEST_RESULT = 0x10, //自检结果
-	PARAMETER_LOAD	 = 0xcc, //参数装订
-	SHORT_FRAME		 = 0x30, //短帧
-	GUI_FRAME		 = 0x33, //制导
-	TOM_FRAME        = 0x66, //TOM
-	LONG_FRAME		 = 0x40, //长帧
-	START_GUN		 = 0x50, //发令枪
-	SCAN			 = 0x60, //扫描
-	DISTANCE		 = 0x70, //测距
-	BEACON			 = 0x80, //信令
+	SLEF_TEST		   = 0x00, //自检
+	SLEF_TEST_RESULT   = 0x10, //自检结果
+	PARAMETER_LOAD	   = 0xcc, //参数装订
+	BUILD_CHAIN		   = 0x20, //建链
+	BUILD_CHAIN_RESULT = 0x40, //建链结果
+	WORK_MODE		   = 0x70, //工作模式
+	SHORT_FRAME		   = 0x30, //短帧
+	LONG_FRAME         = 0x60, //长帧
+	GUI_FRAME		   = 0x33, //ZD
+	TOM_FRAME          = 0x66, //TOM
+	
+	START_GUN		   = 0xa0, //发令枪
+	SCAN			   = 0xa1, //扫描
+	DISTANCE		   = 0xa2, //测距
+	BEACON			   = 0xa3, //信令
 };
 
 enum FRAME_SUBTYPE
@@ -216,6 +220,7 @@ typedef struct _info_t
 	int time_schedule_flag;				//时隙调度标志位，置1表示发送时隙，置0表示接收时隙
 	int time_frame_flag_m[MAX_DEVICE];	//时帧标志位M，指示Z建链完成后，M在这个时帧不发送数据，在下一时帧开始接收和发送数据
 	int time_frame_flag_z;				//时帧标志位Z，指示Z建链完成后，在下一时帧发送数据帧给M
+	int chain_flag;						//建链标志位
 }info_t;
 
 #pragma pack(1)

@@ -112,6 +112,7 @@ int fsm_init2off_st(int para)
 	info.seq_distance_m = 0;
 	info.seq_distance_z = 0;
 	info.time_schedule_flag = 0;
+	info.chain_flag = 0;
 	sql_init();
 	return 0;
 }
@@ -123,37 +124,50 @@ int fsm_init2off_st(int para)
 */
 int fsm_init2off_ed(int para)
 {
-	/*主机发送信令枪帧*/
-	if (MY_INDEX == 0)
+	while (1)
 	{
-#ifdef _WIN32
-		Sleep(1000);
-#endif
-		msg_t msg;
-		int i;
-		msg.data[0] = START_GUN_REQ;
-		msg.data[1] = START_GUN_TIME;
-		msg.len = 2;
-		//clock_gettime(CLOCK_REALTIME, &info.str.base_time);
-		info.str.base_t = my_get_time();
-		info.str.start_time = START_GUN_TIME;
-		for (i = 1; i < FD_NUM; i++)
+		if (info.chain_flag == 1)//收到建链命令
 		{
-			generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
-			send(FD[i].fd, &msg, msg.len, 0);
+			/*主机发送信令枪帧*/
+			if (MY_INDEX == 0)
+			{
+#ifdef _WIN32
+				Sleep(1000);
+#endif
+				msg_t msg;
+				int i;
+				msg.data[0] = START_GUN_REQ;
+				msg.data[1] = START_GUN_TIME;
+				msg.len = 2;
+				//clock_gettime(CLOCK_REALTIME, &info.str.base_time);
+				info.str.base_t = my_get_time();
+				info.str.start_time = START_GUN_TIME;
+				for (i = 1; i < FD_NUM; i++)
+				{
+					generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
+					send(FD[i].fd, &msg, msg.len, 0);
+				}
+				//plog("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
+				printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
+				generate_key_event(0, 0, 0);
+				Sleep(1000);
+				generate_key_event(1, 0, 0);
+				Sleep(1000);
+				generate_key_event(2, 1, 1);
+				Sleep(1000);
+				send_start();
+				generate_key_event(3, 0, 0);
+				Sleep(1000);
+			}
+			break;
 		}
-		//plog("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
-		printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
-		generate_key_event(0,0,0);
-		Sleep(1000);
-		generate_key_event(1,0,0);
-		Sleep(1000);
-		generate_key_event(2,1,1);
-		Sleep(1000);
-		send_start();
-		generate_key_event(3,0,0);
-		Sleep(1000);
+		else
+		{
+			printf("未收到建链命令\n");
+		}
+		
 	}
+	
 	return 0;
 }
 

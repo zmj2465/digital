@@ -360,6 +360,8 @@ void rs_Link_proc(char* data)
     else
         generate_key_event(5, 0, 0);
 
+    info.chain_flag = 1;
+
 }
 
 //建链结果回复
