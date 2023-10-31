@@ -101,7 +101,8 @@ enum TIMER_ID
 	SCAN_REQ_TIMER = 5,		//扫描请求定时器
 	SCAN_RES_TIMER,			//扫描响应定时器
 	SCAN_CON_TIMER,			//扫描确认定时器
-	Z_DATA_TIMER			//数据帧定时器Z
+	Z_DATA_TIMER,		    //数据帧定时器Z
+	START_GUN_TIMER			//发令枪定时器
 };
 
 typedef struct _link_info_t

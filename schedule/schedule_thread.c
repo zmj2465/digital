@@ -423,6 +423,25 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         plog("Z not receive M beacon in 300ms\n");
         fsm_do(EVENT_LOST_M);
         break;
+    case START_GUN_TIMER:
+        plog("M not receive start gun response\n");
+        msg_t msg;
+        int i;
+        msg.data[0] = START_GUN_REQ;
+        msg.data[1] = START_GUN_TIME;
+        msg.len = 2;
+        info.str.base_t = my_get_time();
+        info.str.start_time = START_GUN_TIME;
+        for (i = 1; i < FD_NUM; i++)
+        {
+            generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
+            send(FD[i].fd, &msg, msg.len, 0);
+        }
+        printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
+#ifdef _WIN32
+        info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
+#endif
+        break;
     default:
         break;
     }

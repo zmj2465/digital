@@ -150,6 +150,9 @@ int fsm_init2off_ed(int para)
 				}
 				//plog("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
 				printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
+#ifdef _WIN32
+				info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
+#endif
 				generate_key_event(0, 0, 0);
 				Sleep(1000);
 				generate_key_event(1, 0, 0);

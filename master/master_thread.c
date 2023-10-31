@@ -69,6 +69,9 @@ int master_data_proc(void)
             case START_GUN:
                 if (msg.data[0] == START_GUN_RES)
                 {
+#ifdef _WIN32
+                    timeKillEvent(info.timerId);//关闭发令枪定时器
+#endif
                     fsm_do(EVENT_WAIT_SIMULATE);
                 }
                 break;
