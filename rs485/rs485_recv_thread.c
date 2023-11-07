@@ -433,12 +433,12 @@ void rs_Link_proc(char* data)
 	if (MY_INDEX == 0)
 	{
 		generate_key_event(5, 1, 1);
-		chain_flag_m = 1;
+		info.chain_flag_m = 1;
 	}
 	else
 	{
 		generate_key_event(5, 0, 0);
-		chain_flag_z = 1;
+		info.chain_flag_z = 1;
 	}
 
 }
