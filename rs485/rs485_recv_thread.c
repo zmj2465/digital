@@ -139,16 +139,19 @@ void* rs_485_recv_thread(void* arg)
         //M
         if (head->type == RS_M2Z_GUI)
         {
-            rs_M2ZGui_proc(data);
+			info.m_proc_flight_control_data_rx_count++;
+			rs_M2ZGui_proc(data);
             continue;
         }
         else if (head->type == RS_M2Z_TOM)
         {
-            rs_M2ZTom_proc(data);
+			info.m_proc_flight_control_data_rx_count++;
+			rs_M2ZTom_proc(data);
             continue;
         }
         else if (head->type == RS_M2Z_PLAN)
         {
+			info.m_proc_flight_control_data_rx_count++;
             rs_M2ZPlan_proc(data);
             continue;
         }
@@ -157,30 +160,94 @@ void* rs_485_recv_thread(void* arg)
         switch (head->typea)
         {
         case RS_SELF_CHECK: //自检
+			if (0 == MY_INDEX)
+			{
+				info.m_proc_flight_control_data_rx_count++;
+			}
+			else
+			{
+				info.z_proc_flight_control_data_rx_count++;
+			}
             rs_SelfCheck_proc(data);
             break;
         case RS_SLEF_CHECK_RESULT: //自检结果
+			if (0 == MY_INDEX)
+			{
+				info.m_proc_flight_control_data_rx_count++;
+			}
+			else
+			{
+				info.z_proc_flight_control_data_rx_count++;
+			}
             rs_SelfCheckResult_proc(data);
             break;
         case RS_CONFIG_LOAD: //参数装订
+			if (0 == MY_INDEX)
+			{
+				info.m_proc_flight_control_data_rx_count++;
+			}
+			else
+			{
+				info.z_proc_flight_control_data_rx_count++;
+			}
             rs_ConfigLoad_proc(data);
             break;
         case RS_SHORT_FRAME: //短帧
             rs_ShortFrame_proc(data);
             break;
         case RS_LONG_FRAME: //长帧
+			if (0 == MY_INDEX)
+			{
+				info.m_proc_flight_control_data_rx_count++;
+			}
+			else
+			{
+				info.z_proc_flight_control_data_rx_count++;
+			}
             rs_LongFrame_proc(data,ret);
             break;
         case RS_START_LINK: //建链
+			if (0 == MY_INDEX)
+			{
+				info.m_proc_flight_control_data_rx_count++;
+			}
+			else
+			{
+				info.z_proc_flight_control_data_rx_count++;
+			}
             rs_Link_proc(data);
             break;
         case RS_LINK_RESULT: //建链结果
+			if (0 == MY_INDEX)
+			{
+				info.m_proc_flight_control_data_rx_count++;
+			}
+			else
+			{
+				info.z_proc_flight_control_data_rx_count++;
+			}
             rs_Link_result_proc(data);
             break;
         case RS_WORK_MODE: //工作模式
+			if (0 == MY_INDEX)
+			{
+				info.m_proc_flight_control_data_rx_count++;
+			}
+			else
+			{
+				info.z_proc_flight_control_data_rx_count++;
+			}
             work_mode_proc(data);
             break;
         case RS_PRE_SEPARATE: //预分离
+			if (0 == MY_INDEX)
+			{
+				info.m_proc_flight_control_data_rx_count++;
+			}
+			else
+			{
+				info.z_proc_flight_control_data_rx_count++;
+			}
             rs_PreSeparate_proc(data);
             break;
         }
@@ -203,6 +270,14 @@ void send_to_rs(int len, long offset, char* data)
     printf("\n");
 
     ret = write_device(send_hdev, offset, len, data);
+	if (0 == MY_INDEX)
+	{
+		info.m_proc_flight_control_data_tx_count++;
+	}
+	else
+	{
+		info.z_proc_flight_control_data_tx_count++;
+	}
     
     printf("$$$$$send ok$$$$$\n");
 }
@@ -355,12 +430,16 @@ void rs_Link_proc(char* data)
 
     send_to_rs(RS_LINK_START_LEN, 0, res);
 
-    if (MY_INDEX == 0)
-        generate_key_event(5, 1, 1);
-    else
-        generate_key_event(5, 0, 0);
-
-    info.chain_flag = 1;
+	if (MY_INDEX == 0)
+	{
+		generate_key_event(5, 1, 1);
+		chain_flag_m = 1;
+	}
+	else
+	{
+		generate_key_event(5, 0, 0);
+		chain_flag_z = 1;
+	}
 
 }
 
@@ -439,8 +518,9 @@ void rs_ShortFrame_proc(char* data)
     head_load(data, res);
 
     if (MY_INDEX == 0) //M
-    {
-        //crc
+    { 
+		info.m_proc_flight_control_data_rx_count++;
+        //crc校验
         uint16_t get_crc = *(uint16_t*)((uint8_t*)&body->m_short_frmae + M_SHORT_FRAME_LEN);
         if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + M_SHORT_FRAME_LEN, get_crc) == 1)
         {
@@ -448,7 +528,13 @@ void rs_ShortFrame_proc(char* data)
             return;
         }
         //内容
-        
+		memset((uint8_t*)&rbody->m_short_frmae_sp,0,158);
+		rbody->m_short_frmae_sp.node_id = 0x10;
+		rbody->m_short_frmae_sp.link_status = info.znode_connect_flag[0]| (info.znode_connect_flag[1]<<1 )| (info.znode_connect_flag[2] << 2) | (info.znode_connect_flag[3] << 3);//目前只有z1，为0001
+		rbody->m_short_frmae_sp.m_proc_flight_control_data_rx_count = info.m_proc_flight_control_data_rx_count;
+		rbody->m_short_frmae_sp.m_proc_flight_control_data_tx_count = info.m_proc_flight_control_data_tx_count;
+		rbody->m_short_frmae_sp.m_z1_air_interface_data_rx_count = g_node_progrm[1].air_interface_data_rx_count;
+		rbody->m_short_frmae_sp.m_z1_air_interface_data_tx_count = g_node_progrm[1].air_interface_data_tx_count;
         //尾部加载
         memset((uint8_t*)&rbody->m_short_frmae_sp + M_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
         //crc加载
@@ -457,7 +543,8 @@ void rs_ShortFrame_proc(char* data)
         send_to_rs(RS_M_SHORT_FRAME_SP_LEN, 0, res);
     }
     else //Z
-    {
+    { 
+		info.z_proc_flight_control_data_rx_count++;
         uint16_t get_crc = *(uint16_t*)((uint8_t*)&body->z_short_frmae + Z_SHORT_FRAME_LEN);
         if (crc_check((uint8_t*)head->flag + 4, ADD_TYPE_LEN + Z_SHORT_FRAME_LEN, get_crc) == 1)
         {
@@ -465,7 +552,13 @@ void rs_ShortFrame_proc(char* data)
             return;
         }
         //内容
-
+		memset((uint8_t*)&rbody->z_short_frmae_sp, 0, 77);
+		rbody->z_short_frmae_sp.node_id = 0x11;
+		rbody->z_short_frmae_sp.link_status = info.znode_connect_flag[MY_INDEX-1]; //暂不加zz之间通信状态，只有当前节点是否建链标志 
+		rbody->z_short_frmae_sp.z_proc_flight_control_data_rx_count = info.z_proc_flight_control_data_rx_count;
+		rbody->z_short_frmae_sp.z_proc_flight_control_data_tx_count = info.z_proc_flight_control_data_tx_count;
+		rbody->z_short_frmae_sp.z1_m_air_interface_data_rx_count = g_node_progrm[0].air_interface_data_rx_count;
+		rbody->z_short_frmae_sp.z1_m_air_interface_data_tx_count = g_node_progrm[0].air_interface_data_tx_count;
         //尾部加载
         memset((uint8_t*)&rbody->z_short_frmae_sp + Z_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
         //crc加载

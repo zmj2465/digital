@@ -105,6 +105,7 @@ int data_send_proc(void)
                             info.scan_flag_M[index] = 0;
                             info.time_frame_flag_m[index] = info.current_time_frame + 1;
                             plog("M send Z%d scan confirm, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+							info.znode_connect_flag[i-1] = 1;//z1放入数组0的位置
                             if (info.device_info.node_num == FD_NUM)
                             {
                                 fsm_do(EVENT_WSN_SUCC);
@@ -131,9 +132,9 @@ int data_send_proc(void)
                                 }
 
                                 generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-                                
+								g_node_progrm[index].air_interface_data_tx_count++;//对端节点相应数据计数
                                 psy_send_(&pmsg, &msg);
-                                send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
+                                send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0); //#define FD info.simulated_link		
                                 plog("M send Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                             } 
                             return 0;
@@ -223,7 +224,7 @@ int data_send_proc(void)
 
                             printf("m send type=%02x\n", msg.data[0]);
                             generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-                            
+							g_node_progrm[index].air_interface_data_tx_count++; //M发往各个z的数据包计数
                             psy_send_(&pmsg, &msg);
                             send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0);
                             plog("M send Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
@@ -316,7 +317,7 @@ int data_send_proc(void)
 
                         printf("z send type %02x\n", msg.data[0]);
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
-                        
+						g_node_progrm[0].air_interface_data_tx_count++; //Zi发往M的数据包计数
                         psy_send_(&pmsg, &msg);
                         send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
                         plog("Z%d send M data, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);

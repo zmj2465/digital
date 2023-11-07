@@ -175,29 +175,29 @@ struct z_short_frame_sp_t {
 	uint16_t micro_time_slot_number;     // 微时隙号
 	uint8_t node_id;                    // 节点ID号
 
-	uint8_t table[71];
-	//uint8_t link_status;                // 链路连接状态
-	//uint16_t z1_m_distance;          // 器节点与Cang节点距离
-	//int16_t z1_m_azimuth;            // 器节点与Cang节点相对方位
-	//int16_t z1_m_elevation;          // 器节点与Cang节点相对俯仰
-	//uint8_t comm_status_mode;           // 通信状态/工作模式
-	//uint16_t z_proc_flight_control_data_tx_count; // 器向集成处理器飞控发数据计数
-	//uint16_t z_proc_flight_control_data_rx_count;  //器收集成处理器飞控数据计数
-	//uint32_t z_proc_flight_control_data_tx_timestamp;   // 器向集成处理器飞控发数据时戳
-	//uint32_t z_proc_flight_control_data_rx_timestamp;   // 器收集成处理器飞控数据时戳
-	//uint16_t z1_m_air_interface_data_tx_count;     //器1/器2/器3/器4向Cang发送空口业务数据包计数
-	//uint16_t z1_m_air_interface_data_rx_count;     //器1/器2/器3/器4收Cang空口业务包计数
-	//uint16_t channel_coding_frame_count;       //信道编码帧计数
-	//uint16_t channel_decoding_frame_count;     //信道译码帧计数
-	//uint16_t modulation_frame_count;           //调制帧计数
-	//uint16_t demodulation_frame_count;         //解调帧计数
-	//uint32_t instruction_parsing_frame_count;            // 指令解析帧计数
-	//uint8_t array_status;                // 阵面工作状态
-	//uint8_t instruction_crc_error_count; // 指令CRC错误计数
-	//uint8_t address_error_count;         // 地址码错误计数
-	//uint8_t air_packet_loss_count;       // 空口接收丢包计数
+	//uint8_t table[71];
+	uint8_t link_status;                // 链路连接状态
+	uint16_t z1_m_distance;          // 器节点与Cang节点距离
+	int16_t z1_m_azimuth;            // 器节点与Cang节点相对方位
+	int16_t z1_m_elevation;          // 器节点与Cang节点相对俯仰
+	uint8_t comm_status_mode;           // 通信状态/工作模式
+	uint16_t z_proc_flight_control_data_tx_count; // 器向集成处理器飞控发数据计数
+	uint16_t z_proc_flight_control_data_rx_count;  //器收集成处理器飞控数据计数
+	uint32_t z_proc_flight_control_data_tx_timestamp;   // 器向集成处理器飞控发数据时戳
+	uint32_t z_proc_flight_control_data_rx_timestamp;   // 器收集成处理器飞控数据时戳
+	uint16_t z1_m_air_interface_data_tx_count;     //器1/器2/器3/器4向Cang发送空口业务数据包计数
+	uint16_t z1_m_air_interface_data_rx_count;     //器1/器2/器3/器4收Cang空口业务包计数
+	uint16_t channel_coding_frame_count;       //信道编码帧计数
+	uint16_t channel_decoding_frame_count;     //信道译码帧计数
+	uint16_t modulation_frame_count;           //调制帧计数
+	uint16_t demodulation_frame_count;         //解调帧计数
+	uint32_t instruction_parsing_frame_count;            // 指令解析帧计数
+	uint8_t array_status;                // 阵面工作状态
+	uint8_t instruction_crc_error_count; // 指令CRC错误计数
+	uint8_t address_error_count;         // 地址码错误计数
+	uint8_t air_packet_loss_count;       // 空口接收丢包计数
 	//uint32_t terminal_working_status_representation; // 终端工作状态表征
-	//uint8_t  reserved[15];               // 保留字段
+	uint8_t  reserved[31];               // 状态字（5）+ 保留字段（26）
 	//rs_tail_t tail;
 };
 
@@ -217,34 +217,56 @@ struct m_short_frame_t {
 
 struct m_short_frame_sp_t {
 
-	uint8_t table[158];
-	//uint16_t time_element_number;        // 时元号
-	//uint8_t time_frame_number;           // 时帧号
-	//uint16_t micro_time_slot_number;     // 微时隙号
-	//uint8_t node_id;                    // 节点ID号
+	//uint8_t table[158];
+	uint32_t time_ljqi;
+	float     posX;
+	float     posY;
+	float     posZ;
+	float     Vx;
+	float     Vy;
+	float     Vz;
+	uint16_t time_element_number;        // 时元号
+	uint8_t time_frame_number;           // 时帧号
+	uint16_t micro_time_slot_number;     // 微时隙号
+	uint8_t node_id;                    // 节点ID号
 
-	//uint8_t link_status;                // 链路连接状态
-	//uint16_t z1_m_distance;          // 器节点与Cang节点距离
-	//int16_t z1_m_azimuth;            // 器节点与Cang节点相对方位
-	//int16_t z1_m_elevation;          // 器节点与Cang节点相对俯仰
-	//uint8_t comm_status_mode;           // 通信状态/工作模式
-	//uint16_t z_proc_flight_control_data_tx_count; // 器向集成处理器飞控发数据计数
-	//uint16_t z_proc_flight_control_data_rx_count;  //器收集成处理器飞控数据计数
-	//uint32_t z_proc_flight_control_data_tx_timestamp;   // 器向集成处理器飞控发数据时戳
-	//uint32_t z_proc_flight_control_data_rx_timestamp;   // 器收集成处理器飞控数据时戳
-	//uint16_t z1_m_air_interface_data_tx_count;     //器1/器2/器3/器4向Cang发送空口业务数据包计数
-	//uint16_t z1_m_air_interface_data_rx_count;     //器1/器2/器3/器4收Cang空口业务包计数
-	//uint16_t channel_coding_frame_count;       //信道编码帧计数
-	//uint16_t channel_decoding_frame_count;     //信道译码帧计数
-	//uint16_t modulation_frame_count;           //调制帧计数
-	//uint16_t demodulation_frame_count;         //解调帧计数
-	//uint32_t instruction_parsing_frame_count;            // 指令解析帧计数
-	//uint8_t array_status;                // 阵面工作状态
-	//uint8_t instruction_crc_error_count; // 指令CRC错误计数
-	//uint8_t address_error_count;         // 地址码错误计数
-	//uint8_t air_packet_loss_count;       // 空口接收丢包计数
+	uint8_t link_status;                // 链路连接状态
+	uint8_t comm_status_mode;           // 通信状态/工作模式
+	uint16_t m_proc_flight_control_data_tx_count;            // CANG终端向多任务处理QI发数据计数
+	uint16_t m_proc_flight_control_data_rx_count;            // CANG终端向多任务处理QI收数据计数
+	uint32_t m_proc_flight_control_data_tx_timestamp;   // cang向集成处理器飞控发数据时戳
+	uint32_t m_proc_flight_control_data_rx_timestamp;   // cang收集成处理器飞控数据时戳
+	uint16_t m_z1_air_interface_data_tx_count;     //CANG终端向QI1终端发送空口业务数据包计数
+	uint16_t m_z1_air_interface_data_rx_count;     //CANG终端向QI1终端接收空口业务数据包计数
+	uint16_t m_z2_air_interface_data_tx_count;     //CANG终端向QI2终端发送空口业务数据包计数
+	uint16_t m_z2_air_interface_data_rx_count;     //CANG终端向QI2终端接收空口业务数据包计数
+	uint16_t m_z3_air_interface_data_tx_count;     //CANG终端向QI3终端发送空口业务数据包计数
+	uint16_t m_z3_air_interface_data_rx_count;     //CANG终端向QI3终端接收空口业务数据包计数
+	uint16_t m_z4_air_interface_data_tx_count;     //CANG终端向QI4终端发送空口业务数据包计数
+	uint16_t m_z4_air_interface_data_rx_count;     //CANG终端向QI4终端接收空口业务数据包计数
+	uint16_t channel_coding_frame_count;       //信道编码帧计数
+	uint16_t channel_decoding_frame_count;     //信道译码帧计数
+	uint16_t modulation_frame_count;           //调制帧计数
+	uint16_t demodulation_frame_count;         //解调帧计数
+	uint32_t instruction_parsing_frame_count;            // 指令解析帧计数
+	uint16_t m_z1_distance;                    //Cang与Z1距离
+	int16_t  m_z1_fangwei;                    //CANG终端与QI1终端波束方位指向
+	uint16_t m_z1_fuyang;                     //CANG终端与QI1终端波束俯仰指向
+	uint16_t m_z2_distance;                    //Cang与Z2距离
+	int16_t  m_z2_fangwei;                    //CANG终端与QI2终端波束方位指向
+	uint16_t m_z2_fuyang;                     //CANG终端与QI2终端波束俯仰指向
+	uint16_t m_z3_distance;                    //Cang与Z3距离
+	int16_t  m_z3_fangwei;                    //CANG终端与QI3终端波束方位指向
+	uint16_t m_z3_fuyang;                     //CANG终端与QI3终端波束俯仰指向
+	uint16_t m_z4_distance;                    //Cang与Z4距离
+	int16_t  m_z4_fangwei;                    //CANG终端与QI4终端波束方位指向
+	uint16_t m_z4_fuyang;                     //CANG终端与QI4终端波束俯仰指向
+	uint8_t array_status;                // 阵面工作状态
+	uint8_t instruction_crc_error_count; // 指令CRC错误计数
+	uint8_t address_error_count;         // 地址码错误计数
+	uint32_t air_packet_loss_count;       // 空口接收丢包计数
 	//uint32_t terminal_working_status_representation; // 终端工作状态表征
-	//uint8_t  reserved[15];               // 保留字段
+	uint8_t  reserved[51];               // 保留字段
 	//rs_tail_t tail;
 };
 

@@ -40,13 +40,13 @@ void control_recv_thread_init()
     addr.sin_family = AF_INET;
     inet_pton(AF_INET, info.control_ip, (void*)&addr.sin_addr); //**ip**
     addr.sin_port = htons(info.control_port); //**port**
-    ret = bind(lfd, (struct sockaddr*)&addr, sizeof addr);
+    ret = bind(lfd, (struct sockaddr*)&addr, sizeof addr); //绑定ip和端口
 
     //开始监听
     listen(lfd, SOMAXCONN);
 
     info.control_system.addr_len = sizeof(info.control_system.addr);
-    info.control_system.fd = accept(lfd, (struct sockaddr*)&(info.control_system.addr), &(info.control_system.addr_len));
+    info.control_system.fd = accept(lfd, (struct sockaddr*)&(info.control_system.addr), &(info.control_system.addr_len));//接收连接请求
 
     printf("control_system connect success %d\n", info.control_system.fd);
 

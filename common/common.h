@@ -221,8 +221,24 @@ typedef struct _info_t
 	int time_schedule_flag;				//时隙调度标志位，置1表示发送时隙，置0表示接收时隙
 	int time_frame_flag_m[MAX_DEVICE];	//时帧标志位M，指示Z建链完成后，M在这个时帧不发送数据，在下一时帧开始接收和发送数据
 	int time_frame_flag_z;				//时帧标志位Z，指示Z建链完成后，在下一时帧发送数据帧给M
-	int chain_flag;						//建链标志位
+	//int chain_flag;
+	int chain_flag_m;						//m建链标志位
+	int chain_flag_z;                      //z建链标志位
+	uint8_t  znode_connect_flag[MAX_DEVICE]; //mZ节点建链状态
+	uint16_t m_proc_flight_control_data_tx_count;            // CANG终端向多任务处理QI发数据计数
+	uint16_t m_proc_flight_control_data_rx_count;            // CANG终端向多任务处理QI收数据计数
+	uint16_t m_z1_air_interface_data_tx_count;     //CANG终端向QI1终端发送空口业务数据包计数
+	uint16_t m_z1_air_interface_data_rx_count;     //CANG终端向QI1终端接收空口业务数据包计数
+	uint16_t z_proc_flight_control_data_tx_count; // 器向集成处理器飞控发数据计数
+	uint16_t z_proc_flight_control_data_rx_count;  //器收集成处理器飞控数据计数
 }info_t;
+
+typedef struct NUM_CQ_AIR_DATA_TAG
+{
+	uint8_t  nodeId; //节点自身id
+	uint16_t air_interface_data_tx_count;     //空口发送业务数据包计数
+	uint16_t air_interface_data_rx_count;     //空口接收业务包计数
+}NUM_CQ_AIR_DATA;
 
 #pragma pack(1)
 typedef struct _head_t
@@ -267,7 +283,7 @@ typedef struct _msg_t
 #pragma pack()
 
 extern info_t info;
-
+extern NUM_CQ_AIR_DATA g_node_progrm[MAX_DEVICE]; //节点管理数组
 typedef struct 
 {
 	float x;

@@ -127,7 +127,7 @@ int fsm_init2off_ed(int para)
 	printf("等待建链命令\n");
 	while (1)
 	{
-		if (info.chain_flag == 1)//收到建链命令
+		if (info.chain_flag_m == 1)//收到建链命令
 		{
 			/*主机发送信令枪帧*/
 			if (MY_INDEX == 0)

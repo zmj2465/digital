@@ -55,6 +55,7 @@ void schedule_slot_init(void)
     info.scan_flag_Z = 0;
     memset(info.distance_flag_M, 0, sizeof(info.distance_flag_M));
     memset(info.scan_flag_M, 0, sizeof(info.scan_flag_M));
+	memset(info.znode_connect_flag,0,sizeof(info.znode_connect_flag));
     memset(antenna_table, 0, sizeof(antenna_table));
 }
 

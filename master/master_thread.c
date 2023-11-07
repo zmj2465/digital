@@ -1,4 +1,5 @@
 #include "master_thread.h"
+#include "common.h"
 
 /*
 功能：主控线程
@@ -64,6 +65,7 @@ int master_data_proc(void)
                     printf("m get tom\n");
                     put(&common_data[M_TOM_RECV], msg.data, M_TOM_RECV_LEN, index);
                 }
+				g_node_progrm[index].air_interface_data_rx_count++;
                 plog("M recv Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, msg.head.seq);
                 break;
             case START_GUN:
@@ -102,7 +104,7 @@ int master_data_proc(void)
             switch (msg.head.type)
             {
                 case START_GUN:
-                    if (msg.data[0] == START_GUN_REQ)
+                    if （(msg.data[0] == START_GUN_REQ)&&(1==info.chain_flag_z)）//z收到建链标志和发令枪请求后，才开始回发令枪响应
                     {                                
                         info.str.start_time = msg.data[1];
                         info.str.base_t = msg.head.send_t;
@@ -155,6 +157,7 @@ int master_data_proc(void)
                         printf("z get tom\n");
                         put(&common_data[Z_TOM_RECV], msg.data, Z_TOM_RECV_LEN, 0);
                     }
+					g_node_progrm[0].air_interface_data_tx_count++;
                     plog("Z%d recv M data, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
                     break;
                 case DISTANCE:
