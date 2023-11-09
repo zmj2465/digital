@@ -2,6 +2,7 @@
 #include "display_send_thread.h"
 #include "angle.h"
 #include "physical_simulation.h"
+#include "display_store_thread.h"
 
 int flag = 0;
 double te;
@@ -63,7 +64,7 @@ void* display_thread(void* arg)
 					flag = 4;
 				}
 			}
-			Sleep(5);
+			Sleep(20);
 		}
 		else if (display_state.mode == REPLAY_MODE)
 		{
@@ -79,56 +80,38 @@ void* display_thread(void* arg)
 
 
 
-//void create_table(show_t* mmsg)
-//{
-//	int i, j, k;
-//	int ret = 0;
-//	for (i = 0; i < 5; i++)
-//	{
-//		//节点未在网
-//		if (online_state[i] == 0) continue;
-//		for (j = 0; j < 6; j++)
-//		{
-//			int temp = 0;
-//			//选中一个天线，看是否对准其余节点
-//			for (k = 0; k < 5; k++)
-//			{
-//				//节点是本节点跳过
-//				if (k == MY_INDEX) continue;
-//				//未与该节点建链跳过
-//				if (online_state[k] == 0) continue;
-//				
-//				//ret=
-//
-//				if (ret == 1) //对准了
-//				{
-//					mmsg->display_info.link_target[i][j] |= 1 << k;
-//				}
-//			}
-//		}
-//	}
-//}
-
-
 void create_table(show_t* msg)
 {
 	int i, j, k;
 	int ret = 0;
+	//选择一个节点
 	for (i = 0; i < 5; i++)
 	{
-		//节点未在网
+		//该节点未在网
 		if (online_state[i] == 0) continue;
+		//遍历另外4个节点
 		for (j = 0; j < 5; j++)
 		{
 			if (j == i) continue;
 			//与该节点未建链
 			if (online_state[j] == 0) continue;
+			//i节点选择ret号天线对上j
 			ret = select_antenna(i, overall_fddi_info[i].q, overall_fddi_info[j].pos);
 			if (ret == -1)
 			{
 				continue;
 			}
-			msg->display_info.link_target[i][ret] |= 1 << j;
+			msg->display_info.link_target[i][5] |= 1 << j;
  		}
 	}
+
+	//printf("%%%%%%%%%%%%%%%%%%%%%%\n");
+	//for (i = 0; i < 5; i++)
+	//{
+	//	for (j = 0; j < 6; j++)
+	//	{
+	//		printf("%d ", msg->display_info.link_target[i][j]);
+	//	}
+	//	printf("\n");
+	//}
 }

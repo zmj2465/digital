@@ -146,6 +146,7 @@ typedef struct _info_t
 	pthread_t control_recv_thread_id;
 	pthread_t display_send_thread_id;
 	pthread_t display_recv_thread_id;
+	pthread_t display_store_thread_id;
 	pthread_t display_thread_id;
 	pthread_t master_thread_id;
 	pthread_t link_control_thread_id;
@@ -218,7 +219,10 @@ typedef struct _info_t
 	int seq_beacon_z;					//信令序列号Z
 	int seq_distance_m;					//测距序列号M
 	int seq_distance_z;					//测距序列号Z
+
 	int time_schedule_flag;				//时隙调度标志位，置1表示发送时隙，置0表示接收时隙
+	int data_store_flag;
+
 	int time_frame_flag_m[MAX_DEVICE];	//时帧标志位M，指示Z建链完成后，M在这个时帧不发送数据，在下一时帧开始接收和发送数据
 	int time_frame_flag_z;				//时帧标志位Z，指示Z建链完成后，在下一时帧发送数据帧给M
 	//int chain_flag;

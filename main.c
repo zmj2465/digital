@@ -8,6 +8,7 @@
 #include "control_recv_thread.h"
 #include "display_send_thread.h"
 #include "display_recv_thread.h"
+#include "display_store_thread.h"
 #include "display_thread.h"
 #include "master_thread.h"
 #include "link_control_thread.h"
@@ -124,6 +125,13 @@ void thread_init()
 
     /**/
     ret = pthread_create(&info.display_recv_thread_id, NULL, display_recv_thread, NULL);
+    if (ret != 0)
+    {
+        printf("error\n");
+    }
+
+    /**/
+    ret = pthread_create(&info.display_store_thread_id, NULL, display_store_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");

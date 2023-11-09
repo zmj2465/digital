@@ -62,6 +62,9 @@
 #define RS_Z_SHORT_FRAME_SP_LEN RS_HEAD_LEN+Z_SHORT_FRAME_SP_LEN+RS_TAIL_LEN //7++6
 #define RS_M_SHORT_FRAME_SP_LEN RS_HEAD_LEN+M_SHORT_FRAME_SP_LEN+RS_TAIL_LEN //7++6
 
+
+#define RS_LONG_FRAME_GUI_LEN RS_HEAD_LEN+LONG_FRAME_GUI_LEN+RS_TAIL_LEN //7++6
+#define RS_LONG_FRAME_TOM_LEN RS_HEAD_LEN+LONG_FRAME_TOM_LEN+RS_TAIL_LEN //7++6
 #define RS_LONG_FRAME_SP_GUI_LEN RS_HEAD_LEN+LONG_FRAME_SP_GUI_LEN+RS_TAIL_LEN //7++6
 #define RS_LONG_FRAME_SP_TOM_LEN RS_HEAD_LEN+LONG_FRAME_SP_TOM_LEN+RS_TAIL_LEN //7++6
 
@@ -456,7 +459,8 @@ typedef union _rs_body_t {
 
 
 
-
+int rs485_init();
+void server_init();
 
 
 
@@ -484,7 +488,15 @@ void rs_M2ZGui_proc(char* data);
 void rs_M2ZTom_proc(char* data);
 void rs_M2ZPlan_proc(char* data);
 
+
+void create_CheckResult_res();
+void create_ConfigLoad_res();
+void create_WorkMode_res();
+void create_LinkResult_res();
+void create_ShortFrame_res();
+
 void head_load(char* data, char* res);
+void head_load_b(char* res);
 uint8_t crc_check(char* start_address, int len, uint16_t get_crc);
 
 

@@ -245,11 +245,13 @@ void rep_rep_proc(show_t* msg);
 void rep_suspend_proc(show_t* msg);
 void rep_recover_proc(show_t* msg);
 
-void send_display_msg();
+//void send_display_msg();
 void send_to_display(char* data, int len);
 void find_data();
 
 void role_id_config();
+
+void set_zero(show_t* msg);
 
 
 

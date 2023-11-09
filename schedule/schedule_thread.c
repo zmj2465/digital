@@ -38,6 +38,7 @@ void* schedule_thread(void* arg)
         if (fsm_status == FSM_WSN || fsm_status == FSM_WAN || fsm_status == FSM_ON)
         {
             schedule_slot();
+            info.data_store_flag = 1;
         }
     }
 }
