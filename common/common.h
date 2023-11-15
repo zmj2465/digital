@@ -235,6 +235,9 @@ typedef struct _info_t
 	uint16_t m_z1_air_interface_data_rx_count;     //CANG终端向QI1终端接收空口业务数据包计数
 	uint16_t z_proc_flight_control_data_tx_count; // 器向集成处理器飞控发数据计数
 	uint16_t z_proc_flight_control_data_rx_count;  //器收集成处理器飞控数据计数
+	uint8_t beam_width;		//波束宽度
+	double eirp;			//天线等效全向辐射功率
+	double gt;				//天线接收性能
 }info_t;
 
 
@@ -242,7 +245,7 @@ typedef struct _info_t
 typedef struct
 {
 	uint8_t tx_rx_status;       // 天线收发状态 (0：关闭 1：正在发送 2：正在接收)
-	uint8_t beam_width;         // 天线波束宽度
+	uint8_t beam_width;           // 天线波束宽度
 	double azimuth;             // 0°
 	double elevation;           // 90°
 	double eirp;                // 天线等效全向辐射功率

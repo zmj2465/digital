@@ -114,6 +114,7 @@ int fsm_init2off_st(int para)
 	info.time_schedule_flag = 0;
 	info.chain_flag_m = 0;
 	info.chain_flag_z = 0;
+	memset(&display_data, 0, sizeof(data_t));
 	sql_init();
 	return 0;
 }
