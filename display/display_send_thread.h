@@ -60,37 +60,6 @@ typedef struct
     FILE* file;
 }display_state_t;
 
-typedef struct 
-{
-    uint8_t tx_rx_status;       // 天线收发状态 (0：关闭 1：正在发送 2：正在接收)
-    uint8_t beam_width;         // 天线波束宽度
-    double azimuth;             // 天线方位角
-    double elevation;           // 天线俯仰角
-    double eirp;                // 天线等效全向辐射功率
-    double gt;                  // 天线接收性能
-} antenna_t;
-
-typedef struct 
-{
-    uint8_t node;               // 节点
-    double packet_loss_rate;    // 丢包率
-    double error_rate;          // 误码率
-    double snr;                 // 信噪比
-    double received_signal_power;    // 接收信号功率
-    double spreading_gain;      // 扩频增益
-    double equivalent_spreading_factor; // 等效扩频倍数
-    double noise_level;         // 噪声电平
-    double distance;            // 距离
-    double path_loss;           // 路径损耗
-    double transmission_delay;  // 传输时延
-    double doppler_shift;       // 多普勒频移
-    double radial_velocity;     // 径向速度
-    double beam_angle;          // 波束角度
-    double antenna_gain;        // 天线增益
-    double equivalent_isotropic_radiated_power;  // 等效全向辐射功率
-    double transmitter_output_power; // 发射机发射功率
-    uint8_t state;
-} channel_t;
 
 
 typedef struct
@@ -149,7 +118,6 @@ typedef struct
     channel_t channel_params[4];    // 信道参数，与其它4个节点的数据传输的信道信息
     /*****/
     int8_t link_target[5][6];
-
 } display_t;
 
 
@@ -245,11 +213,13 @@ void rep_rep_proc(show_t* msg);
 void rep_suspend_proc(show_t* msg);
 void rep_recover_proc(show_t* msg);
 
-void send_display_msg();
+//void send_display_msg();
 void send_to_display(char* data, int len);
 void find_data();
 
 void role_id_config();
+
+void set_zero(show_t* msg);
 
 
 

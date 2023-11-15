@@ -2,6 +2,7 @@
 
 info_t info;
 NUM_CQ_AIR_DATA g_node_progrm[MAX_DEVICE]; //节点管理数组
+data_t display_data;
 fddi_info_t fddi_info;
 fddi_info_t overall_fddi_info[5];
 int8_t link_table[5][6];

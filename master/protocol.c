@@ -325,6 +325,7 @@ int fsm_on2wsn_ed(int para)
 	return 0;
 }
 
+
 /*
 功能：在网状态->等待入网状态（只针对终端Z）（之前）
 参数：无

@@ -1,4 +1,5 @@
 #include "file_manage.h"
+#include "display_send_thread.h"
 
 
 //file_info_t log_file;
@@ -23,7 +24,7 @@ void file_init()
         create_file(&file_config[i].file, file_config[i].directory, file_config[i].name);
         if (i == 0)
         {
-            create_map(&file_config[i].file, 10);
+            create_map(&file_config[i].file, 20);
         }
         else
         {
@@ -203,7 +204,7 @@ void tofile(int i, char* s, ...)
     pthread_mutex_unlock(&file_config[i].file.lock);
 }
 
-
+static int store_seq=0;
 
 void todata(char* data, int len)
 {
@@ -214,6 +215,9 @@ void todata(char* data, int len)
         pthread_mutex_unlock(&file_config[0].file.lock);
         return;
     }
+    show_t* p = (show_t*)data;
+    p->display_info.serial_number = store_seq++;
+    printf("data store\n");
     memcpy(file_config[0].file.mappedData + file_config[0].file.ptr, data, len);
     file_config[0].file.ptr += len;
     pthread_mutex_unlock(&file_config[0].file.lock);

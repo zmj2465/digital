@@ -7,7 +7,7 @@
 #include "compatible.h"
 #include <stdlib.h>
 #include "common.h"
-
+#include "display_thread.h"
 
 void* display_recv_thread(void* arg);
 

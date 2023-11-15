@@ -4,6 +4,7 @@
 #include "physical_simulation.h"
 #include "display_thread.h"
 #include "math.h"
+#include "stdio.h"
 
 display_state_t display_state;
 show_t show_msg;
@@ -91,15 +92,15 @@ void display_send_thread_init()
     info.display_system.addr_len = sizeof(info.display_system.addr); //**
     display_fd = accept(lfd, (struct sockaddr*)&(info.display_system.addr), &(info.display_system.addr_len)); //**
     printf("display_system connect success %d\n", display_fd);
-    Sleep(10000);
+    Sleep(100);
+    file_num(display_fd);
+    Sleep(100);
     role_id_config();
-    Sleep(5);
+    Sleep(100);
     generate_key_event(KEY_POWER_ON, 0, 0);
-    //while (1)
-    //{
-        Sleep(500);
-        generate_key_event(KEY_CONFIG_LOAD, 1, 1);
-    //}
+    Sleep(100);
+    generate_key_event(KEY_CONFIG_LOAD, 1, 1);
+
 
 }
 
@@ -119,9 +120,12 @@ void sim_end_proc(show_t* msg)
 void rep_sel_proc(show_t* msg)
 {
     int num=get_file_num(DATA_FOLDER);
+    flag_ = 0;
+    msg->file_seq = 0;
     printf("file num=%d select seq=%d\n", num, msg->file_seq);
     //选择文件
     select_file(msg);
+    display_state.mode = REPLAY_MODE;
 }
 
 void rep_beg_proc(show_t* msg)
@@ -132,8 +136,9 @@ void rep_beg_proc(show_t* msg)
 void rep_rep_proc(show_t* msg)
 {
     int ret;
-    ret=fseek(display_state.file, (4+sizeof(display_t)) * msg->data_seq, SEEK_SET);
+    ret = fseek(display_state.file, MAX_SEND_LEN * msg->data_seq, SEEK_SET);
     flag_ = 0;
+    //display_state.mode = REPLAY_MODE;
     printf("to seq:%d ret=%d\n", msg->data_seq, ret);
 }
 
@@ -170,249 +175,6 @@ void sim_start(uint16_t mode)
     pthread_mutex_unlock(&display_state.mutex);
 }
 
-static float  posx = 0;
-static float  posy = 0;
-static float  posz = 0;
-static double eirp = 0;
-static uint16_t send_= 0;
-static uint16_t recv_ = 0;
-
-static double pr = 0.1;
-static double er = 0.1;
-
-int x = 0;
-int d0 = 1;
-int d1d2 = 3;
-int d3d4 = 1;
-int d5d10 = 22;
-int d11d13 = 6;
-int d14d16 = 1;
-int d17 = 1;
-int d18 = 1;
-int d19 = 1;
-int d2022 = 3;
-int d23 = 1;
-int d24 = 1;
-int d25d31 = 0;
-
-double lastx=0;
-double lasty=0;
-double lastz=0;
-void send_display_msg()
-{
-    static float p=0, pp=0;
-    show_t msg;
-    set_zero(&msg);
-    int i;
-    int j;
-    msg.type = DISPLAY_INFO;
-    //msg.len = 4 + sizeof(display_t);
-    msg.len = MAX_SEND_LEN;
-
-    pthread_mutex_lock(&display_state.mutex);
-    msg.display_info.serial_number = display_state.seq;
-    display_state.seq++;
-    msg.display_info.system_time.tv_sec = x * 20 * 1000 + 1688610381000000000;// 假设系统时间为 2021-06-21 12:00:00
-    msg.display_info.system_time.tv_nsec = 0;
-
-    //位置信息
-    msg.display_info.pos_x = overall_fddi_info[0].pos.x/100;
-    msg.display_info.pos_y = overall_fddi_info[0].pos.y;
-    msg.display_info.pos_z = overall_fddi_info[0].pos.z/100;
-
-    double delta_x = (msg.display_info.pos_x - lastx);
-    double delta_y = (msg.display_info.pos_y - lasty);
-    double delta_z = (msg.display_info.pos_z - lastz);
-    double ddistance = sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
-    double speed = ddistance / 0.005;
-    lastx = msg.display_info.pos_x;
-    lasty = msg.display_info.pos_y;
-    lastz = msg.display_info.pos_z;
-    //printf("%f %f %f\n", msg.display_info.pos_x, msg.display_info.pos_y, msg.display_info.pos_z);
-    //printf("%f %f %f\n", delta_x, delta_y, delta_z);
-    printf("ddistance=%f v=%f\n", ddistance, speed);
-    msg.display_info.vel_x = 1.0;
-    msg.display_info.vel_y = 2.0;
-    msg.display_info.vel_z = 3.0;
-    msg.display_info.ang_vel_x = 0.1;
-    msg.display_info.ang_vel_y = 0.2;
-    msg.display_info.ang_vel_z = 0.3;
-    msg.display_info.quat_q0 = 0.707;
-    msg.display_info.quat_q1 = 0.0;
-    msg.display_info.quat_q2 = 0.0;
-    msg.display_info.quat_q3 = 0.707;
-    msg.display_info.time_element_number = 0;
-    msg.display_info.time_frame_number = 0;
-    msg.display_info.micro_time_slot_number = 0;
-    msg.display_info.node_role = MY_ROLE;
-    msg.display_info.node_id = MY_INDEX - MY_ROLE;
-    msg.display_info.link_status = 1;
-
-    //for (j = 0; j < 5; j++)
-    //{
-    //    double distance = caculate_distance(fddi_info.pos, overall_fddi_info[1].pos);
-    //    double alpha, beta;
-    //    Point3D pos2;
-    //    convertCoordinates(&overall_fddi_info[1].pos, &fddi_info.q, &pos2);
-    //    calculateAngles(&pos2, &alpha, &beta);
-    //}
-
-    //与其他节点信息
-    if (MY_INDEX == 0){
-        double distance = caculate_distance(fddi_info.pos, overall_fddi_info[1].pos);
-        double alpha, beta;
-        Point3D pos2;
-        //对方位置转换到本节点载体坐标系
-        convertCoordinates(&overall_fddi_info[1].pos, &fddi_info.q, &pos2);
-        //计算方位角俯仰角
-        calculateAngles(&pos2, &alpha, &beta);
-
-        msg.display_info.z1_m_distance[1] = distance/20;
-        msg.display_info.z1_m_azimuth[1] = fmin(p++,45);
-        msg.display_info.z1_m_elevation[1] = fmin(pp++, 45);
-
-        //printf("%f %f %f\n", distance, alpha, beta);
-        //tosche("%f %f %f\n", msg.display_info.pos_x,
-        //    msg.display_info.pos_y,
-        //    msg.display_info.pos_z
-        //);
-        //printf("%f %f %f %f %f %f\n", msg.display_info.pos_x,
-        //    msg.display_info.pos_y,
-        //    msg.display_info.pos_z,
-        //    msg.display_info.z1_m_distance[1],
-        //    msg.display_info.z1_m_azimuth[1],
-        //    msg.display_info.z1_m_elevation[1]
-        //);
-
-    }
-    else if (MY_INDEX == 1)
-    {
-        double distance = caculate_distance(fddi_info.pos, overall_fddi_info[0].pos);
-        double alpha, beta;
-        Point3D pos2;
-        //对方位置转换到本节点载体坐标系
-        convertCoordinates(&overall_fddi_info[1].pos, &overall_fddi_info[0].q, &pos2);
-        //计算方位角俯仰角
-        calculateAngles(&pos2, &alpha, &beta);
-
-        msg.display_info.z1_m_distance[0] = distance / 20;
-        msg.display_info.z1_m_azimuth[0] = fmin(p++, 45);
-        msg.display_info.z1_m_elevation[0] = 180 - fmin(pp++, 45);
-
-    }
-
-
-    msg.display_info.comm_status_mode = 2;
-    msg.display_info.z_proc_flight_control_data_rx_tx_count = (send_ << 16) | recv_;
-    send_ += 2;
-    recv_++;
-    msg.display_info.z_proc_flight_control_data_rx_tx_timestamp = 0;
-    //msg.display_info.z1_m_air_interface_data_rx_tx_count = 0;
-    for (i = 0; i < 4; i++)
-    {
-        msg.display_info.z_m_send_recv_count[i] = 0;
-    }
-    //msg.display_info.z1_m_air_interface_data_rx_tx_timestamp = 0;
-    msg.display_info.operation_status = 0;
-    msg.display_info.channel_coding_decoding_frame_count = 0;
-    msg.display_info.modulation_demodulation_frame_count = 0;
-    msg.display_info.instruction_parsing_frame_count = 0;
-    msg.display_info.m_node_time_freq_sync_status = 0;
-    msg.display_info.m_node_downlink_link_status = 0;
-    msg.display_info.m_node_beam_azimuth_direction = 0;
-    msg.display_info.m_node_beam_elevation_direction = 90;
-
-
-    msg.display_info.frequency_synthesizer_status = 0;
-    msg.display_info.terminal_working_status_representation = 0;
-    int temp = 0;
-    temp |= d0;
-    temp |= (d1d2 << 1);
-    temp |= (d3d4 << 3);
-    temp |= (d5d10 << 5);
-    temp |= (d11d13 << 11);
-
-    temp |= (d14d16 << 14);
-    temp |= (d17 << 17);
-    temp |= (d18 << 18);
-    temp |= (d19 << 19);
-    temp |= (d2022 << 20);
-    temp |= (d23 << 23);
-    temp |= (d24 << 24);
-
-    msg.display_info.terminal_working_status_representation = temp;
-
-    for (j = 0; j < 6; j++)
-    {
-        msg.display_info.antenna_params[j].tx_rx_status = 1;
-        msg.display_info.antenna_params[j].beam_width = 30;
-        msg.display_info.antenna_params[j].azimuth = 45.67;
-        msg.display_info.antenna_params[j].elevation = 12.34;
-        msg.display_info.antenna_params[j].eirp = eirp++;
-        msg.display_info.antenna_params[j].gt = eirp++;
-    }
-    for (j = 0; j < 4; j++)
-    {
-        msg.display_info.channel_params[j].node = 1;
-        msg.display_info.channel_params[j].packet_loss_rate = pr;
-        msg.display_info.channel_params[j].error_rate = pr;
-        pr += 0.01;
-        if (pr < 0.9)
-        {
-            pr += 0.01;
-        }
-        else
-        {
-            pr -= 0.8;
-        }
-        msg.display_info.channel_params[j].snr = 20.5;
-        msg.display_info.channel_params[j].received_signal_power = -70.2;
-        msg.display_info.channel_params[j].spreading_gain = 12.3;
-        msg.display_info.channel_params[j].equivalent_spreading_factor = 4.5;
-        msg.display_info.channel_params[j].noise_level = -90.1;
-        msg.display_info.channel_params[j].distance = 500.0;
-        msg.display_info.channel_params[j].path_loss = 60.8;
-        msg.display_info.channel_params[j].transmission_delay = 0.003;
-        msg.display_info.channel_params[j].doppler_shift = 100.5;
-        msg.display_info.channel_params[j].radial_velocity = 50.2;
-        msg.display_info.channel_params[j].beam_angle = 30.0;
-        msg.display_info.channel_params[j].antenna_gain = 18.7;
-        msg.display_info.channel_params[j].equivalent_isotropic_radiated_power = 30.5;
-        msg.display_info.channel_params[j].transmitter_output_power = 25.8;
-        if (j == 0)
-            msg.display_info.channel_params[j].state = 1;
-        if (j == 1)
-            msg.display_info.channel_params[j].state = 0;
-        if (j == 2)
-            msg.display_info.channel_params[j].state = 1;
-        if (j == 3)
-            msg.display_info.channel_params[j].state = 0;
-    }
-
-
-    create_table(&msg);
-    //for (i = 0; i < 5; i++)
-    //{
-    //    printf("%d ", online_state[i]);
-    //}
-    //printf("\n");
-
-    //for (i = 0; i < 2; i++)
-    //{
-    //    for (j = 0; j < 6; j++)
-    //    {
-    //        printf("%d ", msg.display_info.link_target[i][j]);
-    //    }
-    //    printf("\n");
-    //}
-    //printf("****\n");
-
-    //printf("y=%f\n", msg.display_info.pos_y);
-    send(display_fd, &msg, msg.len, 0);
-    //todata(&msg, msg.len);
-    //enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
-    pthread_mutex_unlock(&display_state.mutex);
-}
 
 
 void generate_key_event(int type,int id_znum,int role_mnum)
@@ -426,7 +188,6 @@ void generate_key_event(int type,int id_znum,int role_mnum)
     msg.len = MAX_SEND_LEN;
 
     //
-    pthread_mutex_lock(&display_state.mutex);
     msg.key.seq = display_state.seq;
     display_state.seq++;
     msg.key.system_time.tv_sec = my_get_time();
@@ -456,16 +217,10 @@ void generate_key_event(int type,int id_znum,int role_mnum)
         online_state[id_znum] = 1;
     }
 
-
     printf("key event:%d len=%d\n", msg.key.key,msg.len);
-
-    send(display_fd, &msg, msg.len, 0);
+    send_to_display(&msg, msg.len);
     todata(&msg, msg.len);
-    //enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, msg.len);
-    pthread_mutex_unlock(&display_state.mutex);
 }
-
-
 
 
 
@@ -589,14 +344,8 @@ void set_zero(show_t* msg)
 {
     int i, j;
     memset(msg, 0, sizeof(show_t));
-    //for (i = 0; i < 5; i++)
-    //{
-    //    for (j = 0; j < 6; j++)
-    //    {
-    //        msg->display_info.link_target[i][j] = -1;
-    //    }
-    //}
 }
+
 
 
 void find_data()
@@ -607,7 +356,7 @@ void find_data()
     {
         return;
     }
-    ret=fread(&msg, 1, 4 + sizeof(display_t), display_state.file);
+    ret = fread(&msg, 1, MAX_SEND_LEN, display_state.file);
 
     if (msg.type == 0) msg.type = 6;
     if (msg.type == 5) msg.type = 7;
@@ -623,7 +372,16 @@ void find_data()
 
 void send_to_display(char* data,int len)
 {
+    int i;
+    pthread_mutex_lock(&display_state.mutex);
     send(display_fd, data, len, 0);
+    //for (i = 0; i < len; i++)
+    //{
+    //    printf("%02x ", (uint8_t)data[i]);
+    //}
+    //printf("\n");
+    pthread_mutex_unlock(&display_state.mutex);
+
 }
 
 
@@ -640,7 +398,7 @@ void file_num(int fd)
     for (i = 0; i < msg.file_info.file_num; i++)
     {
         sprintf(msg.file_info.file_name[i], "%d:", i);
-        //printf("file name:%s\n", msg.file_info.file_name[i]);
+        printf("file name:%s\n", msg.file_info.file_name[i]);
     }
 
     send(fd, &msg, msg.len, 0);

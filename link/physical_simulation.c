@@ -430,17 +430,7 @@ int rett(int node,int antenna)
     }
 }
 
-void temp()
-{
-    int i, j;
-    for (i = 0; i < 5; i++)
-    {
-        for (j = 0; j < 6; j++)
-        {
-            link_table[i][j] = x();
-        }
-    }
-}
+
 
 
 

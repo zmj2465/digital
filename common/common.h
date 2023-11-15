@@ -10,6 +10,7 @@
 #include "queue.h"
 #include "compatible.h"
 #include "file_manage.h"
+
 //#include "windows.h"
 //#include <dirent.h>
 
@@ -146,6 +147,7 @@ typedef struct _info_t
 	pthread_t control_recv_thread_id;
 	pthread_t display_send_thread_id;
 	pthread_t display_recv_thread_id;
+	pthread_t display_store_thread_id;
 	pthread_t display_thread_id;
 	pthread_t master_thread_id;
 	pthread_t link_control_thread_id;
@@ -218,7 +220,10 @@ typedef struct _info_t
 	int seq_beacon_z;					//信令序列号Z
 	int seq_distance_m;					//测距序列号M
 	int seq_distance_z;					//测距序列号Z
+
 	int time_schedule_flag;				//时隙调度标志位，置1表示发送时隙，置0表示接收时隙
+	int data_store_flag;
+
 	int time_frame_flag_m[MAX_DEVICE];	//时帧标志位M，指示Z建链完成后，M在这个时帧不发送数据，在下一时帧开始接收和发送数据
 	int time_frame_flag_z;				//时帧标志位Z，指示Z建链完成后，在下一时帧发送数据帧给M
 	int chain_flag_m;						//m建链标志位
@@ -232,6 +237,66 @@ typedef struct _info_t
 	uint16_t z_proc_flight_control_data_rx_count;  //器收集成处理器飞控数据计数
 }info_t;
 
+
+#pragma pack(1)
+typedef struct
+{
+	uint8_t tx_rx_status;       // 天线收发状态 (0：关闭 1：正在发送 2：正在接收)
+	uint8_t beam_width;         // 天线波束宽度
+	double azimuth;             // 0°
+	double elevation;           // 90°
+	double eirp;                // 天线等效全向辐射功率
+	double gt;                  // 天线接收性能
+} antenna_t;
+
+typedef struct
+{
+	uint8_t node;               // 节点
+	double packet_loss_rate;    // 丢包率
+	double error_rate;          // 误码率
+	double snr;                 // 信噪比
+	double received_signal_power;    // 接收信号功率
+	double spreading_gain;      // 扩频增益
+	double equivalent_spreading_factor; // 等效扩频倍数
+	double noise_level;         // 噪声电平
+	double distance;            // 距离
+	double path_loss;           // 路径损耗
+	double transmission_delay;  // 传输时延
+	double doppler_shift;       // 多普勒频移
+	double radial_velocity;     // 径向速度
+	double beam_angle;          // 波束角度
+	double antenna_gain;        // 天线增益
+	double equivalent_isotropic_radiated_power;  // 等效全向辐射功率
+	double transmitter_output_power; // 发射机发射功率
+	uint8_t state;
+} channel_t;
+
+
+
+typedef struct _data_t {
+	uint16_t time_element_number;   // 时元号，当前时元号，每秒增加1（0~65535）
+	uint8_t time_frame_number;  // 时帧号，当前帧号，每100ms增加1（0~9）
+	uint16_t micro_time_slot_number;    // 微时隙号，当前微时隙号（0~499）
+	uint8_t link_status;        // 链路连接状态，占用一个字节
+	float z_m_distance[5];     //  i节点相对本节点距离
+	float z_m_azimuth[5];      //  i节点相对本节点方位
+	float z_m_elevation[5];    //  i节点相对本节点俯仰
+	antenna_t antenna_params[6];    // 天线参数，与天线数量相对应的天线基本参数
+	uint8_t comm_status_mode;   // 通信状态/工作模式，1字节，扫描、建链、通信、静默、小功率/大功率
+	uint8_t operation_status;   // 工作状态，定频、跳频
+	uint16_t m_node_time_freq_sync_status;      // M节点时频同步工作状态，M节点,时间同步状态：1字节，频率同步状态：1字节
+	uint8_t m_node_downlink_link_status;    // M节点下行链路工作状态，M节点，1字节
+	uint8_t frequency_synthesizer_status;    // 频综状态，频综工作状态指示
+	channel_t channel_params[4];    // 信道参数，与其它4个节点的数据传输的信道信息
+	uint32_t z_proc_flight_control_data_rx_tx_count;    // Z与集成处理器飞控数据收发计数，Z与集成处理器飞控数据接收计数：2字节，Z与集成处理器飞控数据发送计数：2字节
+	uint32_t z_proc_flight_control_data_rx_tx_timestamp;    // Z与集成处理器飞控数据收发时戳，Z与集成处理器飞控数据接收时戳：2字节，Z与集成处理器飞控数据发送时戳：2字节
+	uint32_t z_m_send_recv_count[4];
+	uint32_t channel_coding_decoding_frame_count;    // 信道编译码帧计数，信道编码帧计数：2字节，信道译码帧计数：2字节
+	uint32_t modulation_demodulation_frame_count;    // 调制解调帧计数，调制帧计数：2字节，解调帧计数：2字节
+	uint32_t instruction_parsing_frame_count;    // 指令解析帧计数：4字节
+}data_t;
+
+
 typedef struct NUM_CQ_AIR_DATA_TAG
 {
 	uint8_t  nodeId; //节点自身id
@@ -239,7 +304,7 @@ typedef struct NUM_CQ_AIR_DATA_TAG
 	uint16_t air_interface_data_rx_count;     //空口接收业务包计数
 }NUM_CQ_AIR_DATA;
 
-#pragma pack(1)
+
 typedef struct _head_t
 {
 	uint8_t dst;				//目的地址	
@@ -283,6 +348,8 @@ typedef struct _msg_t
 
 extern info_t info;
 extern NUM_CQ_AIR_DATA g_node_progrm[MAX_DEVICE]; //节点管理数组
+extern data_t display_data;
+
 typedef struct 
 {
 	float x;

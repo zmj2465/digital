@@ -13,35 +13,13 @@
 
 char path[1024];
 
-
 static HANDLE recv_hdev;
 static HANDLE send_hdev;
 static HANDLE user_hdev;
+static int rs485_fd;
+static int lfd;
 
-void rs485_init()
-{
-    int i;
-    uint64_t path_len = MAX_PATH + 1;
-    char** device_base_path;
-    device_base_path = (char**)malloc(sizeof(char*) * 4);
-    assert(device_base_path);
-    for (i = 0; i < 4; i++)
-    {
-        device_base_path[i] = (char*)malloc(sizeof(char) * path_len);
-        assert(device_base_path[i]);
-        memset(device_base_path[i], 0, MAX_PATH + 1);
-    }
-
-    uint32_t numBoard = get_devices(GUID_DEVINTERFACE_XDMA, device_base_path, path_len);
-    if (!numBoard)
-    {
-
-        return 0;
-    }
-    printf("board num:%d\n", numBoard);
-    memcpy(path, device_base_path[0], path_len);
-}
-
+//#define RS485
 
 
 void* rs_485_recv_thread(void* arg)
@@ -49,84 +27,41 @@ void* rs_485_recv_thread(void* arg)
     pthread_detach(pthread_self());
     int ret = 0;
     int i;
-
-    rs485_init();
-
     uint8_t data[2048];
-    char res[2048];
 
-    printf("rs485 recv0x10000000\n");
-
-    ret = open_devices(&recv_hdev, GENERIC_READ, path, (const char*)XDMA_FILE_C2H_0);
-    if (ret == 0)
-    {
-        printf("RS485:open recv fail\n");
-    }
-    ret = open_devices(&send_hdev, GENERIC_WRITE, path, (const char*)XDMA_FILE_H2C_0);
-    if (ret == 0)
-    {
-        printf("RS485:open send fail\n");
-    }
-    ret = open_devices(&user_hdev, GENERIC_READ | GENERIC_WRITE, path, (const char*)XDMA_FILE_USER);
-    if (ret == 0)
-    {
-        printf("RS485:open user fail\n");
-    }
-    ret = reset_devices(user_hdev);
-    if (ret < 0)
-    {
-        printf("RS485:reset fail\n");
-        return;
-    }
-
-#if(0)
-    i=0;
-    uint8_t a[1024];
-    memset(a, 0, 1024);
-
-    a[i++] = 0x7E;
-    a[i++] = 0x7E;
-    a[i++] = 0x7E;
-    a[i++] = 0x7E;
-
-    a[i++] = 0x52;
-    a[i++] = 0x78;
-    a[i++] = 0x10;
-    a[i++] = 0x34;
-    a[i++] = 0x12;
-    a[i++] = 0xC4;
-    a[i++] = 0x74;
-
-    a[i++] = 0x7E;
-    a[i++] = 0x7E;
-    a[i++] = 0x7E;
-    a[i++] = 0x7E;
-
-    //memset(a, 0, 1024);
-    
-    while (1)
-    {
-        //ret = write_device(send_hdev, 0x10000000, 16, a);
-        //printf("%d\n", ret);
-        //Sleep(1000);
-        //ret = read_device(recv_hdev, 0x10000000, 1024, a);
-        //ret=last_packetSize(user_hdev);
-        //printf("get len=%d\n", ret);
-        //for (i = 0; i < ret; i++)
-        //{
-        //    printf("%02x ", a[i]);
-        //}
-        //printf("\n");
-
-        //ret = write_device(send_hdev, 0x10000000, ret, a);
-        //printf("send ok:%d\n",ret);
-    }
+#ifdef RS485
+    ret = rs485_init();
+    if (ret < 0) return 0;
 #else
+    server_init();
+#endif
+
+    create_CheckResult_res();
+    Sleep(100);
+    create_ConfigLoad_res();
+    Sleep(100);
+    create_WorkMode_res();
+    Sleep(100);
+    create_LinkResult_res();
+    Sleep(100);
+    create_ShortFrame_res();
+
+
     while (1)
     {
+#ifdef RS485
         //printf("ready for recv\n");
         ret = read_device(recv_hdev, 0x10000000, 2048, data);
         ret = last_packetSize(user_hdev);
+#else
+        ret = recv(rs485_fd, data, 2048, 0);
+        if (ret <= 0)
+        {
+            rs485_fd = accept(lfd, (struct sockaddr*)&(info.control_system.addr), &(info.control_system.addr_len));//接收连接请求
+            printf("rs485 connect success %d\n", rs485_fd);
+            continue;
+        }
+#endif
 
         rs_head_t* head = (rs_head_t*)data;
         printf("-----get len=%d type:%x mtype=%x-----\n", ret, head->typea, head->type);
@@ -252,7 +187,6 @@ void* rs_485_recv_thread(void* arg)
             break;
         }
     }
-#endif
 }
 
 
@@ -269,7 +203,12 @@ void send_to_rs(int len, long offset, char* data)
     }
     printf("\n");
 
+#ifdef RS485
     ret = write_device(send_hdev, offset, len, data);
+#else
+    ret = send(rs485_fd, data, len, 0);
+#endif
+
 	if (0 == MY_INDEX)
 	{
 		info.m_proc_flight_control_data_tx_count++;
@@ -642,6 +581,14 @@ void head_load(char* data,char* res)
     //printf("%x %x\n", rhead->address_a, rhead->address_b);
 }
 
+void head_load_b(char* res)
+{
+    rs_head_t* rhead = (rs_head_t*)res;
+    memset(res, 0x7e, 4);
+    rhead->address_a = MY_INDEX == 0 ? 0x50 : 0x52;
+    rhead->address_b = MY_INDEX == 0 ? 0x56 : 0x78;
+}
+
 uint8_t crc_check(char* start_address, int len, uint16_t get_crc)
 {
     int i = 0;
@@ -756,6 +703,211 @@ void rs_M2ZPlan_proc(char* data)
     send_to_rs(RS_M2Z_PLAN_FRAME_SP_LEN, 0, res);
 
 }
+
+
+
+void create_CheckResult_res()
+{
+    char res[RS_MAX_LEN];
+    memset(res, 0, RS_MAX_LEN);
+    rs_head_t* rhead = (rs_head_t*)res;
+    rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+
+    //head
+    head_load_b(res);
+    //type
+    rhead->type = 0x1010;
+    //content
+    rbody->result1_ack.ack = 0;
+    //crc
+    rbody->result1_ack.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + 2);
+    //tail
+    memset(&rbody->result1_ack.tail.flag, 0x7e, 4);
+    //send
+    send_to_rs(RS_RESULT_LEN, 0, res);
+}
+
+void create_ConfigLoad_res()
+{
+    char res[RS_MAX_LEN];
+    memset(res, 0, RS_MAX_LEN);
+    rs_head_t* rhead = (rs_head_t*)res;
+    rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+
+    //head
+    head_load_b(res);
+    //type
+    rhead->type = 0xCCCC;
+    //content
+    
+    //crc
+    rbody->config_load.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + CONFIG_INFO_LEN);
+    //tail
+    memset(&rbody->config_load.tail.flag, 0x7e, 4);
+    //send
+    send_to_rs(RS_CONFIG_LEN, 0, res);
+}
+
+void create_WorkMode_res()
+{
+    char res[RS_MAX_LEN];
+    memset(res, 0, RS_MAX_LEN);
+    rs_head_t* rhead = (rs_head_t*)res;
+    rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+
+    //head
+    head_load_b(res);
+    //type
+    rhead->type = 0x7070;
+    //content
+
+    //crc
+    rbody->work_modes_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + 1);
+    //tail
+    memset(&rbody->work_modes_sp.tail.flag, 0x7e, 4);
+    //send
+    send_to_rs(RS_WORK_MODE_SP_LEN, 0, res);
+}
+
+void create_LinkResult_res()
+{
+    char res[RS_MAX_LEN];
+    memset(res, 0, RS_MAX_LEN);
+    rs_head_t* rhead = (rs_head_t*)res;
+    rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+
+    //head
+    head_load_b(res);
+    //type
+    rhead->type = 0x4040;
+    //content
+
+    //crc
+    rbody->link_result_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + LINK_RESULT_SP_LEN);
+    //tail
+    memset(&rbody->link_result_sp.tail.flag, 0x7e, 4);
+    //send
+    send_to_rs(RS_LINK_RESULT_SP_LEN, 0, res);
+
+}
+
+void create_ShortFrame_res()
+{
+    char res[RS_MAX_LEN];
+    memset(res, 0, RS_MAX_LEN);
+    rs_head_t* rhead = (rs_head_t*)res;
+    rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+
+    //head
+    head_load_b(res);
+    //type
+    rhead->type = 0x3030;
+
+    if (MY_INDEX == 0) //M
+    {
+        //content
+
+        //尾部加载
+        memset((uint8_t*)&rbody->m_short_frmae_sp + M_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
+        //crc加载
+        *(uint16_t*)((uint8_t*)&rbody->m_short_frmae_sp + M_SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + M_SHORT_FRAME_SP_LEN);
+
+        send_to_rs(RS_M_SHORT_FRAME_SP_LEN, 0, res);
+    }
+    else //Z
+    {
+        //内容
+
+        //尾部加载
+        memset((uint8_t*)&rbody->z_short_frmae_sp + Z_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
+        //crc加载
+        *(uint16_t*)((uint8_t*)&rbody->z_short_frmae_sp + Z_SHORT_FRAME_SP_LEN) = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + Z_SHORT_FRAME_SP_LEN);
+
+        send_to_rs(RS_Z_SHORT_FRAME_SP_LEN, 0, res);
+    }
+}
+
+
+
+
+
+
+int rs485_init()
+{
+    int i, ret = 0;
+    uint64_t path_len = MAX_PATH + 1;
+    char** device_base_path;
+    device_base_path = (char**)malloc(sizeof(char*) * 4);
+    assert(device_base_path);
+    for (i = 0; i < 4; i++)
+    {
+        device_base_path[i] = (char*)malloc(sizeof(char) * path_len);
+        assert(device_base_path[i]);
+        memset(device_base_path[i], 0, MAX_PATH + 1);
+    }
+
+    uint32_t numBoard = get_devices(GUID_DEVINTERFACE_XDMA, device_base_path, path_len);
+    if (!numBoard)
+    {
+
+        return -1;
+    }
+    printf("board num:%d\n", numBoard);
+    memcpy(path, device_base_path[0], path_len);
+    printf("rs485 recv0x10000000\n");
+    ret = open_devices(&recv_hdev, GENERIC_READ, path, (const char*)XDMA_FILE_C2H_0);
+    if (ret == 0)
+    {
+        printf("RS485:open recv fail\n");
+    }
+    ret = open_devices(&send_hdev, GENERIC_WRITE, path, (const char*)XDMA_FILE_H2C_0);
+    if (ret == 0)
+    {
+        printf("RS485:open send fail\n");
+    }
+    ret = open_devices(&user_hdev, GENERIC_READ | GENERIC_WRITE, path, (const char*)XDMA_FILE_USER);
+    if (ret == 0)
+    {
+        printf("RS485:open user fail\n");
+    }
+    ret = reset_devices(user_hdev);
+    if (ret < 0)
+    {
+        printf("RS485:reset fail\n");
+        return ret;
+    }
+}
+
+
+
+void server_init()
+{
+    int ret = 0;
+
+    //创建侦听socket
+    lfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    //设置端口复用
+    int opt = 1;
+    if (setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof opt) == -1) plog("setsockopt error");
+
+    //绑定本机ip地址、端口号
+    struct sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    inet_pton(AF_INET, "127.0.0.1", (void*)&addr.sin_addr); //**ip**
+    addr.sin_port = htons(6789); //**port**
+    ret = bind(lfd, (struct sockaddr*)&addr, sizeof addr); //绑定ip和端口
+
+    //开始监听
+    listen(lfd, SOMAXCONN);
+
+    info.control_system.addr_len = sizeof(info.control_system.addr);
+    rs485_fd = accept(lfd, (struct sockaddr*)&(info.control_system.addr), &(info.control_system.addr_len));//接收连接请求
+
+    printf("rs485 connect success %d\n", rs485_fd);
+
+}
+
 
 
 
