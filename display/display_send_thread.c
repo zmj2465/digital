@@ -121,11 +121,11 @@ void rep_sel_proc(show_t* msg)
 {
     int num=get_file_num(DATA_FOLDER);
     flag_ = 0;
-    //msg->file_seq = 0;
+    msg->file_seq = 0;
     printf("file num=%d select seq=%d\n", num, msg->file_seq);
     //选择文件
     select_file(msg);
-    //display_state.mode = REPLAY_MODE;
+    display_state.mode = REPLAY_MODE;
 }
 
 void rep_beg_proc(show_t* msg)

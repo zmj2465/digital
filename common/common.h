@@ -272,6 +272,8 @@ typedef struct
 	uint8_t state;
 } channel_t;
 
+
+
 typedef struct _data_t {
 	uint16_t time_element_number;   // 时元号，当前时元号，每秒增加1（0~65535）
 	uint8_t time_frame_number;  // 时帧号，当前帧号，每100ms增加1（0~9）
