@@ -221,7 +221,6 @@ typedef struct _info_t
 	int time_schedule_flag;				//时隙调度标志位，置1表示发送时隙，置0表示接收时隙
 	int time_frame_flag_m[MAX_DEVICE];	//时帧标志位M，指示Z建链完成后，M在这个时帧不发送数据，在下一时帧开始接收和发送数据
 	int time_frame_flag_z;				//时帧标志位Z，指示Z建链完成后，在下一时帧发送数据帧给M
-	//int chain_flag;
 	int chain_flag_m;						//m建链标志位
 	int chain_flag_z;                      //z建链标志位
 	uint8_t  znode_connect_flag[MAX_DEVICE]; //mZ节点建链状态
