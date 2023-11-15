@@ -121,10 +121,11 @@ void rep_sel_proc(show_t* msg)
 {
     int num=get_file_num(DATA_FOLDER);
     flag_ = 0;
-    msg->file_seq = 0;
+    //msg->file_seq = 0;
     printf("file num=%d select seq=%d\n", num, msg->file_seq);
     //选择文件
     select_file(msg);
+    //display_state.mode = REPLAY_MODE;
 }
 
 void rep_beg_proc(show_t* msg)
@@ -137,6 +138,7 @@ void rep_rep_proc(show_t* msg)
     int ret;
     ret = fseek(display_state.file, MAX_SEND_LEN * msg->data_seq, SEEK_SET);
     flag_ = 0;
+    //display_state.mode = REPLAY_MODE;
     printf("to seq:%d ret=%d\n", msg->data_seq, ret);
 }
 
@@ -345,6 +347,7 @@ void set_zero(show_t* msg)
 }
 
 
+
 void find_data()
 {
     show_t msg;
@@ -369,8 +372,14 @@ void find_data()
 
 void send_to_display(char* data,int len)
 {
+    int i;
     pthread_mutex_lock(&display_state.mutex);
     send(display_fd, data, len, 0);
+    //for (i = 0; i < len; i++)
+    //{
+    //    printf("%02x ", (uint8_t)data[i]);
+    //}
+    //printf("\n");
     pthread_mutex_unlock(&display_state.mutex);
 
 }

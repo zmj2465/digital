@@ -24,7 +24,7 @@ void file_init()
         create_file(&file_config[i].file, file_config[i].directory, file_config[i].name);
         if (i == 0)
         {
-            create_map(&file_config[i].file, 10);
+            create_map(&file_config[i].file, 20);
         }
         else
         {
@@ -217,8 +217,7 @@ void todata(char* data, int len)
     }
     show_t* p = (show_t*)data;
     p->display_info.serial_number = store_seq++;
-    printf("%d %d %d %d\n", p->type, p->display_info.serial_number, p->len, len);
-
+    printf("data store\n");
     memcpy(file_config[0].file.mappedData + file_config[0].file.ptr, data, len);
     file_config[0].file.ptr += len;
     pthread_mutex_unlock(&file_config[0].file.lock);
