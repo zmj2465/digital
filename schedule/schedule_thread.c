@@ -4,7 +4,7 @@
 #define SLOT_NUM	  63  /*时隙数*/
 
 
-static int antenna_table[ANTENNA_NUM] = { 0, 0, 0, 0, 0, 0 };      //0接收1发送
+static int antenna_table[ANTENNA_NUM] = { 0, 0, 0, 0, 0, 0 };      //0关闭1发送2接收
 
 static int slot_table[SLOT_NUM] = 
 {
@@ -74,11 +74,13 @@ int schedule_slot(void)
         if ( (0 <= info.current_slot && info.current_slot <= 28) || (info.current_slot == 61) )
         {
             info.time_schedule_flag = 1;
-            antenna_table[info.current_antenna] = 1;           
-            udelay(slot_table[info.current_slot]);  
+            //antenna_table[info.current_antenna] = 1;
+            display_data.antenna_params[info.current_antenna].tx_rx_status = 1;
+            udelay(slot_table[info.current_slot]);
+            display_data.antenna_params[info.current_antenna].tx_rx_status = 0;
             info.current_antenna = (info.current_antenna + 1) % ANTENNA_NUM;
             info.current_slot = (info.current_slot + 1) % SLOT_NUM;
-            memset(antenna_table, 0, sizeof(antenna_table));
+            //memset(antenna_table, 0, sizeof(antenna_table));
         }
         else
         {
@@ -364,7 +366,7 @@ int inquire_address(int node_id)
 
 /*
 功能：定时器回调
-参数：
+参数：定时器Id
 返回值：无
 */
 #ifdef _WIN32
@@ -448,4 +450,77 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         break;
     }
 }
+
+/*
+功能：根据i节点相对于本节点的距离信息推算出本节点的波束宽度，EIRP，GT
+参数：i节点的索引值（0-4：1M4Z）
+返回值：自身的波束宽度
+*/
+int beam_width_cal(int index)
+{
+    double dis;
+    dis = caculate_distance(fddi_info.pos, overall_fddi_info[index].pos);//计算i节点相对于本节点的距离
+    if (MY_INDEX == 0)//本节点是M
+    {
+        if (0 <= dis && dis < 500)
+        {
+            info.beam_width = 55;
+            info.eirp = 24;
+            info.gt = -36;
+        }
+        else if (500 <= dis && dis < 30000)
+        {
+            info.beam_width = 26;
+            info.eirp = 46;
+            info.gt = -21;
+        }
+        else if (30000 <= dis && dis < 500000)
+        {
+            info.beam_width = 9;
+            info.eirp = 72;
+            info.gt = -6;
+        }
+        else
+        {
+            info.beam_width = 0;
+            info.eirp = 0;
+            info.gt = 0;
+        }
+    }
+    else//本节点是Z
+    {
+        if (0 <= dis && dis < 5000)
+        {
+            info.beam_width = 55;
+            info.eirp = 24;
+            info.gt = -36;
+        }
+        else if (5000 <= dis && dis < 15000)
+        {
+            info.beam_width = 50;
+            info.eirp = 33;
+            info.gt = -29;
+        }
+        else if (15000 <= dis && dis < 30000)
+        {
+            info.beam_width = 26;
+            info.eirp = 46;
+            info.gt = -21;
+        }
+        else if (30000 <= dis && dis < 500000)
+        {
+            info.beam_width = 19;
+            info.eirp = 55;
+            info.gt = -15;
+        }
+        else
+        {
+            info.beam_width = 0;
+            info.eirp = 0;
+            info.gt = 0;
+        }
+    }
+    return 0;
+}
+
 #endif
