@@ -31,6 +31,11 @@
           "name": "CMAKE_CXX_COMPILER",
           "value": "E:/mingw64/bin/g++.exe",
           "type": "STRING"
+        },
+        {
+          "name": "C",
+          "value": "E:/toge/project/common/angle/ComCal_DLL.lib",
+          "type": "FILEPATH"
         }
       ],
       "intelliSenseMode": "linux-gcc-x64"

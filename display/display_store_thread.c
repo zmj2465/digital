@@ -40,7 +40,7 @@ void* display_store_thread(void* arg)
         //}
         if (display_state.mode == SIM_MODE)
         {
-            //data_store();
+            data_store();
             for (i = 0; i < 6; i++)
             {
                 display_data.antenna_params[i].beam_width += 10;
@@ -54,7 +54,7 @@ void* display_store_thread(void* arg)
             //display_data.antenna_params[3].tx_rx_status = 0;
             //display_data.antenna_params[4].tx_rx_status = 1;
             //display_data.antenna_params[5].tx_rx_status = 2;
-            Sleep(5000);
+            Sleep(20);
         }
 	}
 }
