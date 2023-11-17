@@ -207,7 +207,7 @@ typedef struct _info_t
 	UINT timerId_M[MAX_DEVICE];			//数据帧M定时器ID
 #endif
 
-	int antenna_M[MAX_DEVICE];			//天线匹配表M（0-5）
+	int antenna_M[MAX_DEVICE];			//天线匹配表M（0-5），比如antenna_M[1]的值代表M用于跟Z1通信的天线id
 	int antenna_Z;						//天线匹配表Z（0-5）
 	struct timespec set_network_st;		//系统时钟下建网开始时刻
 	struct timespec set_network_ed;		//系统时钟下建网结束时刻

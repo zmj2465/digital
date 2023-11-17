@@ -75,9 +75,9 @@ int schedule_slot(void)
         {
             info.time_schedule_flag = 1;
             //antenna_table[info.current_antenna] = 1;
-            display_data.antenna_params[info.current_antenna].tx_rx_status = 1;
+            //display_data.antenna_params[info.current_antenna].tx_rx_status = 1;
             udelay(slot_table[info.current_slot]);
-            display_data.antenna_params[info.current_antenna].tx_rx_status = 0;
+            display_data.antenna_params[info.current_antenna].tx_rx_status = 0;//将上次时隙中的发送天线置0，即关闭状态，并推送到显控界面
             info.current_antenna = (info.current_antenna + 1) % ANTENNA_NUM;
             info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             //memset(antenna_table, 0, sizeof(antenna_table));
@@ -90,7 +90,13 @@ int schedule_slot(void)
         if (info.current_slot == 0)
         {
             info.current_time_frame = info.current_time_frame + 1;
+            if (info.current_time_frame % 10 == 0)
+            {
+                //display_data.time_element_number
+            }
         }
+        
+        display_data.time_frame_number = info.current_time_frame;//将当前时帧号推送给显控界面
     }
     /*从机Z*/
     else
@@ -102,6 +108,7 @@ int schedule_slot(void)
             {
                 info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
+                display_data.antenna_params[info.antenna_Z].tx_rx_status = 0;//将上次时隙中的发送天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             else
@@ -113,12 +120,14 @@ int schedule_slot(void)
             {
                 info.current_time_frame = info.current_time_frame + 1;
             }
+            display_data.time_frame_number = info.current_time_frame;//将当前时帧号推送给显控界面
             break;
         case 2:
             if ((35 <= info.current_slot && info.current_slot <= 39) || (info.current_slot == 59))
             {
                 info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
+                display_data.antenna_params[info.antenna_Z].tx_rx_status = 0;//将上次时隙中的发送天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             else
@@ -130,12 +139,14 @@ int schedule_slot(void)
             {
                 info.current_time_frame = info.current_time_frame + 1;
             }
+            display_data.time_frame_number = info.current_time_frame;//将当前时帧号推送给显控界面
             break;
         case 3:
             if ((40 <= info.current_slot && info.current_slot <= 43) || (info.current_slot == 59) || (info.current_slot == 30))
             {
                 info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
+                display_data.antenna_params[info.antenna_Z].tx_rx_status = 0;//将上次时隙中的发送天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             else
@@ -147,12 +158,14 @@ int schedule_slot(void)
             {
                 info.current_time_frame = info.current_time_frame + 1;
             }
+            display_data.time_frame_number = info.current_time_frame;//将当前时帧号推送给显控界面
             break;
         case 4:
             if ((44 <= info.current_slot && info.current_slot <= 47) || (info.current_slot == 59) || (info.current_slot == 35))
             {
                 info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
+                display_data.antenna_params[info.antenna_Z].tx_rx_status = 0;//将上次时隙中的发送天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             else
@@ -164,6 +177,7 @@ int schedule_slot(void)
             {
                 info.current_time_frame = info.current_time_frame + 1;
             }
+            display_data.time_frame_number = info.current_time_frame;//将当前时帧号推送给显控界面
             break;
         default:
             break;
