@@ -360,11 +360,13 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
         if (type == SCAN && msg->data[0] == SCAN_REQ)
         {
             msg->head.antenna_id = info.current_antenna;
+            display_data.antenna_params[msg->head.antenna_id].tx_rx_status = 1;//将本次使用的发送天线置1，即发送状态，并推送到显控界面
         }
         else
         {
             index = inquire_address(msg->head.dst);
             msg->head.antenna_id = info.antenna_M[index];
+            display_data.antenna_params[msg->head.antenna_id].tx_rx_status = 1;//将本次使用的发送天线置1，即发送状态，并推送到显控界面
         }
 
 
@@ -387,7 +389,7 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
     else//Z
     {
         msg->head.antenna_id = info.antenna_Z;
-
+        display_data.antenna_params[msg->head.antenna_id].tx_rx_status = 1;//将本次使用的发送天线置1，即发送状态，并推送到显控界面
         if (type == BEACON)
         {
             msg->head.seq = info.seq_beacon_z;
