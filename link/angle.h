@@ -19,6 +19,6 @@ double caculate_ber(double SNR_dB);
 
 int select_antenna(Point3D target_pos);
 int select_antennaA(int index, Point3D target_pos);
-bool antenna_check(Point3D target_pos);
+bool antenna_check(int target_index, int target_antenna_id, Point3D target_pos);
 
 #endif

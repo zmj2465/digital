@@ -398,7 +398,8 @@ typedef struct
 {
 	int len;
 	int role;
-	int index;		//选择天线
+	int antenna_id;		//选择天线
+	int index;      //节点号
 	int flag;
 	Point3D pos;	//位置
 	Point3D v;		//速度

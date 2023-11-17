@@ -270,7 +270,8 @@ int psy_send_(psy_msg_t* data, msg_t* msg)
 {
     data->psy_head.len = sizeof(psy_head_t) + sizeof(msg_t);
     data->psy_head.role = info.device_info.node_role;
-    data->psy_head.index = info.current_antenna;
+    data->psy_head.antenna_id = info.current_antenna;
+    data->psy_head.index = MY_INDEX;
     data->psy_head.flag = prepare_simulation;
     //data->psy_head.pos = fddi_info.pos;
     data->psy_head.v = fddi_info.v;
@@ -304,7 +305,7 @@ bool distance_judge(psy_msg_t* p)
 bool antenna_match_(psy_msg_t* p)
 {
     bool ret = true;
-    ret=antenna_check(p->psy_head.pos);
+    ret = antenna_check(p->psy_head.index, p->psy_head.antenna_id, p->psy_head.pos);
     return ret;
 }
 
