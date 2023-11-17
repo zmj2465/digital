@@ -4,7 +4,7 @@ project(Project)
 
 
 
-add_executable(project "main.c" "main.h" "rs485/rs485_send_thread.c" "rs485/rs485_send_thread.h" "common/compatible.c" "common/compatible.h" "common/common.c" "common/common.h" "rs485/rs485_recv_thread.c" "rs485/rs485_recv_thread.h" "fddi/fddi_thread.c" "fddi/fddi_thread.h" "schedule/schedule_thread.c" "schedule/schedule_thread.h" "control/control_recv_thread.c" "control/control_recv_thread.h" "display/display_send_thread.c"  "master/master_thread.c" "master/master_thread.h" "link/link_control_thread.c" "link/link_control_thread.h" "link/data_send_thread.c" "link/data_send_thread.h" "link/data_recv_thread.c" "link/data_recv_thread.h" "common/queue.c" "common/queue.h" "link/physical_simulation.c" "link/physical_simulation.h" "master/protocol.h" "master/protocol.c"  "link/angle.h" "link/angle.c"   "common/mytime.c" "common/mytime.h"  "common/file_manage.c" "common/file_manage.h" "display/display_recv_thread.c" "display/display_recv_thread.h" "display/display_thread.c" "display/display_thread.h" "common/sql.c" "common/sql.h" "fddi/rm_thread.c" "fddi/rm_thread.h" "rs485/crc.c" "rs485/crc.h"  "display/display_store_thread.c")
+add_executable(project "main.c" "main.h" "rs485/rs485_send_thread.c" "rs485/rs485_send_thread.h" "common/compatible.c" "common/compatible.h" "common/common.c" "common/common.h" "rs485/rs485_recv_thread.c" "rs485/rs485_recv_thread.h" "fddi/fddi_thread.c" "fddi/fddi_thread.h" "schedule/schedule_thread.c" "schedule/schedule_thread.h" "control/control_recv_thread.c" "control/control_recv_thread.h" "display/display_send_thread.c"  "master/master_thread.c" "master/master_thread.h" "link/link_control_thread.c" "link/link_control_thread.h" "link/data_send_thread.c" "link/data_send_thread.h" "link/data_recv_thread.c" "link/data_recv_thread.h" "common/queue.c" "common/queue.h" "link/physical_simulation.c" "link/physical_simulation.h" "master/protocol.h" "master/protocol.c"  "link/angle.h" "link/angle.c"   "common/mytime.c" "common/mytime.h"  "common/file_manage.c" "common/file_manage.h" "display/display_recv_thread.c" "display/display_recv_thread.h" "display/display_thread.c" "display/display_thread.h" "common/sql.c" "common/sql.h" "fddi/rm_thread.c" "fddi/rm_thread.h" "rs485/crc.c" "rs485/crc.h"  "display/display_store_thread.c" "rs485/angle/comcal_dll.h")
 #add_executable(project "main.c" "main.h" "rs485/rs485_send_thread.c" "rs485/rs485_send_thread.h" "common/compatible.c" "common/compatible.h" "common/common.c" "common/common.h" "rs485/rs485_recv_thread.c" "rs485/rs485_recv_thread.h" "fddi/fddi_thread.c" "fddi/fddi_thread.h" "schedule/schedule_thread.c" "schedule/schedule_thread.h" "control/control_recv_thread.c" "control/control_recv_thread.h" "display/display_send_thread.c"  "master/master_thread.c" "master/master_thread.h" "link/link_control_thread.c" "link/link_control_thread.h" "link/data_send_thread.c" "link/data_send_thread.h" "link/data_recv_thread.c" "link/data_recv_thread.h" "common/queue.c" "common/queue.h" "link/physical_simulation.c" "link/physical_simulation.h" "master/protocol.h" "master/protocol.c"  "link/angle.h" "link/angle.c"   "common/mytime.c" "common/mytime.h"  "common/file_manage.c" "common/file_manage.h" "common/sql.c" "common/sql.h")
 
 
@@ -18,10 +18,6 @@ include_directories(${PROJECT_SOURCE_DIR}/link)
 include_directories(${PROJECT_SOURCE_DIR}/common)
 
 #反射内存卡
-#include_directories("C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Inc")
-#link_directories("C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Lib")
-#find_library(A NAMES rfm2gdll_stdc_64.lib PATHS "C:/Program Files (x86)/GE Intelligent Platforms/RFM2g/Lib")
-#target_link_libraries(project ${A})
 include_directories("${PROJECT_SOURCE_DIR}/fddi/GE Intelligent Platforms/RFM2g/Inc")
 link_directories("${PROJECT_SOURCE_DIR}/fddi/GE Intelligent Platforms/RFM2g/Lib")
 find_library(A NAMES rfm2gdll_stdc_64.lib PATHS "${PROJECT_SOURCE_DIR}/fddi/GE Intelligent Platforms/RFM2g/Lib")
@@ -33,10 +29,19 @@ link_directories(${PROJECT_SOURCE_DIR}/rs485/driver)
 find_library(B NAMES XDMA_MoreB.lib PATHS ${PROJECT_SOURCE_DIR}/rs485/driver)
 target_link_libraries(project ${B})
 
+#天线对准
+include_directories(${PROJECT_SOURCE_DIR}/rs485/angle)
+link_directories(${PROJECT_SOURCE_DIR}/rs485/angle)
+#target_link_libraries(project ${PROJECT_SOURCE_DIR}/rs485/angle/ComCal_Dll.dll)
+target_link_libraries(project ${PROJECT_SOURCE_DIR}/rs485/angle/ComCal_Dll.lib)
+
+
+#数据库
 include_directories(${PROJECT_SOURCE_DIR}/MySQL/include)
 link_directories(${PROJECT_SOURCE_DIR}/MySQL/lib)
 find_library(LIB_MYSQL NAMES libmysql.lib PATHS ${PROJECT_SOURCE_DIR}/MySQL/lib)
 target_link_libraries(project ${LIB_MYSQL})
+
 
 set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")

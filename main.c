@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <pthread.h>
+
 #include "rm_thread.h"
 #include "rs485_send_thread.h"
 #include "rs485_recv_thread.h"
@@ -27,13 +28,19 @@
 #include "sql.h"
 #include "mytime.h"
 
+#include "comcal_dll.h"
+
 sem_t semaphore;
 pthread_mutex_t lock;
 
-
 int main()
 {
-
+    int a;
+    float b;
+    float c;
+    //calculate_ante_angle_coord_m(0, 0, 0, 1, 2, 3, 4, 0, 100, 2, 2, &a, &b, &c);
+    //printf("%d %f %f\n", a, b, c);
+    //while (1);
     //system("C:\\Users\\MRGT\\Desktop\\start.bat");
 
     /*ptp ±÷”≥ı ºªØ*/

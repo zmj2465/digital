@@ -1,5 +1,6 @@
 #include "rs485_recv_thread.h"
 #include "xdmaDLL_public.h"
+#include "comcal_dll.h"
 #include "display_send_thread.h"
 #include "data_send_thread.h"
 #include "stddef.h"
