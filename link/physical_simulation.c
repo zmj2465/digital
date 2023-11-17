@@ -167,27 +167,7 @@ void convertCoordinates2(const Point3D* p1, const AntennaTransform* transform, P
 * index:选择的天线号
 * 天线指向存在数组中
 */
-int select_antenna(int my_role, Quaternion my_quaternion, Point3D pos)
-{
-    Point3D pos2, pos3;
-    Point3D null = { 0,0,1 };
-    double a, b;
-    int add = (my_role == 0) ? 0 : 6;
-    int i;
-    double angle;
-    convertCoordinates(&pos, &my_quaternion, &pos2);
-    for (i = 0; i < 6; i++)
-    {
-        convertCoordinates2(&pos2, &transform[i + add], &pos3);
-        angle = calculateAngle(&pos3, &null);
-        if (angle < 90)
-        {
-            return i;
-        }
-    }
-    printf("\n");
-    return -1;
-}
+
 
 /*
 * p11:发射方所在位置
@@ -324,13 +304,7 @@ bool distance_judge(psy_msg_t* p)
 bool antenna_match_(psy_msg_t* p)
 {
     bool ret = true;
-    //ret=checkAngles(p->psy_head.pos, p->psy_head.p_to, p->psy_head.q, p->psy_head.index, p->psy_head.role, fddi_info.pos, antenna_info[info.current_antenna].point_to, fddi_info.q, info.current_antenna, info.device_info.node_role);
-    ret = new_angle_check(
-        p->psy_head.pos, fddi_info.pos,
-        p->psy_head.q, fddi_info.q,
-        p->psy_head.index, info.current_antenna,
-        p->psy_head.role, info.device_info.node_role
-    );
+    ret=antenna_check(p->psy_head.pos);
     return ret;
 }
 
@@ -408,6 +382,7 @@ bool new_angle_check(Point3D send_p, Point3D recv_p, Quaternion send_q, Quaterni
 }
 
 
+
 void fddi_load(fddi_info_t* fddi, psy_msg_t* msg)
 {
     memcpy(&fddi->pos, &msg->psy_head.pos, sizeof(Point3D));
@@ -417,18 +392,48 @@ void fddi_load(fddi_info_t* fddi, psy_msg_t* msg)
 
 
 
-
-int rett(int node,int antenna)
-{
-    int i;
-    for (i = 0; i < 5; i++)
-    {
-        //天线转换
-        overall_fddi_info[i].pos;
-
-        //
-    }
+// 函数定义：计算两个向量的差
+Point3D subtractVectors(Point3D v1, Point3D v2) {
+    Point3D result;
+    result.x = v1.x - v2.x;
+    result.y = v1.y - v2.y;
+    result.z = v1.z - v2.z;
+    return result;
 }
+
+// 函数定义：将点绕飞行器的旋转轴进行旋转
+Point3D rotatePoint(Point3D point, Quaternion quaternion) {
+    Point3D result;
+
+    result.x = (quaternion.q0 * quaternion.q0 + quaternion.q1 * quaternion.q1 - quaternion.q2 * quaternion.q2 - quaternion.q3 * quaternion.q3) * point.x
+        + 2 * (quaternion.q1 * quaternion.q2 - quaternion.q0 * quaternion.q3) * point.y
+        + 2 * (quaternion.q1 * quaternion.q3 + quaternion.q0 * quaternion.q2) * point.z;
+
+    result.y = 2 * (quaternion.q1 * quaternion.q2 + quaternion.q0 * quaternion.q3) * point.x
+        + (quaternion.q0 * quaternion.q0 - quaternion.q1 * quaternion.q1 + quaternion.q2 * quaternion.q2 - quaternion.q3 * quaternion.q3) * point.y
+        + 2 * (quaternion.q2 * quaternion.q3 - quaternion.q0 * quaternion.q1) * point.z;
+
+    result.z = 2 * (quaternion.q1 * quaternion.q3 - quaternion.q0 * quaternion.q2) * point.x
+        + 2 * (quaternion.q2 * quaternion.q3 + quaternion.q0 * quaternion.q1) * point.y
+        + (quaternion.q0 * quaternion.q0 - quaternion.q1 * quaternion.q1 - quaternion.q2 * quaternion.q2 + quaternion.q3 * quaternion.q3) * point.z;
+
+    return result;
+}
+
+//计算方位角俯仰角
+void calculateYawAndPitch(Point3D my_pos, Quaternion my_q, Point3D target_pos, float* yaw, float* pitch)
+{
+    Point3D switch_point = subtractVectors(my_pos, target_pos);
+    switch_point = rotatePoint(switch_point, my_q);
+    *yaw = atan2(switch_point.y, switch_point.x) * (180.0 / 3.1415926);
+    *pitch = atan2(-switch_point.z, sqrt(switch_point.x * switch_point.x + switch_point.y * switch_point.y)) * (180.0 / 3.1415926);
+    return;
+}
+
+
+
+
+
 
 
 

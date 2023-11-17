@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include "angle.h"
+#include "comcal_dll.h"
 
 typedef double real_T;
 typedef float  real32_T;
@@ -231,3 +232,118 @@ double caculate_snr_(double c_n0,double B)
 {
     return c_n0 / B;
 }
+
+
+
+
+
+//选择天线
+int select_antenna(Point3D target_pos)
+{
+    int antenna_id;
+    float azimuth;
+    float elevation;
+
+    if (MY_INDEX == 0)
+    {
+        calculate_ante_angle_coord_m(
+            overall_fddi_info[MY_INDEX].pos.x,
+            overall_fddi_info[MY_INDEX].pos.y,
+            overall_fddi_info[MY_INDEX].pos.z,
+            overall_fddi_info[MY_INDEX].q.q0,
+            overall_fddi_info[MY_INDEX].q.q1,
+            overall_fddi_info[MY_INDEX].q.q2,
+            overall_fddi_info[MY_INDEX].q.q3,
+            MY_INDEX,
+            target_pos.x,
+            target_pos.y,
+            target_pos.z,
+            &antenna_id,
+            &azimuth,
+            &elevation
+        );
+    }
+    else
+    {
+        calculate_ante_angle_coord_z(
+            overall_fddi_info[MY_INDEX].pos.x,
+            overall_fddi_info[MY_INDEX].pos.y,
+            overall_fddi_info[MY_INDEX].pos.z,
+            overall_fddi_info[MY_INDEX].q.q0,
+            overall_fddi_info[MY_INDEX].q.q1,
+            overall_fddi_info[MY_INDEX].q.q2,
+            overall_fddi_info[MY_INDEX].q.q3,
+            MY_INDEX,
+            target_pos.x,
+            target_pos.y,
+            target_pos.z,
+            &antenna_id,
+            &azimuth,
+            &elevation
+        );
+    }
+    return antenna_id;
+}
+
+int select_antennaA(int index,Point3D target_pos)
+{
+    int antenna_id;
+    float azimuth;
+    float elevation;
+
+    if (index == 0)
+    {
+        calculate_ante_angle_coord_m(
+            overall_fddi_info[index].pos.x,
+            overall_fddi_info[index].pos.y,
+            overall_fddi_info[index].pos.z,
+            overall_fddi_info[index].q.q0,
+            overall_fddi_info[index].q.q1,
+            overall_fddi_info[index].q.q2,
+            overall_fddi_info[index].q.q3,
+            index,
+            target_pos.x,
+            target_pos.y,
+            target_pos.z,
+            &antenna_id,
+            &azimuth,
+            &elevation
+        );
+    }
+    else
+    {
+        calculate_ante_angle_coord_z(
+            overall_fddi_info[index].pos.x,
+            overall_fddi_info[index].pos.y,
+            overall_fddi_info[index].pos.z,
+            overall_fddi_info[index].q.q0,
+            overall_fddi_info[index].q.q1,
+            overall_fddi_info[index].q.q2,
+            overall_fddi_info[index].q.q3,
+            index,
+            target_pos.x,
+            target_pos.y,
+            target_pos.z,
+            &antenna_id,
+            &azimuth,
+            &elevation
+        );
+    }
+    return antenna_id;
+}
+
+
+//接收天线是否为可收到信息的天线
+bool antenna_check(Point3D target_pos)
+{
+    int antenna_id;
+    antenna_id = select_antennaA(MY_INDEX, target_pos);
+    if (antenna_id < 0) return false;
+    if (display_data.antenna_params[antenna_id].tx_rx_status != 2) return false;
+    return true;
+}
+
+
+
+
+

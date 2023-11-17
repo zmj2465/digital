@@ -1,14 +1,12 @@
-/********************************************************************************
-* @File name: stk_connect.h
+ï»¿/********************************************************************************
+* @File name: comcal_dll.h
 * @Author: cjg
 * @Version: 1.0
-* @Date: 2023Äê11ÔÂ16ÈÕ09:55:26
+* @Date: 2023å¹´11æœˆ16æ—¥09:55:26
 * @Description: This is a file about exporting function declarations
 
-* @ Èí¼şÉè¼Æ£º-5
+* @ è½¯ä»¶è®¾è®¡ï¼š-5
 ********************************************************************************/
-
-#include <Windows.h>
 
 #ifdef K7CTRBOARDDRIVER_EXPORTS
 #define K7CTRBOARDDRIVER_API __declspec(dllexport)
@@ -22,10 +20,10 @@
 
 #define u8 unsigned char
 /********************************************************************************
-ÊäÈëĞÅÏ¢£º1. À´×Ô¶ÌÖ¡£ºËÄÔªÊı£ºq0,q1,q2,q3q
-          ×ÔÉí·¢¹ßÏµÎ»ÖÃĞÅÏ¢£ºPosX£¬PosY£¬PosZ
-		  2. À´×ÔÉ¨ÃèÇëÇó¡¢É¨ÃèÏìÓ¦¡¢ÈëÍøĞí¿É¡¢ÍøÂçÎ¬»¤£º¶Ô¶Ë·¢¹ßÏµÎ»ÖÃĞÅÏ¢£ºtargtFgPosX¡¢targtFgPosY¡¢targtFgPosZ
-Êä³öĞÅÏ¢£ºÌìÏßÃæÑ¡ÔñÇé¿ö¡¢Ä¿±êÔÚÑ¡ÖĞÌìÏßÃæµÄ¸©Ñö½Ç¡¢·½Î»½Ç
+è¾“å…¥ä¿¡æ¯ï¼š1. æ¥è‡ªçŸ­å¸§ï¼šå››å…ƒæ•°ï¼šq0,q1,q2,q3q
+		  è‡ªèº«å‘æƒ¯ç³»ä½ç½®ä¿¡æ¯ï¼šPosXï¼ŒPosYï¼ŒPosZ
+		  2. æ¥è‡ªæ‰«æè¯·æ±‚ã€æ‰«æå“åº”ã€å…¥ç½‘è®¸å¯ã€ç½‘ç»œç»´æŠ¤ï¼šå¯¹ç«¯å‘æƒ¯ç³»ä½ç½®ä¿¡æ¯ï¼štargtFgPosXã€targtFgPosYã€targtFgPosZ
+è¾“å‡ºä¿¡æ¯ï¼šå¤©çº¿é¢é€‰æ‹©æƒ…å†µã€ç›®æ ‡åœ¨é€‰ä¸­å¤©çº¿é¢çš„ä¿¯ä»°è§’ã€æ–¹ä½è§’
 int *antenum,float *Azimuth,float *Elevation
 ********************************************************************************/
 #ifdef  __cplusplus
@@ -33,21 +31,21 @@ extern "C" {
 #endif
 	/*-
 	Function name : calculate_ante_angle_coord_z
-	Description   : »ñÈ¡ZµÄ
+	Description   : è·å–Zçš„
 	Parameter
-	* Return      : 
+	* Return      :
 	-*/
-	K7CTRBOARDDRIVER_API void calculate_ante_angle_coord_z(float PosX,float PosY,float PosZ,float SYq0,float SYq1,float SYq2
-		,float SYq3,u8 nodeId,float tgtPosX,float tgtPosY,float tgtPosZ,int *antenum,float *Azimuth,float *Elevation);
+	K7CTRBOARDDRIVER_API void calculate_ante_angle_coord_z(float PosX, float PosY, float PosZ, float SYq0, float SYq1, float SYq2
+		, float SYq3, u8 nodeId, float tgtPosX, float tgtPosY, float tgtPosZ, int *antenum, float *Azimuth, float *Elevation);
 
 	/*-
 	Function name : calculate_ante_angle_coord_m
-	Description   : »ñÈ¡MµÄ
+	Description   : è·å–Mçš„
 	Parameter
-	* Return      : 
+	* Return      :
 	-*/
-	K7CTRBOARDDRIVER_API void calculate_ante_angle_coord_m(float PosX,float PosY,float PosZ,float SYq0,float SYq1,float SYq2
-		,float SYq3,u8 nodeId,float tgtPosX,float tgtPosY,float tgtPosZ,int *antenum,float *Azimuth,float *Elevation);
+	K7CTRBOARDDRIVER_API void calculate_ante_angle_coord_m(float PosX, float PosY, float PosZ, float SYq0, float SYq1, float SYq2
+		, float SYq3, u8 nodeId, float tgtPosX, float tgtPosY, float tgtPosZ, int *antenum, float *Azimuth, float *Elevation);
 #ifdef  __cplusplus
 }
 #endif  /* end of __cplusplus */

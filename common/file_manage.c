@@ -217,7 +217,7 @@ void todata(char* data, int len)
     }
     show_t* p = (show_t*)data;
     p->display_info.serial_number = store_seq++;
-    printf("data store\n");
+    //printf("data store\n");
     memcpy(file_config[0].file.mappedData + file_config[0].file.ptr, data, len);
     file_config[0].file.ptr += len;
     pthread_mutex_unlock(&file_config[0].file.lock);

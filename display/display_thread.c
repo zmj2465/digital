@@ -79,7 +79,7 @@ void* display_thread(void* arg)
 }
 
 
-
+static int temp;
 void create_table(show_t* msg)
 {
 	int i, j, k;
@@ -96,15 +96,16 @@ void create_table(show_t* msg)
 			//与该节点未建链
 			if (online_state[j] == 0) continue;
 			//i节点选择ret号天线对上j
-			ret = select_antenna(i, overall_fddi_info[i].q, overall_fddi_info[j].pos);
-			if (ret == -1)
+			ret = select_antennaA(i, overall_fddi_info[j].pos);
+			if (ret < 0)
 			{
 				continue;
 			}
-			msg->display_info.link_target[i][5] |= 1 << j;
+			printf("%d\n", ret);
+			msg->display_info.link_target[i][temp] |= 1 << j;
  		}
 	}
-
+	//temp = (temp + 1) % 6;
 	//printf("%%%%%%%%%%%%%%%%%%%%%%\n");
 	//for (i = 0; i < 5; i++)
 	//{

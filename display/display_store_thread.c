@@ -1,6 +1,7 @@
 #include "display_store_thread.h"
 #include "display_send_thread.h"
 #include "display_thread.h"
+#include "physical_simulation.h"
 #include "stdio.h"
 #include "angle.h"
 
@@ -83,6 +84,7 @@ void send_display_msg()
 
 void create_msg(show_t* msg)
 {
+    float yaw, pitch;
     set_zero(msg);
     int i;
     int j;
@@ -119,33 +121,43 @@ void create_msg(show_t* msg)
     //与其他节点信息
     if (MY_INDEX == 0) {
         double distance = caculate_distance(fddi_info.pos, overall_fddi_info[1].pos);
-        double alpha, beta;
-        Point3D pos2;
-        //对方位置转换到本节点载体坐标系
-        convertCoordinates(&overall_fddi_info[1].pos, &fddi_info.q, &pos2);
-        //计算方位角俯仰角
-        calculateAngles(&pos2, &alpha, &beta);
-        
-        msg->display_info.z1_m_distance[1] = distance / 20;
+
+
+        msg->display_info.z1_m_distance[1] = distance / 50;
         //printf("distance %f %f\n", msg->display_info.z1_m_distance[1],distance);
-        msg->display_info.z1_m_azimuth[1] = fmin(p, 45);
-        msg->display_info.z1_m_elevation[1] = fmin(pp, 45);
+
+        calculateYawAndPitch(overall_fddi_info[MY_INDEX].pos,
+            overall_fddi_info[MY_INDEX].q,
+            overall_fddi_info[1].pos,
+            &yaw,
+            &pitch);
+
+        msg->display_info.z1_m_azimuth[1] = yaw;
+        msg->display_info.z1_m_elevation[1] = pitch;
+
+        /*msg->display_info.z1_m_azimuth[1] = fmin(p, 45);
+        msg->display_info.z1_m_elevation[1] = fmin(pp, 45);*/
 
     }
     else if (MY_INDEX == 1)
     {
         double distance = caculate_distance(fddi_info.pos, overall_fddi_info[0].pos);
-        double alpha, beta;
-        Point3D pos2;
-        //对方位置转换到本节点载体坐标系
-        convertCoordinates(&overall_fddi_info[1].pos, &overall_fddi_info[0].q, &pos2);
-        //计算方位角俯仰角
-        calculateAngles(&pos2, &alpha, &beta);
 
-        msg->display_info.z1_m_distance[0] = distance / 20;
+
+        msg->display_info.z1_m_distance[0] = distance / 50;
         //printf("distance %f\n", msg->display_info.z1_m_distance[0]);
-        msg->display_info.z1_m_azimuth[0] = fmin(p, 45);
-        msg->display_info.z1_m_elevation[0] = 180 - fmin(pp, 45);
+
+        calculateYawAndPitch(overall_fddi_info[MY_INDEX].pos,
+            overall_fddi_info[MY_INDEX].q,
+            overall_fddi_info[0].pos,
+            &yaw,
+            &pitch);
+
+        msg->display_info.z1_m_azimuth[0] = yaw;
+        msg->display_info.z1_m_elevation[0] = pitch;
+
+        //msg->display_info.z1_m_azimuth[0] = fmin(p, 45);
+        //msg->display_info.z1_m_elevation[0] = 180 - fmin(pp, 45);
 
     }
 

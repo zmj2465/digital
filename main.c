@@ -29,6 +29,7 @@
 #include "mytime.h"
 
 #include "comcal_dll.h"
+#include "test.h"
 
 sem_t semaphore;
 pthread_mutex_t lock;
@@ -39,7 +40,9 @@ int main()
     float b;
     float c;
     //calculate_ante_angle_coord_m(0, 0, 0, 1, 2, 3, 4, 0, 100, 2, 2, &a, &b, &c);
+    //my_add(3, 5);
     //printf("%d %f %f\n", a, b, c);
+    //printf("%d\n", my_add(3, 5));
     //while (1);
     //system("C:\\Users\\MRGT\\Desktop\\start.bat");
 

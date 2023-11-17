@@ -17,7 +17,7 @@ struct antenna_info_t {
 extern struct antenna_info_t antenna_info[6];
 
 
-int select_antenna(int my_role, Quaternion my_quaternion, Point3D pos);
+
 
 bool psy_recv_(psy_msg_t* data, msg_t* msg);
 int psy_send_(psy_msg_t* data, msg_t* msg);
@@ -33,5 +33,10 @@ void fddi_load(fddi_info_t* fddi, psy_msg_t* msg);
 
 void convertCoordinates(const Point3D* p1, const Quaternion* quaternion,
     Point3D* p2);
+
+
+Point3D subtractVectors(Point3D v1, Point3D v2);
+Point3D rotatePoint(Point3D point, Quaternion quaternion);
+void calculateYawAndPitch(Point3D my_pos, Quaternion my_q, Point3D target_pos, float* yaw, float* pitch);
 
 #endif
