@@ -334,12 +334,18 @@ int select_antennaA(int index,Point3D target_pos)
 
 
 //接收天线是否为可收到信息的天线
-bool antenna_check(Point3D target_pos)
+//输入：对方使用天线id，对方位置
+bool antenna_check(int target_index, int target_antenna_id, Point3D target_pos)
 {
     int antenna_id;
+    //接收判断
     antenna_id = select_antennaA(MY_INDEX, target_pos);
     if (antenna_id < 0) return false;
     if (display_data.antenna_params[antenna_id].tx_rx_status != 2) return false;
+    //发送判断
+    antenna_id = select_antennaA(target_index, overall_fddi_info[MY_INDEX].pos);
+    if (antenna_id < 0) return false;
+    if (antenna_id != target_antenna_id) return false;
     return true;
 }
 
