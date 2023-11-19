@@ -57,6 +57,27 @@ void* display_send_thread(void* arg)
     }
 }
 
+void find_data()
+{
+    show_t msg;
+    int ret = 0;
+    if (flag_ == 1 && msg.len == 0)
+    {
+        return;
+    }
+    ret = fread(&msg, 1, MAX_SEND_LEN, display_state.file);
+
+    if (msg.type == 0) msg.type = 6;
+    if (msg.type == 5) msg.type = 7;
+    printf("flag=%d len=%d\n", flag_, msg.len);
+    enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, ret);
+    if (msg.len == 0)
+    {
+        flag_ = 1;
+        display_state.interval = 1000;
+    }
+}
+
 
 static void init()
 {
@@ -121,11 +142,12 @@ void rep_sel_proc(show_t* msg)
 {
     int num=get_file_num(DATA_FOLDER);
     flag_ = 0;
-    msg->file_seq = 0;
+    //msg->file_seq = 0;
     printf("file num=%d select seq=%d\n", num, msg->file_seq);
     //选择文件
     select_file(msg);
-    display_state.mode = REPLAY_MODE;
+    //display_state.interval = 5;
+    //display_state.mode = REPLAY_MODE;
 }
 
 void rep_beg_proc(show_t* msg)
@@ -347,26 +369,6 @@ void set_zero(show_t* msg)
 }
 
 
-
-void find_data()
-{
-    show_t msg;
-    int ret = 0;
-    if (flag_ == 1 && msg.len == 0)
-    {
-        return;
-    }
-    ret = fread(&msg, 1, MAX_SEND_LEN, display_state.file);
-
-    if (msg.type == 0) msg.type = 6;
-    if (msg.type == 5) msg.type = 7;
-    printf("flag=%d len=%d\n", flag_, msg.len);
-    enqueue(&info.thread_queue[DISPLAY_RECV_THREAD], &msg, ret);
-    if (msg.len == 0)
-    {
-        flag_ = 1;
-    }
-}
 
 
 

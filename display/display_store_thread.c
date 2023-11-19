@@ -6,24 +6,24 @@
 #include "angle.h"
 
 
-
+static int ttround = 0;
 
 void* display_store_thread(void* arg)
 {
     int i = 0;
-    display_data.antenna_params[0].beam_width = 30;
-    display_data.antenna_params[1].beam_width = 20;
-    display_data.antenna_params[2].beam_width = 10;
-    display_data.antenna_params[3].beam_width = 30;
-    display_data.antenna_params[4].beam_width = 30;
-    display_data.antenna_params[5].beam_width = 30;
+    display_data.antenna_params[0].beam_width = 0;
+    display_data.antenna_params[1].beam_width = 0;
+    display_data.antenna_params[2].beam_width = 0;
+    display_data.antenna_params[3].beam_width = 0;
+    display_data.antenna_params[4].beam_width = 0;
+    display_data.antenna_params[5].beam_width = 0;
 
     display_data.antenna_params[0].tx_rx_status = 0;
-    display_data.antenna_params[1].tx_rx_status = 1;
-    display_data.antenna_params[2].tx_rx_status = 2;
+    display_data.antenna_params[1].tx_rx_status = 0;
+    display_data.antenna_params[2].tx_rx_status = 0;
     display_data.antenna_params[3].tx_rx_status = 0;
-    display_data.antenna_params[4].tx_rx_status = 1;
-    display_data.antenna_params[5].tx_rx_status = 2;
+    display_data.antenna_params[4].tx_rx_status = 0;
+    display_data.antenna_params[5].tx_rx_status = 0;
 
     display_data.antenna_params[0].elevation = 90;
     display_data.antenna_params[1].elevation = 90;
@@ -42,20 +42,30 @@ void* display_store_thread(void* arg)
         if (display_state.mode == SIM_MODE)
         {
             data_store();
-            for (i = 0; i < 6; i++)
-            {
-                display_data.antenna_params[i].beam_width += 10;
-                display_data.antenna_params[i].beam_width %= 70;
-                display_data.antenna_params[i].tx_rx_status += 1;
-                display_data.antenna_params[i].tx_rx_status %= 3;
-            }
+            display_data.antenna_params[0].tx_rx_status = 0;
+            display_data.antenna_params[1].tx_rx_status = 0;
+            display_data.antenna_params[2].tx_rx_status = 0;
+            display_data.antenna_params[3].tx_rx_status = 0;
+            display_data.antenna_params[4].tx_rx_status = 0;
+            display_data.antenna_params[5].tx_rx_status = 0;
+            display_data.antenna_params[0].beam_width = 0;
+            display_data.antenna_params[1].beam_width = 0;
+            display_data.antenna_params[2].beam_width = 0;
+            display_data.antenna_params[3].beam_width = 0;
+            display_data.antenna_params[4].beam_width = 0;
+            display_data.antenna_params[5].beam_width = 0;
+
+            display_data.antenna_params[ttround].tx_rx_status = 2;
+            display_data.antenna_params[ttround].beam_width = 30;
+            ttround = (ttround + 1) % 6;
+
             //display_data.antenna_params[0].tx_rx_status = 0;
             //display_data.antenna_params[1].tx_rx_status = 1;
             //display_data.antenna_params[2].tx_rx_status = 2;
             //display_data.antenna_params[3].tx_rx_status = 0;
             //display_data.antenna_params[4].tx_rx_status = 1;
             //display_data.antenna_params[5].tx_rx_status = 2;
-            Sleep(20);
+            Sleep(4);
         }
 	}
 }

@@ -69,7 +69,7 @@ void* display_thread(void* arg)
 		else if (display_state.mode == REPLAY_MODE)
 		{
 			find_data();
-			Sleep(20);
+			Sleep(display_state.interval);
 		}
 		else if (display_state.mode == NO_MODE)
 		{
