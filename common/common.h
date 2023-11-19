@@ -195,7 +195,7 @@ typedef struct _info_t
 	device_info_t device_info;			//节点信息
 	start_boardcast_t str;				//仿真开始时间
 	int current_slot;					//当前时隙号
-	int current_antenna;				//当前发射天线号
+	int current_antenna;				//M用于扫描建链时的发送天线号
 	int current_time_frame;				//当前时帧号
 	int distance_flag_M[MAX_DEVICE];	//测距标志位M
 	int scan_flag_M[MAX_DEVICE];		//扫描标志位M，置1发送扫描确认帧
