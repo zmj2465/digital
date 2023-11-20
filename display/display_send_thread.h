@@ -58,6 +58,7 @@ typedef struct
     int find_seq;
     pthread_mutex_t mutex;
     FILE* file;
+    int flag;
 }display_state_t;
 
 
@@ -118,7 +119,13 @@ typedef struct
     channel_t channel_params[4];    // 信道参数，与其它4个节点的数据传输的信道信息
     /*****/
     int8_t link_target[5][6];
+    float  pitch[5];
+    float  yaw[5];
+    float  roll[5];
+
 } display_t;
+
+
 
 
 typedef struct {
