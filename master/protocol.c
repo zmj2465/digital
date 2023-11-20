@@ -105,12 +105,9 @@ int fsm_init2off_st(int para)
 	info.device_info.node_num = 1;
 	info.device_info.node_list = 0x21;
 	schedule_slot_init();
-	info.seq_m = 0;
-	info.seq_z = 0;
-	info.seq_beacon_m = 0;
-	info.seq_beacon_z = 0;
-	info.seq_distance_m = 0;
-	info.seq_distance_z = 0;
+	info.seq_data = 0;
+	info.seq_beacon = 0;
+	info.seq_distance = 0;
 	info.time_schedule_flag = 0;
 	info.chain_flag_m = 0;
 	info.chain_flag_z = 0;

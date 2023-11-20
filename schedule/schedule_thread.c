@@ -4,7 +4,6 @@
 #define SLOT_NUM	  63  /*时隙数*/
 
 
-static int antenna_table[ANTENNA_NUM] = { 0, 0, 0, 0, 0, 0 };      //0关闭1发送2接收
 
 static int slot_table[SLOT_NUM] = 
 {
@@ -51,13 +50,13 @@ void* schedule_thread(void* arg)
 void schedule_slot_init(void)
 {
     info.current_slot    = 0;
-    info.current_antenna = 1;
-    info.current_time_frame = 1;
+    info.current_antenna = 0;
+    info.chain_antenna = 1;
+    info.current_time_frame = 0;
     info.scan_flag_Z = 0;
     memset(info.distance_flag_M, 0, sizeof(info.distance_flag_M));
     memset(info.scan_flag_M, 0, sizeof(info.scan_flag_M));
 	memset(info.znode_connect_flag,0,sizeof(info.znode_connect_flag));
-    memset(antenna_table, 0, sizeof(antenna_table));
 }
 
 
@@ -74,23 +73,21 @@ int schedule_slot(void)
         if ( (0 <= info.current_slot && info.current_slot <= 28) || (info.current_slot == 61) )
         {
             info.time_schedule_flag = 1;
-            //antenna_table[info.current_antenna] = 1;
-            //display_data.antenna_params[info.current_antenna].tx_rx_status = 1;
             udelay(slot_table[info.current_slot]);
             display_data.antenna_params[info.current_antenna].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
-            info.current_antenna = (info.current_antenna + 1) % ANTENNA_NUM;
+            info.chain_antenna = (info.chain_antenna + 1) % ANTENNA_NUM;
             info.current_slot = (info.current_slot + 1) % SLOT_NUM;
-            //memset(antenna_table, 0, sizeof(antenna_table));
         }
         else
         {
             udelay(slot_table[info.current_slot]);
-            //将上次时隙中的天线置0，即关闭状态，并推送到显控界面
+            display_data.antenna_params[info.current_antenna].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
             info.current_slot = (info.current_slot + 1) % SLOT_NUM;
         }
         if (info.current_slot == 0)//每100ms增加1个时帧号
         {
-            display_data.time_frame_number = (display_data.time_frame_number + 1) % 10;
+            info.current_time_frame++;//协议内部的时帧号
+            display_data.time_frame_number = (display_data.time_frame_number + 1) % 10;//推送给显控的时帧号
             if (display_data.time_frame_number == 0)
             {
                 display_data.time_element_number++;//时帧号满10进1，增加1个时元号
@@ -108,17 +105,18 @@ int schedule_slot(void)
             {
                 info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
-                display_data.antenna_params[info.antenna_Z].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
+                display_data.antenna_params[info.current_antenna].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             else
             {
                 udelay(slot_table[info.current_slot]);
-                //将上次时隙中的天线置0，即关闭状态，并推送到显控界面
+                display_data.antenna_params[info.current_antenna].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             if (info.current_slot == 0)//每100ms增加1个时帧号
             {
+                info.current_time_frame++;//协议内部的时帧号
                 display_data.time_frame_number = (display_data.time_frame_number + 1) % 10;
                 if (display_data.time_frame_number == 0)
                 {
@@ -131,17 +129,18 @@ int schedule_slot(void)
             {
                 info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
-                display_data.antenna_params[info.antenna_Z].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
+                display_data.antenna_params[info.current_antenna].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             else
             {
                 udelay(slot_table[info.current_slot]);
-                //将上次时隙中的天线置0，即关闭状态，并推送到显控界面
+                display_data.antenna_params[info.current_antenna].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             if (info.current_slot == 0)//每100ms增加1个时帧号
             {
+                info.current_time_frame++;//协议内部的时帧号
                 display_data.time_frame_number = (display_data.time_frame_number + 1) % 10;
                 if (display_data.time_frame_number == 0)
                 {
@@ -154,17 +153,18 @@ int schedule_slot(void)
             {
                 info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
-                display_data.antenna_params[info.antenna_Z].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
+                display_data.antenna_params[info.current_antenna].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             else
             {
                 udelay(slot_table[info.current_slot]);
-                //将上次时隙中的天线置0，即关闭状态，并推送到显控界面
+                display_data.antenna_params[info.current_antenna].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             if (info.current_slot == 0)//每100ms增加1个时帧号
             {
+                info.current_time_frame++;//协议内部的时帧号
                 display_data.time_frame_number = (display_data.time_frame_number + 1) % 10;
                 if (display_data.time_frame_number == 0)
                 {
@@ -177,17 +177,18 @@ int schedule_slot(void)
             {
                 info.time_schedule_flag = 1;
                 udelay(slot_table[info.current_slot]);
-                display_data.antenna_params[info.antenna_Z].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
+                display_data.antenna_params[info.current_antenna].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             else
             {
                 udelay(slot_table[info.current_slot]);
-                //将上次时隙中的天线置0，即关闭状态，并推送到显控界面
+                display_data.antenna_params[info.current_antenna].tx_rx_status = 0;//将上次时隙中的天线置0，即关闭状态，并推送到显控界面
                 info.current_slot = (info.current_slot + 1) % SLOT_NUM;
             }
             if (info.current_slot == 0)//每100ms增加1个时帧号
             {
+                info.current_time_frame++;//协议内部的时帧号
                 display_data.time_frame_number = (display_data.time_frame_number + 1) % 10;
                 if (display_data.time_frame_number == 0)
                 {
@@ -482,74 +483,84 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
 }
 
 /*
-功能：根据i节点相对于本节点的距离信息推算出本节点的波束宽度，EIRP，GT
-参数：i节点的索引值（0-4：1M4Z）
+功能：设置天线的参数信息：天线状态，波束宽度，EIRP，GT
+参数：对应天线ID，i节点的索引值（0-4：1M4Z），天线状态信息（0：关闭，1：发送，2：接收）
 返回值：自身的波束宽度
 */
-int beam_width_cal(int index)
+int set_antenna_parameter(int antenna_id, int index, int antenna_status)
 {
     double dis;
-    dis = caculate_distance(fddi_info.pos, overall_fddi_info[index].pos);//计算i节点相对于本节点的距离
-    if (MY_INDEX == 0)//本节点是M
+    dis = caculate_distance(fddi_info.pos, overall_fddi_info[index].pos);//计算index节点相对于本节点的距离
+    
+    if (antenna_status == 0)
     {
-        if (0 <= dis && dis < 500)
+        display_data.antenna_params[antenna_id].tx_rx_status = antenna_status;
+    }
+    else
+    {
+        display_data.antenna_params[antenna_id].tx_rx_status = antenna_status;
+        if (MY_INDEX == 0)//本节点是M
         {
-            info.beam_width = 55;
-            info.eirp = 24;
-            info.gt = -36;
+            if (0 <= dis && dis < 500)
+            {
+                display_data.antenna_params[antenna_id].beam_width = 55;
+                display_data.antenna_params[antenna_id].eirp = 24;
+                display_data.antenna_params[antenna_id].gt = -36;
+            }
+            else if (500 <= dis && dis < 30000)
+            {
+                display_data.antenna_params[antenna_id].beam_width = 26;
+                display_data.antenna_params[antenna_id].eirp = 46;
+                display_data.antenna_params[antenna_id].gt = -21;
+            }
+            else if (30000 <= dis && dis < 500000)
+            {
+                display_data.antenna_params[antenna_id].beam_width = 9;
+                display_data.antenna_params[antenna_id].eirp = 72;
+                display_data.antenna_params[antenna_id].gt = -6;
+            }
+            else
+            {
+                display_data.antenna_params[antenna_id].beam_width = 0;
+                display_data.antenna_params[antenna_id].eirp = 0;
+                display_data.antenna_params[antenna_id].gt = 0;
+            }
         }
-        else if (500 <= dis && dis < 30000)
+        else//本节点是Z
         {
-            info.beam_width = 26;
-            info.eirp = 46;
-            info.gt = -21;
-        }
-        else if (30000 <= dis && dis < 500000)
-        {
-            info.beam_width = 9;
-            info.eirp = 72;
-            info.gt = -6;
-        }
-        else
-        {
-            info.beam_width = 0;
-            info.eirp = 0;
-            info.gt = 0;
+            if (0 <= dis && dis < 5000)
+            {
+                display_data.antenna_params[antenna_id].beam_width = 55;
+                display_data.antenna_params[antenna_id].eirp = 24;
+                display_data.antenna_params[antenna_id].gt = -36;
+            }
+            else if (5000 <= dis && dis < 15000)
+            {
+                display_data.antenna_params[antenna_id].beam_width = 50;
+                display_data.antenna_params[antenna_id].eirp = 33;
+                display_data.antenna_params[antenna_id].gt = -29;
+            }
+            else if (15000 <= dis && dis < 30000)
+            {
+                display_data.antenna_params[antenna_id].beam_width = 26;
+                display_data.antenna_params[antenna_id].eirp = 46;
+                display_data.antenna_params[antenna_id].gt = -21;
+            }
+            else if (30000 <= dis && dis < 500000)
+            {
+                display_data.antenna_params[antenna_id].beam_width = 19;
+                display_data.antenna_params[antenna_id].eirp = 55;
+                display_data.antenna_params[antenna_id].gt = -15;
+            }
+            else
+            {
+                display_data.antenna_params[antenna_id].beam_width = 0;
+                display_data.antenna_params[antenna_id].eirp = 0;
+                display_data.antenna_params[antenna_id].gt = 0;
+            }
         }
     }
-    else//本节点是Z
-    {
-        if (0 <= dis && dis < 5000)
-        {
-            info.beam_width = 55;
-            info.eirp = 24;
-            info.gt = -36;
-        }
-        else if (5000 <= dis && dis < 15000)
-        {
-            info.beam_width = 50;
-            info.eirp = 33;
-            info.gt = -29;
-        }
-        else if (15000 <= dis && dis < 30000)
-        {
-            info.beam_width = 26;
-            info.eirp = 46;
-            info.gt = -21;
-        }
-        else if (30000 <= dis && dis < 500000)
-        {
-            info.beam_width = 19;
-            info.eirp = 55;
-            info.gt = -15;
-        }
-        else
-        {
-            info.beam_width = 0;
-            info.eirp = 0;
-            info.gt = 0;
-        }
-    }
+    
     return 0;
 }
 
