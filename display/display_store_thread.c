@@ -2,6 +2,7 @@
 #include "display_send_thread.h"
 #include "display_thread.h"
 #include "physical_simulation.h"
+#include "math.h"
 #include "stdio.h"
 #include "angle.h"
 
@@ -42,29 +43,27 @@ void* display_store_thread(void* arg)
         if (display_state.mode == SIM_MODE)
         {
             data_store();
-            display_data.antenna_params[0].tx_rx_status = 0;
-            display_data.antenna_params[1].tx_rx_status = 0;
-            display_data.antenna_params[2].tx_rx_status = 0;
-            display_data.antenna_params[3].tx_rx_status = 0;
-            display_data.antenna_params[4].tx_rx_status = 0;
-            display_data.antenna_params[5].tx_rx_status = 0;
-            display_data.antenna_params[0].beam_width = 0;
-            display_data.antenna_params[1].beam_width = 0;
-            display_data.antenna_params[2].beam_width = 0;
-            display_data.antenna_params[3].beam_width = 0;
-            display_data.antenna_params[4].beam_width = 0;
-            display_data.antenna_params[5].beam_width = 0;
+            if (display_state.flag == 1)
+            {
+                display_data.antenna_params[0].tx_rx_status = 0;
+                display_data.antenna_params[1].tx_rx_status = 0;
+                display_data.antenna_params[2].tx_rx_status = 0;
+                display_data.antenna_params[3].tx_rx_status = 0;
+                display_data.antenna_params[4].tx_rx_status = 0;
+                display_data.antenna_params[5].tx_rx_status = 0;
+                display_data.antenna_params[0].beam_width = 0;
+                display_data.antenna_params[1].beam_width = 0;
+                display_data.antenna_params[2].beam_width = 0;
+                display_data.antenna_params[3].beam_width = 0;
+                display_data.antenna_params[4].beam_width = 0;
+                display_data.antenna_params[5].beam_width = 0;
 
-            display_data.antenna_params[ttround].tx_rx_status = 2;
-            display_data.antenna_params[ttround].beam_width = 30;
-            ttround = (ttround + 1) % 6;
+                display_data.antenna_params[ttround].tx_rx_status = 2;
+                display_data.antenna_params[ttround].beam_width = 30;
+                ttround = (ttround + 1) % 6;
+            }
+          
 
-            //display_data.antenna_params[0].tx_rx_status = 0;
-            //display_data.antenna_params[1].tx_rx_status = 1;
-            //display_data.antenna_params[2].tx_rx_status = 2;
-            //display_data.antenna_params[3].tx_rx_status = 0;
-            //display_data.antenna_params[4].tx_rx_status = 1;
-            //display_data.antenna_params[5].tx_rx_status = 2;
             Sleep(4);
         }
 	}
@@ -239,4 +238,29 @@ void create_msg(show_t* msg)
     }
 
     create_table(msg);
+
+    for (i = 0; i < 2; i++)
+    {
+        quaternionToEulerAngles(
+            overall_fddi_info[i].q,
+            &msg->display_info.roll[i],
+            &msg->display_info.pitch[i],
+            &msg->display_info.yaw[i]
+        );
+    }
+    msg->display_info.roll[0] = 45;
+    msg->display_info.pitch[0] = 45;
+    msg->display_info.yaw[0] = 45;
+    msg->display_info.roll[1] = 30;
+    msg->display_info.pitch[1] = 60;
+    msg->display_info.yaw[1] = 90;
+}
+
+void quaternionToEulerAngles(const Quaternion q, double* roll, double* pitch, double* yaw) {
+    *roll = atan2(2 * (q.q2 * q.q3 + q.q0 * q.q1), 1 - 2 * (q.q1 * q.q1 + q.q2 * q.q2));
+    *pitch = asin(2 * (q.q1 * q.q3 - q.q0 * q.q2));
+    *yaw = atan2(2 * (q.q1 * q.q2 + q.q0 * q.q3), 1 - 2 * (q.q2 * q.q2 + q.q3 * q.q3));
+    *roll = *roll * (180.0 / PI);
+    *pitch = *pitch * (180.0 / PI);
+    *yaw = *yaw * (180.0 / PI);
 }

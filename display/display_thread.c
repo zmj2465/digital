@@ -4,6 +4,8 @@
 #include "physical_simulation.h"
 #include "display_store_thread.h"
 
+#define FRESH_TIME 20
+
 int flag = 0;
 double te;
 void* display_thread(void* arg)
@@ -23,18 +25,34 @@ void* display_thread(void* arg)
 				if (distance > 0.01)
 				{
 					//printf("distance=%f\n", overall_fddi_info[0].pos.y);
-					Sleep(1);
-					generate_key_event(4,0,0);
+					Sleep(FRESH_TIME);
+					generate_key_event(KEY_SEPARATE,0,0);
 					flag = 1;
+					display_state.flag = 1;
 				}
 			}
 			else if (flag == 1)
 			{
-				if (distance > 1)
+				if (distance > 1) //½¨Á´
 				{
-					Sleep(2);
+					display_state.flag = 0;
+					Sleep(FRESH_TIME);
 					if (MY_INDEX == 0)
+					{
+						display_data.antenna_params[0].tx_rx_status = 1;
+						display_data.antenna_params[1].tx_rx_status = 0;
+						display_data.antenna_params[2].tx_rx_status = 0;
+						display_data.antenna_params[3].tx_rx_status = 0;
+						display_data.antenna_params[4].tx_rx_status = 0;
+						display_data.antenna_params[5].tx_rx_status = 0;
+						display_data.antenna_params[0].beam_width = 30;
+						display_data.antenna_params[1].beam_width = 0;
+						display_data.antenna_params[2].beam_width = 0;
+						display_data.antenna_params[3].beam_width = 0;
+						display_data.antenna_params[4].beam_width = 0;
+						display_data.antenna_params[5].beam_width = 0;
 						generate_key_event(5, 1, 1);
+					}
 					else
 						generate_key_event(5, 0, 0);
 					flag = 2;
@@ -42,9 +60,10 @@ void* display_thread(void* arg)
 			}
 			else if (flag == 2)
 			{
-				if (distance > 2)
+				if (distance > 2)//¶ÏÁ´
 				{
-					Sleep(2);
+					display_state.flag = 1;
+					Sleep(FRESH_TIME);
 					if (MY_INDEX == 0)
 						generate_key_event(6, 1, 1);
 					else
@@ -54,17 +73,32 @@ void* display_thread(void* arg)
 			}
 			else if (flag == 3)
 			{
-				if (distance > 3)
+				if (distance > 3)//ÔÙ½¨Á´
 				{
-					Sleep(2);
+					display_state.flag = 0;
+					Sleep(FRESH_TIME);
 					if (MY_INDEX == 0)
+					{
+						display_data.antenna_params[0].tx_rx_status = 1;
+						display_data.antenna_params[1].tx_rx_status = 0;
+						display_data.antenna_params[2].tx_rx_status = 0;
+						display_data.antenna_params[3].tx_rx_status = 0;
+						display_data.antenna_params[4].tx_rx_status = 0;
+						display_data.antenna_params[5].tx_rx_status = 0;
+						display_data.antenna_params[0].beam_width = 30;
+						display_data.antenna_params[1].beam_width = 0;
+						display_data.antenna_params[2].beam_width = 0;
+						display_data.antenna_params[3].beam_width = 0;
+						display_data.antenna_params[4].beam_width = 0;
+						display_data.antenna_params[5].beam_width = 0;
 						generate_key_event(7, 1, 1);
+					}
 					else
 						generate_key_event(7, 0, 0);
 					flag = 4;
 				}
 			}
-			Sleep(20);
+			Sleep(FRESH_TIME);
 		}
 		else if (display_state.mode == REPLAY_MODE)
 		{
@@ -101,7 +135,7 @@ void create_table(show_t* msg)
 			{
 				continue;
 			}
-			printf("%d\n", ret);
+			//printf("%d\n", ret);
 			msg->display_info.link_target[i][temp] |= 1 << j;
  		}
 	}
