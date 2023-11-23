@@ -17,6 +17,7 @@ void* display_thread(void* arg)
 		if (display_state.mode == SIM_MODE)
 		{
 			send_display_msg();
+			//printf("ok\n");
 			double distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[1].pos)/20;
 			//printf("%f\n", te=fmax(te, overall_fddi_info[0].pos.y));
 			//printf("%f\n", overall_fddi_info[0].pos.y);
@@ -39,14 +40,14 @@ void* display_thread(void* arg)
 					Sleep(FRESH_TIME);
 					if (MY_INDEX == 0)
 					{
-						display_data.antenna_params[0].tx_rx_status = 1;
-						display_data.antenna_params[1].tx_rx_status = 0;
+						display_data.antenna_params[0].tx_rx_status = 0;
+						display_data.antenna_params[1].tx_rx_status = 1;
 						display_data.antenna_params[2].tx_rx_status = 0;
 						display_data.antenna_params[3].tx_rx_status = 0;
 						display_data.antenna_params[4].tx_rx_status = 0;
 						display_data.antenna_params[5].tx_rx_status = 0;
-						display_data.antenna_params[0].beam_width = 30;
-						display_data.antenna_params[1].beam_width = 0;
+						display_data.antenna_params[0].beam_width = 0;
+						display_data.antenna_params[1].beam_width = 60;
 						display_data.antenna_params[2].beam_width = 0;
 						display_data.antenna_params[3].beam_width = 0;
 						display_data.antenna_params[4].beam_width = 0;
@@ -79,13 +80,13 @@ void* display_thread(void* arg)
 					Sleep(FRESH_TIME);
 					if (MY_INDEX == 0)
 					{
-						display_data.antenna_params[0].tx_rx_status = 1;
+						display_data.antenna_params[0].tx_rx_status = 0;
 						display_data.antenna_params[1].tx_rx_status = 0;
 						display_data.antenna_params[2].tx_rx_status = 0;
 						display_data.antenna_params[3].tx_rx_status = 0;
 						display_data.antenna_params[4].tx_rx_status = 0;
 						display_data.antenna_params[5].tx_rx_status = 0;
-						display_data.antenna_params[0].beam_width = 30;
+						display_data.antenna_params[0].beam_width = 60;
 						display_data.antenna_params[1].beam_width = 0;
 						display_data.antenna_params[2].beam_width = 0;
 						display_data.antenna_params[3].beam_width = 0;
@@ -149,4 +150,6 @@ void create_table(show_t* msg)
 	//	}
 	//	printf("\n");
 	//}
+	msg->display_info.link_target[0][1] |= 1 << 1;
+	msg->display_info.link_target[1][5] |= 1 << 0;
 }

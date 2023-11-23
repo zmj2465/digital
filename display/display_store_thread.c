@@ -108,7 +108,7 @@ void create_msg(show_t* msg)
     msg->display_info.pos_x = overall_fddi_info[0].pos.x / 100;
     msg->display_info.pos_y = overall_fddi_info[0].pos.y;
     msg->display_info.pos_z = overall_fddi_info[0].pos.z / 100;
-
+    printf("%f\n", msg->display_info.pos_y);
     msg->display_info.vel_x = 1.0;
     msg->display_info.vel_y = 2.0;
     msg->display_info.vel_z = 3.0;
@@ -202,8 +202,8 @@ void create_msg(show_t* msg)
         //printf("%d", msg->display_info.antenna_params[j].beam_width);
         //msg->display_info.antenna_params[j].tx_rx_status = 1;
         //msg->display_info.antenna_params[j].beam_width = 30;
-        //msg->display_info.antenna_params[j].azimuth = 0;
-        //msg->display_info.antenna_params[j].elevation = 90;
+        msg->display_info.antenna_params[j].azimuth = 0;
+        msg->display_info.antenna_params[j].elevation = 90;
         //msg->display_info.antenna_params[j].eirp = 0;
         //msg->display_info.antenna_params[j].gt = 0;
     }
@@ -247,19 +247,36 @@ void create_msg(show_t* msg)
             &msg->display_info.pitch[i],
             &msg->display_info.yaw[i]
         );
+        //printf("%f %f %f\n", msg->display_info.roll[i], msg->display_info.pitch[i], msg->display_info.yaw[i]);
     }
-    msg->display_info.roll[0] = 45;
-    msg->display_info.pitch[0] = 45;
-    msg->display_info.yaw[0] = 45;
-    msg->display_info.roll[1] = 30;
-    msg->display_info.pitch[1] = 60;
-    msg->display_info.yaw[1] = 90;
+
+
+    //msg->display_info.antenna_params[0].azimuth = yaw;
+    //msg->display_info.antenna_params[0].elevation = pitch;
+
 }
 
-void quaternionToEulerAngles(const Quaternion q, double* roll, double* pitch, double* yaw) {
-    *roll = atan2(2 * (q.q2 * q.q3 + q.q0 * q.q1), 1 - 2 * (q.q1 * q.q1 + q.q2 * q.q2));
-    *pitch = asin(2 * (q.q1 * q.q3 - q.q0 * q.q2));
-    *yaw = atan2(2 * (q.q1 * q.q2 + q.q0 * q.q3), 1 - 2 * (q.q2 * q.q2 + q.q3 * q.q3));
+void quaternionToEulerAngles(const Quaternion q, float* roll, float* pitch, float* yaw) {
+
+    double q0 = q.q0;
+    double q1 = q.q1;
+    double q2 = q.q2;
+    double q3 = q.q3;
+
+    double q11 = q0 * q0;
+    double q12 = q0 * q1;
+    double q13 = q0 * q2;
+    double q14 = q0 * q3;
+    double q22 = q1 * q1;
+    double q23 = q1 * q2;
+    double q24 = q1 * q3;
+    double q33 = q2 * q2;
+    double q34 = q2 * q3;
+    double q44 = q3 * q3;
+
+    *roll = atan2(-2 * (q34 - q12), q11 - q22 + q33 - q44);
+    *pitch = asin(2 * (q23 + q14));
+    *yaw = atan2(-2 * (q24 - q13), q11 + q22 - q33 - q44);
     *roll = *roll * (180.0 / PI);
     *pitch = *pitch * (180.0 / PI);
     *yaw = *yaw * (180.0 / PI);

@@ -15,6 +15,6 @@
 void* display_thread(void* arg);
 
 void create_table(show_t* msg);
-void quaternionToEulerAngles(const Quaternion q, double* roll, double* pitch, double* yaw);
+void quaternionToEulerAngles(const Quaternion q, float* roll, float* pitch, float* yaw);
 
 #endif

@@ -43,6 +43,19 @@ int main()
     //my_add(3, 5);
     //printf("%d %f %f\n", a, b, c);
     //printf("%d\n", my_add(3, 5));
+    //float yaw, roll, pitch;
+    //Quaternion ttt;
+    //ttt.q0 = 0.9568315;
+    //ttt.q1 = 0.03177429;
+    //ttt.q2 = -0.2492538;
+    //ttt.q3 = -0.1460697;
+    //show_t msg;
+    //quaternionToEulerAngles(
+    //    ttt,
+    //    &msg.display_info.roll[0],
+    //    &msg.display_info.pitch[0],
+    //    &msg.display_info.yaw[0]
+    //);
     //while (1);
     //system("C:\\Users\\MRGT\\Desktop\\start.bat");
 
