@@ -195,7 +195,10 @@ typedef struct _info_t
 	device_info_t device_info;			//节点信息
 	start_boardcast_t str;				//仿真开始时间
 	int current_slot;					//当前时隙号
-	int current_antenna;				//M用于扫描建链时的发送天线号
+	int current_antenna;				//当前使用的天线号，用于下一时隙给这个天线号设置成关闭状态
+	int chain_antenna;					//M用于建链时切换的天线号
+	int antenna_M[MAX_DEVICE];			//M用于数据发送时的天线匹配表M（0-5），比如antenna_M[1]的值代表M用于跟Z1通信的天线id
+	int antenna_Z;						//天线匹配表Z（0-5）
 	int current_time_frame;				//当前时帧号
 	int distance_flag_M[MAX_DEVICE];	//测距标志位M
 	int scan_flag_M[MAX_DEVICE];		//扫描标志位M，置1发送扫描确认帧
@@ -206,20 +209,15 @@ typedef struct _info_t
 	UINT timerId_Z;						//数据帧Z定时器ID
 	UINT timerId_M[MAX_DEVICE];			//数据帧M定时器ID
 #endif
-
-	int antenna_M[MAX_DEVICE];			//天线匹配表M（0-5），比如antenna_M[1]的值代表M用于跟Z1通信的天线id
-	int antenna_Z;						//天线匹配表Z（0-5）
 	struct timespec set_network_st;		//系统时钟下建网开始时刻
 	struct timespec set_network_ed;		//系统时钟下建网结束时刻
 	uint64_t network_st;				//PTP授时系统下建网开始时刻
 	uint64_t network_ed;				//PTP授时系统下建网结束时刻
 	int set_network_time;				//建网时间
-	int seq_m;							//数据包序列号M
-	int seq_z;							//数据包序列号Z
-	int seq_beacon_m;					//信令序列号M
-	int seq_beacon_z;					//信令序列号Z
-	int seq_distance_m;					//测距序列号M
-	int seq_distance_z;					//测距序列号Z
+	int seq_data;						//数据包序列号
+	int seq_beacon;						//信令序列号
+	int seq_distance;					//测距序列号
+
 
 	int time_schedule_flag;				//时隙调度标志位，置1表示发送时隙，置0表示接收时隙
 	int data_store_flag;
@@ -235,9 +233,6 @@ typedef struct _info_t
 	uint16_t m_z1_air_interface_data_rx_count;     //CANG终端向QI1终端接收空口业务数据包计数
 	uint16_t z_proc_flight_control_data_tx_count; // 器向集成处理器飞控发数据计数
 	uint16_t z_proc_flight_control_data_rx_count;  //器收集成处理器飞控数据计数
-	uint8_t beam_width;		//波束宽度
-	double eirp;			//天线等效全向辐射功率
-	double gt;				//天线接收性能
 }info_t;
 
 
@@ -315,7 +310,7 @@ typedef struct _head_t
 	uint8_t type;				//包类型
 	struct timespec send_time;	//系统时钟下发送时间
 	uint64_t send_t;			//PTP授时系统下发送时间
-	uint8_t antenna_id;			//天线ID
+	uint8_t antenna_id;			//发送天线ID
 	int seq;					//发包序列号
 	//位置信息
 }head_t;

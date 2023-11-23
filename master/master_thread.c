@@ -157,7 +157,7 @@ int master_data_proc(void)
                         printf("z get tom\n");
                         put(&common_data[Z_TOM_RECV], msg.data, Z_TOM_RECV_LEN, 0);
                     }
-					g_node_progrm[0].air_interface_data_tx_count++;
+					g_node_progrm[0].air_interface_data_rx_count++;
                     plog("Z%d recv M data, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
                     break;
                 case DISTANCE:

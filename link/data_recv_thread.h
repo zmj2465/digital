@@ -13,5 +13,6 @@
 void* data_recv_thread(void* arg);
 int   data_recv_proc(void);
 int	  antenna_match(char* data, msg_t* msg, int role);
+int	  antenna_recv(msg_t* msg);
 
 #endif

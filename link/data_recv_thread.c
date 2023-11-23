@@ -92,13 +92,15 @@ int data_recv_proc(void)
 					//send_display_msg();
 					msg_t msg;
 					memset(&msg, 0, sizeof(msg_t));
-					int len;
-					int antenna_recv;
-					uint64_t sub;
-					uint64_t recv_time;
+					uint64_t sub, recv_time;
+					bool ret_val;
+					memcpy(&msg, &psy_msg->msg, sizeof(msg_t));
+					//ret = antenna_match(psy_msg, &msg, info.device_info.node_role);
 
-					ret = antenna_match(psy_msg, &msg, info.device_info.node_role);
-					if (ret == 1)
+					antenna_recv(&msg);
+					ret_val = antenna_match_(psy_msg);//天线匹配，若成功则接收数据包
+
+					if (ret_val == true)
 					{
 						recv_time = my_get_time();
 						sub = recv_time - msg.head.send_t;
@@ -107,7 +109,7 @@ int data_recv_proc(void)
 					}
 					else
 					{
-						plog("match fail throw, M send antenna = %d, Z%d receive antenna = %d, current slot = %d.%d, seq = %d\n", psy_msg->msg.head.antenna_id, MY_INDEX, inquire_antenna(info.current_slot), info.current_time_frame, info.current_slot, psy_msg->msg.head.seq);
+						plog("match fail throw\n");
 					}
 				}
 			}
@@ -228,5 +230,25 @@ int antenna_match(char* data, msg_t* msg, int role)
 		}
 	}
 	
+	return 0;
+}
+
+int antenna_recv(msg_t* msg)
+{
+	int index;
+	index = inquire_address(msg->head.src);
+	
+	if (msg->head.type == SCAN && msg->data[0] == SCAN_REQ)
+	{
+		info.current_antenna = inquire_antenna(info.current_slot);
+	}
+	else
+	{
+		info.current_antenna = select_antennaA(MY_INDEX, overall_fddi_info[index].pos);
+	}
+
+	/*将发送天线状态信息推送到显控界面*/
+	set_antenna_parameter(info.current_antenna, index, 2);
+
 	return 0;
 }

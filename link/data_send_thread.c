@@ -343,7 +343,9 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
     msg->head.dst = dst;
     msg->head.src = src;
     msg->head.type = type;
-    
+    index = inquire_address(dst);
+
+    /*添加发送时间*/
     if (type == START_GUN && MY_INDEX == 0)
     {
         //msg->head.send_time = info.str.base_time;
@@ -355,57 +357,38 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
         msg->head.send_t = my_get_time();
     }
 
-    if (MY_INDEX == 0)//M
+    /*添加序列号*/
+    if (type == BEACON)
     {
-        if (type == SCAN && msg->data[0] == SCAN_REQ)
-        {
-            msg->head.antenna_id = info.current_antenna;           
-        }
-        else
-        {
-            index = inquire_address(msg->head.dst);
-            msg->head.antenna_id = info.antenna_M[index];           
-        }
-        display_data.antenna_params[msg->head.antenna_id].tx_rx_status = 1;//将本次使用的天线置1，即发送状态，并推送到显控界面
-        
-        if (type == BEACON)
-        {
-            msg->head.seq = info.seq_beacon_m;
-            info.seq_beacon_m++;
-        }
-        else if (type == DISTANCE)
-        {
-            msg->head.seq = info.seq_distance_m;
-            info.seq_distance_m++;
-        }
-        else
-        {
-            msg->head.seq = info.seq_m;
-            info.seq_m++;
-        }
+        msg->head.seq = info.seq_beacon;
+        info.seq_beacon++;
     }
-    else//Z
+    else if (type == DISTANCE)
     {
-        msg->head.antenna_id = info.antenna_Z;
-        display_data.antenna_params[msg->head.antenna_id].tx_rx_status = 1;//将本次使用的天线置1，即发送状态，并推送到显控界面
-        
-        if (type == BEACON)
-        {
-            msg->head.seq = info.seq_beacon_z;
-            info.seq_beacon_z++;
-        }
-        else if (type == DISTANCE)
-        {
-            msg->head.seq = info.seq_distance_z;
-            info.seq_distance_z++;
-        }
-        else
-        {
-            msg->head.seq = info.seq_z;
-            info.seq_z++;
-        }
+        msg->head.seq = info.seq_distance;
+        info.seq_distance++;
     }
+    else
+    {
+        msg->head.seq = info.seq_data;
+        info.seq_data++;
+    }
+
+    /*添加天线id*/
+    if (type == SCAN && msg->data[0] == SCAN_REQ)
+    {
+        info.current_antenna = info.chain_antenna;
+    }
+    else
+    {
+        info.current_antenna = select_antennaA(MY_INDEX, overall_fddi_info[index].pos);//根据索引判断当前的发送天线id       
+    }
+
+    msg->head.antenna_id = info.current_antenna;        //发送天线id
     msg->len = msg->len + sizeof(head_t) + sizeof(int);//加上包头长度
+
+    /*将发送天线状态信息推送到显控界面*/
+    set_antenna_parameter(info.current_antenna, index, 1);
 }
 
 
