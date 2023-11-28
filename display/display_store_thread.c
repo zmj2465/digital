@@ -5,6 +5,7 @@
 #include "math.h"
 #include "stdio.h"
 #include "angle.h"
+#include "comcal_dll.h"
 
 
 static int ttround = 0;
@@ -42,26 +43,27 @@ void* display_store_thread(void* arg)
         //}
         if (display_state.mode == SIM_MODE)
         {
-            data_store();
-            if (display_state.flag == 1)
-            {
-                display_data.antenna_params[0].tx_rx_status = 0;
-                display_data.antenna_params[1].tx_rx_status = 0;
-                display_data.antenna_params[2].tx_rx_status = 0;
-                display_data.antenna_params[3].tx_rx_status = 0;
-                display_data.antenna_params[4].tx_rx_status = 0;
-                display_data.antenna_params[5].tx_rx_status = 0;
-                display_data.antenna_params[0].beam_width = 0;
-                display_data.antenna_params[1].beam_width = 0;
-                display_data.antenna_params[2].beam_width = 0;
-                display_data.antenna_params[3].beam_width = 0;
-                display_data.antenna_params[4].beam_width = 0;
-                display_data.antenna_params[5].beam_width = 0;
+            //data_store();
+            //if (display_state.flag == 1)
+            //{
+            //    display_data.antenna_params[0].tx_rx_status = 0;
+            //    display_data.antenna_params[1].tx_rx_status = 0;
+            //    display_data.antenna_params[2].tx_rx_status = 0;
+            //    display_data.antenna_params[3].tx_rx_status = 0;
+            //    display_data.antenna_params[4].tx_rx_status = 0;
+            //    display_data.antenna_params[5].tx_rx_status = 0;
+            //    display_data.antenna_params[0].beam_width = 0;
+            //    display_data.antenna_params[1].beam_width = 0;
+            //    display_data.antenna_params[2].beam_width = 0;
+            //    display_data.antenna_params[3].beam_width = 0;
+            //    display_data.antenna_params[4].beam_width = 0;
+            //    display_data.antenna_params[5].beam_width = 0;
+            //    
 
-                display_data.antenna_params[ttround].tx_rx_status = 2;
-                display_data.antenna_params[ttround].beam_width = 30;
-                ttround = (ttround + 1) % 6;
-            }
+            //    display_data.antenna_params[ttround].tx_rx_status = 2;
+            //    display_data.antenna_params[ttround].beam_width = 30;
+            //    ttround = (ttround + 1) % 6;
+            //}
           
 
             Sleep(4);
@@ -97,6 +99,11 @@ void create_msg(show_t* msg)
     set_zero(msg);
     int i;
     int j;
+    int select_id = 0;
+
+    int antenna_id=0;
+    float azimuth;
+    float elevation;
     msg->type = DISPLAY_INFO;
     //msg->len = 4 + sizeof(display_t);
     msg->len = MAX_SEND_LEN;
@@ -105,20 +112,20 @@ void create_msg(show_t* msg)
     msg->display_info.system_time.tv_sec = 0;// 假设系统时间为 2021-06-21 12:00:00
     msg->display_info.system_time.tv_nsec = 0;
     //位置信息
-    msg->display_info.pos_x = overall_fddi_info[0].pos.x / 100;
+    msg->display_info.pos_x = overall_fddi_info[0].pos.x ;
     msg->display_info.pos_y = overall_fddi_info[0].pos.y;
-    msg->display_info.pos_z = overall_fddi_info[0].pos.z / 100;
-    printf("%f\n", msg->display_info.pos_y);
+    msg->display_info.pos_z = overall_fddi_info[0].pos.z ;
+    //printf("%f\n", msg->display_info.pos_y);
     msg->display_info.vel_x = 1.0;
     msg->display_info.vel_y = 2.0;
     msg->display_info.vel_z = 3.0;
     msg->display_info.ang_vel_x = 0.1;
     msg->display_info.ang_vel_y = 0.2;
     msg->display_info.ang_vel_z = 0.3;
-    msg->display_info.quat_q0 = 0.707;
-    msg->display_info.quat_q1 = 0.0;
-    msg->display_info.quat_q2 = 0.0;
-    msg->display_info.quat_q3 = 0.707;
+    //msg->display_info.quat_q0 = 0.707;
+    //msg->display_info.quat_q1 = 0.0;
+    //msg->display_info.quat_q2 = 0.0;
+    //msg->display_info.quat_q3 = 0.707;
     msg->display_info.time_element_number = 0;
     msg->display_info.time_frame_number = 0;
     msg->display_info.micro_time_slot_number = 0;
@@ -194,19 +201,20 @@ void create_msg(show_t* msg)
     int temp = 0;
     msg->display_info.terminal_working_status_representation = temp;
 
-    msg->display_info.antenna_params[0] = display_data.antenna_params[0];
+    //msg->display_info.antenna_params[0] = display_data.antenna_params[0];
 
     for (j = 0; j < 6; j++)
     {
-        msg->display_info.antenna_params[j] = display_data.antenna_params[j];
+        //msg->display_info.antenna_params[j] = display_data.antenna_params[j];
         //printf("%d", msg->display_info.antenna_params[j].beam_width);
-        //msg->display_info.antenna_params[j].tx_rx_status = 1;
-        //msg->display_info.antenna_params[j].beam_width = 30;
-        msg->display_info.antenna_params[j].azimuth = 0;
-        msg->display_info.antenna_params[j].elevation = 90;
-        //msg->display_info.antenna_params[j].eirp = 0;
-        //msg->display_info.antenna_params[j].gt = 0;
+        //msg->display_info.antenna_params[MY_INDEX][j].tx_rx_status = 2;
+        //msg->display_info.antenna_params[MY_INDEX][j].beam_width = 40;
+        //msg->display_info.antenna_params[MY_INDEX][j].azimuth = 6;
+        //msg->display_info.antenna_params[MY_INDEX][j].elevation = 120;
+        //msg->display_info.antenna_params[MY_INDEX][j].eirp = 8;
+        //msg->display_info.antenna_params[MY_INDEX][j].gt = 9;
     }
+
 
     for (j = 0; j < 4; j++)
     {
@@ -247,13 +255,44 @@ void create_msg(show_t* msg)
             &msg->display_info.pitch[i],
             &msg->display_info.yaw[i]
         );
-        //printf("%f %f %f\n", msg->display_info.roll[i], msg->display_info.pitch[i], msg->display_info.yaw[i]);
+        //printf("i%d: %f %f %f\n", i, msg->display_info.roll[i], msg->display_info.pitch[i], msg->display_info.yaw[i]);
     }
 
+    //printf("0:x=%f,y=%f,z=%f,q0=%f,q1=%f,q2=%f,q3=%f\n", msg->display_info.pos_x);
+    //printf("1:x=%f,y=%f,z=%f,q0=%f,q1=%f,q2=%f,q3=%f\n",);
+    //printf("")
 
     //msg->display_info.antenna_params[0].azimuth = yaw;
     //msg->display_info.antenna_params[0].elevation = pitch;
 
+
+    calculate_ante_angle_coord_m(
+        overall_fddi_info[0].pos.x,
+        overall_fddi_info[0].pos.y,
+        overall_fddi_info[0].pos.z,
+        overall_fddi_info[0].q.q0,
+        overall_fddi_info[0].q.q1,
+        overall_fddi_info[0].q.q2,
+        overall_fddi_info[0].q.q3,
+        0,
+        overall_fddi_info[1].pos.x,
+        overall_fddi_info[1].pos.y,
+        overall_fddi_info[1].pos.z,
+        &antenna_id,
+        &azimuth,
+        &elevation
+    );
+    if (antenna_id >= 0 && antenna_id < 6);
+    {
+        /*printf("antenna_id=%d\n", antenna_id);*/
+        msg->display_info.antenna_params[antenna_id].tx_rx_status = 1;
+        msg->display_info.antenna_params[antenna_id].beam_width = 10;
+        msg->display_info.antenna_params[antenna_id].elevation = elevation;
+        msg->display_info.antenna_params[antenna_id].azimuth = azimuth;
+    }
+
+
+    data_show(msg);
 }
 
 void quaternionToEulerAngles(const Quaternion q, float* roll, float* pitch, float* yaw) {
@@ -280,4 +319,51 @@ void quaternionToEulerAngles(const Quaternion q, float* roll, float* pitch, floa
     *roll = *roll * (180.0 / PI);
     *pitch = *pitch * (180.0 / PI);
     *yaw = *yaw * (180.0 / PI);
+}
+
+
+void data_show(show_t* msg)
+{
+    int i = 0;
+    printf("0:x=%f,y=%f,z=%f,q0=%f,q1=%f,q2=%f,q3=%f\n",
+        msg->display_info.pos_x,
+        msg->display_info.pos_y,
+        msg->display_info.pos_z,
+        overall_fddi_info[0].q.q0,
+        overall_fddi_info[0].q.q1,
+        overall_fddi_info[0].q.q2,
+        overall_fddi_info[0].q.q3
+    );
+    printf("1:x=%f,y=%f,z=%f,q0=%f,q1=%f,q2=%f,q3=%f\n",
+        overall_fddi_info[1].pos.x,
+        overall_fddi_info[1].pos.y,
+        overall_fddi_info[1].pos.z,
+        overall_fddi_info[1].q.q0,
+        overall_fddi_info[1].q.q1,
+        overall_fddi_info[1].q.q2,
+        overall_fddi_info[1].q.q3
+    );
+    for (i = 0; i < 6; i++)
+    {
+        printf("state=%d,angle=%d,azimuth=%f,elevation=%f\n",
+            msg->display_info.antenna_params[i].tx_rx_status,
+            msg->display_info.antenna_params[i].beam_width,
+            msg->display_info.antenna_params[i].azimuth,
+            msg->display_info.antenna_params[i].elevation
+        );
+    }
+    printf("0:pitch=%f,yaw=%f,roll=%f\n",
+        msg->display_info.pitch[0],
+        msg->display_info.yaw[0],
+        msg->display_info.roll[0]
+    );
+    printf("1:pitch=%f,yaw=%f,roll=%f\n",
+        msg->display_info.pitch[1],
+        msg->display_info.yaw[1],
+        msg->display_info.roll[1]
+    );
+
+    printf("azimuth=%f,elevation=%f\n", msg->display_info.z1_m_azimuth[1], msg->display_info.z1_m_elevation[1]);
+
+
 }

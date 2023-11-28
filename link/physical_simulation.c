@@ -394,7 +394,7 @@ void fddi_load(fddi_info_t* fddi, psy_msg_t* msg)
 
 
 // 函数定义：计算两个向量的差
-Point3D subtractVectors(Point3D v1, Point3D v2) {
+Point3D subtractVectors(Point3D v2, Point3D v1) {
     Point3D result;
     result.x = v1.x - v2.x;
     result.y = v1.y - v2.y;
@@ -407,15 +407,15 @@ Point3D rotatePoint(Point3D point, Quaternion quaternion) {
     Point3D result;
 
     result.x = (quaternion.q0 * quaternion.q0 + quaternion.q1 * quaternion.q1 - quaternion.q2 * quaternion.q2 - quaternion.q3 * quaternion.q3) * point.x
-        + 2 * (quaternion.q1 * quaternion.q2 - quaternion.q0 * quaternion.q3) * point.y
-        + 2 * (quaternion.q1 * quaternion.q3 + quaternion.q0 * quaternion.q2) * point.z;
+        + 2 * (quaternion.q1 * quaternion.q2 + quaternion.q0 * quaternion.q3) * point.y
+        + 2 * (quaternion.q1 * quaternion.q3 - quaternion.q0 * quaternion.q2) * point.z;
 
-    result.y = 2 * (quaternion.q1 * quaternion.q2 + quaternion.q0 * quaternion.q3) * point.x
+    result.y = 2 * (quaternion.q1 * quaternion.q2 - quaternion.q0 * quaternion.q3) * point.x
         + (quaternion.q0 * quaternion.q0 - quaternion.q1 * quaternion.q1 + quaternion.q2 * quaternion.q2 - quaternion.q3 * quaternion.q3) * point.y
-        + 2 * (quaternion.q2 * quaternion.q3 - quaternion.q0 * quaternion.q1) * point.z;
+        + 2 * (quaternion.q2 * quaternion.q3 + quaternion.q0 * quaternion.q1) * point.z;
 
-    result.z = 2 * (quaternion.q1 * quaternion.q3 - quaternion.q0 * quaternion.q2) * point.x
-        + 2 * (quaternion.q2 * quaternion.q3 + quaternion.q0 * quaternion.q1) * point.y
+    result.z = 2 * (quaternion.q1 * quaternion.q3 + quaternion.q0 * quaternion.q2) * point.x
+        + 2 * (quaternion.q2 * quaternion.q3 - quaternion.q0 * quaternion.q1) * point.y
         + (quaternion.q0 * quaternion.q0 - quaternion.q1 * quaternion.q1 - quaternion.q2 * quaternion.q2 + quaternion.q3 * quaternion.q3) * point.z;
 
     return result;
@@ -426,6 +426,9 @@ void calculateYawAndPitch(Point3D my_pos, Quaternion my_q, Point3D target_pos, f
 {
     Point3D switch_point = subtractVectors(my_pos, target_pos);
     switch_point = rotatePoint(switch_point, my_q);
+    //printf("x=%f,y=%f,z=%f\n", my_pos.x, my_pos.y, my_pos.z);
+    //printf("x=%f,y=%f,z=%f\n", target_pos.x, target_pos.y, target_pos.z);
+    //printf("x=%f,y=%f,z=%f\n", switch_point.x, switch_point.y, switch_point.z);
     *yaw = atan2(switch_point.y, switch_point.x) * (180.0 / 3.1415926);
     *pitch = atan2(-switch_point.z, sqrt(switch_point.x * switch_point.x + switch_point.y * switch_point.y)) * (180.0 / 3.1415926);
     return;
