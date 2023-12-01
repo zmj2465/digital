@@ -1,4 +1,5 @@
 #include "display_send_thread.h"
+#include "display_store_thread.h"
 #include "file_manage.h"
 #include "angle.h"
 #include "physical_simulation.h"
@@ -120,9 +121,31 @@ void display_send_thread_init()
     Sleep(100);
     generate_key_event(KEY_POWER_ON, 0, 0);
     Sleep(100);
-    generate_key_event(KEY_CONFIG_LOAD, 1, 1);
+    generate_key_event(KEY_CONFIG_LOAD, 4, 1);
+    Sleep(100);
+    generate_key_event(5, 1, 1);
+    Sleep(100);
+    generate_key_event(5, 2, 1);
+    Sleep(100);
+    generate_key_event(5, 3, 1);
+    Sleep(100);
+    generate_key_event(5, 4, 1);
+    Sleep(100);
+    send_display_msg();
+    Sleep(100);
+    send_display_msg();
+    //Sleep(100);
+    //send_display_msg();
     //Sleep(100);
     //generate_key_event(5, 1, 1);
+    //Sleep(100);
+    //generate_key_event(5, 2, 1);
+    //Sleep(100);
+    //generate_key_event(5, 3, 1);
+    //Sleep(100);
+    //generate_key_event(5, 4, 1);
+
+    while (1);
 
 }
 

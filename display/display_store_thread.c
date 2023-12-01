@@ -148,11 +148,26 @@ void create_msg(show_t* msg)
             &yaw,
             &pitch);
 
-        msg->display_info.z1_m_azimuth[1] = yaw;
-        msg->display_info.z1_m_elevation[1] = pitch;
+        //msg->display_info.z1_m_azimuth[1] = yaw;
+        //msg->display_info.z1_m_elevation[1] = pitch;
 
         /*msg->display_info.z1_m_azimuth[1] = fmin(p, 45);
         msg->display_info.z1_m_elevation[1] = fmin(pp, 45);*/
+        msg->display_info.z1_m_distance[1] = 0.5;
+        msg->display_info.z1_m_azimuth[1] = 90;
+        msg->display_info.z1_m_elevation[1] = 0;
+
+        msg->display_info.z1_m_distance[2] = 0.5;
+        msg->display_info.z1_m_azimuth[2] = -90;
+        msg->display_info.z1_m_elevation[2] = 0;
+
+        msg->display_info.z1_m_distance[3] = 0.5;
+        msg->display_info.z1_m_azimuth[3] = 0;
+        msg->display_info.z1_m_elevation[3] = 90;
+
+        msg->display_info.z1_m_distance[4] = 0.5;
+        msg->display_info.z1_m_azimuth[4] = 0;
+        msg->display_info.z1_m_elevation[4] = -90;
 
     }
     else if (MY_INDEX == 1)
@@ -258,6 +273,22 @@ void create_msg(show_t* msg)
         //printf("i%d: %f %f %f\n", i, msg->display_info.roll[i], msg->display_info.pitch[i], msg->display_info.yaw[i]);
     }
 
+    msg->display_info.roll[0] = 0;
+    msg->display_info.pitch[0] = 0;
+    msg->display_info.yaw[0] = 0;
+    msg->display_info.roll[1] = 0;
+    msg->display_info.pitch[1] = 0;
+    msg->display_info.yaw[1] = 0;
+    msg->display_info.roll[2] = 0;
+    msg->display_info.pitch[2] = 0;
+    msg->display_info.yaw[2] = 0;
+    msg->display_info.roll[3] = 0;
+    msg->display_info.pitch[3] = 0;
+    msg->display_info.yaw[3] = 0;
+    msg->display_info.roll[4] = 0;
+    msg->display_info.pitch[4] = 0;
+    msg->display_info.yaw[4] = 0;
+
     //printf("0:x=%f,y=%f,z=%f,q0=%f,q1=%f,q2=%f,q3=%f\n", msg->display_info.pos_x);
     //printf("1:x=%f,y=%f,z=%f,q0=%f,q1=%f,q2=%f,q3=%f\n",);
     //printf("")
@@ -285,11 +316,15 @@ void create_msg(show_t* msg)
     if (antenna_id >= 0 && antenna_id < 6);
     {
         /*printf("antenna_id=%d\n", antenna_id);*/
-        msg->display_info.antenna_params[antenna_id].tx_rx_status = 1;
-        msg->display_info.antenna_params[antenna_id].beam_width = 10;
-        msg->display_info.antenna_params[antenna_id].elevation = elevation;
-        msg->display_info.antenna_params[antenna_id].azimuth = azimuth;
+        //msg->display_info.antenna_params[antenna_id].tx_rx_status = 1;
+        //msg->display_info.antenna_params[antenna_id].beam_width = 10;
+        //msg->display_info.antenna_params[antenna_id].elevation = elevation;
+        //msg->display_info.antenna_params[antenna_id].azimuth = azimuth;
     }
+    msg->display_info.antenna_params[1].tx_rx_status = 1;
+    msg->display_info.antenna_params[1].beam_width = 5;
+    msg->display_info.antenna_params[1].elevation = 90;
+    msg->display_info.antenna_params[1].azimuth = 0;
 
 
     data_show(msg);

@@ -21,7 +21,8 @@ void* display_thread(void* arg)
 		if (display_state.mode == SIM_MODE)
 		{
 			send_display_msg();
-			//printf("ok\n");
+
+
 			double distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[1].pos)/5;
 			//printf("%f\n", te=fmax(te, overall_fddi_info[0].pos.y));
 			//printf("%f\n", overall_fddi_info[0].pos.y);
@@ -201,6 +202,16 @@ void create_table(show_t* msg)
 	//	}
 	//	printf("\n");
 	//}
-	//msg->display_info.link_target[0][1] |= 1 << 1;
-	//msg->display_info.link_target[1][5] |= 1 << 0;
+	msg->display_info.link_target[0][1] |= 1 << 1;
+	msg->display_info.link_target[1][5] |= 1 << 0;
+
+	msg->display_info.link_target[0][5] |= 1 << 2;
+	msg->display_info.link_target[2][1] |= 1 << 0;
+
+	msg->display_info.link_target[0][3] |= 1 << 3;
+	msg->display_info.link_target[3][1] |= 1 << 0;
+
+	msg->display_info.link_target[0][4] |= 1 << 4;
+	msg->display_info.link_target[4][1] |= 1 << 0;
+
 }
