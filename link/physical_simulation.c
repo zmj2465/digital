@@ -280,6 +280,9 @@ int psy_send_(psy_msg_t* data, msg_t* msg)
     memcpy(&data->psy_head.pos, &fddi_info.pos, sizeof(Point3D));
     data->psy_head.p_to = antenna_info[info.current_antenna].point_to;
     data->msg = *msg;
+
+    display_data.channel_coding_frame_count++;
+    display_data.modulation_frame_count++;
 }
 //
 
@@ -342,6 +345,9 @@ bool channel_sim(psy_msg_t* data)
     {
         ret = false;
     }
+    display_data.channel_decoding_frame_count++;
+    display_data.demodulation_frame_count++;
+
     return ret;
 }
 

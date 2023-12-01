@@ -20,7 +20,9 @@ static HANDLE user_hdev;
 static int rs485_fd;
 static int lfd;
 
-//#define RS485
+static int id_table[5] = { 0x10,0x11,0x12,0x13,0x14 };
+
+#define RS485
 
 
 void* rs_485_recv_thread(void* arg)
@@ -65,12 +67,14 @@ void* rs_485_recv_thread(void* arg)
 #endif
 
         rs_head_t* head = (rs_head_t*)data;
-        printf("-----get len=%d type:%x mtype=%x-----\n", ret, head->typea, head->type);
+        tosche("-----get len=%d type:%x mtype=%x-----\n", ret, head->typea, head->type);
         for (i = 0; i < ret; i++)
         {
-            printf("%02x ", data[i]);
+            tosche("%02x ", data[i]);
         }
-        printf("\n");
+        tosche("\n");
+
+        display_data.rx_timestamp = my_get_time();
 
         //M
         if (head->type == RS_M2Z_GUI)
@@ -197,12 +201,20 @@ void send_to_rs(int len, long offset, char* data)
     int i;
     rs_head_t* rhead = (rs_head_t*)data;
 
+    display_data.tx_timestamp = my_get_time();
     printf("*****send:%d type:%x*****\n", len, rhead->typea);
     for (i = 0; i < len; i++)
     {
         printf("%02x ", (uint8_t)data[i]);
     }
     printf("\n");
+    tosche("*****send:%d type:%x*****\n", len, rhead->typea);
+    for (i = 0; i < len; i++)
+    {
+        tosche("%02x ", (uint8_t)data[i]);
+    }
+    tosche("\n");
+    
 
 #ifdef RS485
     ret = write_device(send_hdev, offset, len, data);
@@ -453,6 +465,10 @@ void rs_ShortFrame_proc(char* data)
     rs_body_t* body = (rs_body_t*)(data + RS_HEAD_LEN);
     rs_head_t* rhead = (rs_head_t*)res;
     rs_body_t* rbody = (rs_body_t*)(res + RS_HEAD_LEN);
+    int ant_id;
+    float distance;
+    float azimuth;
+    float elevation;
 
     //头部加载
     head_load(data, res);
@@ -469,12 +485,131 @@ void rs_ShortFrame_proc(char* data)
         }
         //内容
 		memset((uint8_t*)&rbody->m_short_frmae_sp,0,158);
-		rbody->m_short_frmae_sp.node_id = 0x10;
-		rbody->m_short_frmae_sp.link_status = info.znode_connect_flag[0]| (info.znode_connect_flag[1]<<1 )| (info.znode_connect_flag[2] << 2) | (info.znode_connect_flag[3] << 3);//目前只有z1，为0001
-		rbody->m_short_frmae_sp.m_proc_flight_control_data_rx_count = info.m_proc_flight_control_data_rx_count;
-		rbody->m_short_frmae_sp.m_proc_flight_control_data_tx_count = info.m_proc_flight_control_data_tx_count;
-		rbody->m_short_frmae_sp.m_z1_air_interface_data_rx_count = g_node_progrm[1].air_interface_data_rx_count;
-		rbody->m_short_frmae_sp.m_z1_air_interface_data_tx_count = g_node_progrm[1].air_interface_data_tx_count;
+
+        rbody->m_short_frmae_sp.time_ljqi = my_get_time();
+        rbody->m_short_frmae_sp.posX = overall_fddi_info[0].pos.x;
+        rbody->m_short_frmae_sp.posY = overall_fddi_info[0].pos.y;
+        rbody->m_short_frmae_sp.posZ = overall_fddi_info[0].pos.z;
+        rbody->m_short_frmae_sp.Vx = overall_fddi_info[0].v.x;
+        rbody->m_short_frmae_sp.Vy = overall_fddi_info[0].v.y;
+        rbody->m_short_frmae_sp.Vz = overall_fddi_info[0].v.z;
+        rbody->m_short_frmae_sp.time_element_number = display_data.time_element_number;
+        rbody->m_short_frmae_sp.time_frame_number = display_data.time_frame_number;
+        rbody->m_short_frmae_sp.micro_time_slot_number = display_data.micro_time_slot_number;
+        rbody->m_short_frmae_sp.node_id = id_table[MY_INDEX];
+        rbody->m_short_frmae_sp.link_status = info.znode_connect_flag[0] | (info.znode_connect_flag[1] << 1) | (info.znode_connect_flag[2] << 2) | (info.znode_connect_flag[3] << 3);//目前只有z1，为0001
+        rbody->m_short_frmae_sp.comm_status_mode = display_data.comm_status_mode;
+        rbody->m_short_frmae_sp.m_proc_flight_control_data_tx_count = info.m_proc_flight_control_data_tx_count;
+        rbody->m_short_frmae_sp.m_proc_flight_control_data_rx_count = info.m_proc_flight_control_data_rx_count;
+        rbody->m_short_frmae_sp.m_proc_flight_control_data_tx_timestamp = display_data.tx_timestamp;
+        rbody->m_short_frmae_sp.m_proc_flight_control_data_rx_timestamp = display_data.rx_timestamp;
+        rbody->m_short_frmae_sp.m_z1_air_interface_data_tx_count = g_node_progrm[1].air_interface_data_tx_count;     //CANG终端向QI1终端发送空口业务数据包计数
+        rbody->m_short_frmae_sp.m_z1_air_interface_data_rx_count = g_node_progrm[1].air_interface_data_rx_count;     //CANG终端向QI1终端接收空口业务数据包计数
+        rbody->m_short_frmae_sp.m_z2_air_interface_data_tx_count = g_node_progrm[2].air_interface_data_tx_count;    //CANG终端向QI2终端发送空口业务数据包计数
+        rbody->m_short_frmae_sp.m_z2_air_interface_data_rx_count = g_node_progrm[2].air_interface_data_rx_count;     //CANG终端向QI2终端接收空口业务数据包计数
+        rbody->m_short_frmae_sp.m_z3_air_interface_data_tx_count = g_node_progrm[3].air_interface_data_tx_count;  //CANG终端向QI3终端发送空口业务数据包计数
+        rbody->m_short_frmae_sp.m_z3_air_interface_data_rx_count = g_node_progrm[3].air_interface_data_rx_count;     //CANG终端向QI3终端接收空口业务数据包计数
+        rbody->m_short_frmae_sp.m_z4_air_interface_data_tx_count = g_node_progrm[4].air_interface_data_tx_count;   //CANG终端向QI4终端发送空口业务数据包计数
+        rbody->m_short_frmae_sp.m_z4_air_interface_data_rx_count = g_node_progrm[4].air_interface_data_rx_count;     //CANG终端向QI4终端接收空口业务数据包计数
+        rbody->m_short_frmae_sp.channel_coding_frame_count=display_data.channel_coding_frame_count;       //信道编码帧计数
+        rbody->m_short_frmae_sp.channel_decoding_frame_count= display_data.channel_decoding_frame_count;     //信道译码帧计数
+        rbody->m_short_frmae_sp.modulation_frame_count= display_data.modulation_frame_count;           //调制帧计数
+        rbody->m_short_frmae_sp.demodulation_frame_count= display_data.demodulation_frame_count;         //解调帧计数
+        rbody->m_short_frmae_sp.instruction_parsing_frame_count = display_data.instruction_parsing_frame_count;           // 指令解析帧计数
+        distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[1].pos);
+        calculate_ante_angle_coord_m(
+            overall_fddi_info[0].pos.x,
+            overall_fddi_info[0].pos.y,
+            overall_fddi_info[0].pos.z,
+            overall_fddi_info[0].q.q0,
+            overall_fddi_info[0].q.q1,
+            overall_fddi_info[0].q.q2,
+            overall_fddi_info[0].q.q3,
+            0,
+            overall_fddi_info[1].pos.x,
+            overall_fddi_info[1].pos.y,
+            overall_fddi_info[1].pos.z,
+            &ant_id,
+            &azimuth,
+            &elevation
+            );
+        rbody->m_short_frmae_sp.m_z1_distance = distance;                    //Cang与Z1距离
+        rbody->m_short_frmae_sp.m_z1_fangwei = azimuth;                    //CANG终端与QI1终端波束方位指向
+        rbody->m_short_frmae_sp.m_z1_fuyang = elevation;                     //CANG终端与QI1终端波束俯仰指向
+        distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[2].pos);
+        calculate_ante_angle_coord_m(
+            overall_fddi_info[0].pos.x,
+            overall_fddi_info[0].pos.y,
+            overall_fddi_info[0].pos.z,
+            overall_fddi_info[0].q.q0,
+            overall_fddi_info[0].q.q1,
+            overall_fddi_info[0].q.q2,
+            overall_fddi_info[0].q.q3,
+            0,
+            overall_fddi_info[2].pos.x,
+            overall_fddi_info[2].pos.y,
+            overall_fddi_info[2].pos.z,
+            &ant_id,
+            &azimuth,
+            &elevation
+        );
+        rbody->m_short_frmae_sp.m_z2_distance = distance;                    //Cang与Z2距离
+        rbody->m_short_frmae_sp.m_z2_fangwei = azimuth;                    //CANG终端与QI2终端波束方位指向
+        rbody->m_short_frmae_sp.m_z2_fuyang = elevation;                     //CANG终端与QI2终端波束俯仰指向
+        distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[3].pos);
+        calculate_ante_angle_coord_m(
+            overall_fddi_info[0].pos.x,
+            overall_fddi_info[0].pos.y,
+            overall_fddi_info[0].pos.z,
+            overall_fddi_info[0].q.q0,
+            overall_fddi_info[0].q.q1,
+            overall_fddi_info[0].q.q2,
+            overall_fddi_info[0].q.q3,
+            0,
+            overall_fddi_info[3].pos.x,
+            overall_fddi_info[3].pos.y,
+            overall_fddi_info[3].pos.z,
+            &ant_id,
+            &azimuth,
+            &elevation
+        );
+        rbody->m_short_frmae_sp.m_z3_distance = distance;                    //Cang与Z3距离
+        rbody->m_short_frmae_sp.m_z3_fangwei = azimuth;                    //CANG终端与QI3终端波束方位指向
+        rbody->m_short_frmae_sp.m_z3_fuyang = elevation;                     //CANG终端与QI3终端波束俯仰指向
+        distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[4].pos);
+        calculate_ante_angle_coord_m(
+            overall_fddi_info[0].pos.x,
+            overall_fddi_info[0].pos.y,
+            overall_fddi_info[0].pos.z,
+            overall_fddi_info[0].q.q0,
+            overall_fddi_info[0].q.q1,
+            overall_fddi_info[0].q.q2,
+            overall_fddi_info[0].q.q3,
+            0,
+            overall_fddi_info[4].pos.x,
+            overall_fddi_info[4].pos.y,
+            overall_fddi_info[4].pos.z,
+            &ant_id,
+            &azimuth,
+            &elevation
+        );
+        rbody->m_short_frmae_sp.m_z4_distance = distance;                    //Cang与Z4距离
+        rbody->m_short_frmae_sp.m_z4_fangwei = azimuth;                    //CANG终端与QI4终端波束方位指向
+        rbody->m_short_frmae_sp.m_z4_fuyang = elevation;                     //CANG终端与QI4终端波束俯仰指向
+        rbody->m_short_frmae_sp.array_status=display_data.array_status;                // 阵面工作状态
+        rbody->m_short_frmae_sp.instruction_crc_error_count= display_data.instruction_crc_error_count; // 指令CRC错误计数
+        rbody->m_short_frmae_sp.address_error_count=display_data.address_error_count;         // 地址码错误计数
+        rbody->m_short_frmae_sp.air_packet_loss_count=display_data.air_packet_loss_count;       // 空口接收丢包计数
+
+
+		//rbody->m_short_frmae_sp.node_id = 0x10;
+		//rbody->m_short_frmae_sp.link_status = info.znode_connect_flag[0]| (info.znode_connect_flag[1]<<1 )| (info.znode_connect_flag[2] << 2) | (info.znode_connect_flag[3] << 3);//目前只有z1，为0001
+		//rbody->m_short_frmae_sp.m_proc_flight_control_data_rx_count = info.m_proc_flight_control_data_rx_count;
+		//rbody->m_short_frmae_sp.m_proc_flight_control_data_tx_count = info.m_proc_flight_control_data_tx_count;
+		//rbody->m_short_frmae_sp.m_z1_air_interface_data_rx_count = g_node_progrm[1].air_interface_data_rx_count;
+		//rbody->m_short_frmae_sp.m_z1_air_interface_data_tx_count = g_node_progrm[1].air_interface_data_tx_count;
+
+
         //尾部加载
         memset((uint8_t*)&rbody->m_short_frmae_sp + M_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
         //crc加载
@@ -493,12 +628,64 @@ void rs_ShortFrame_proc(char* data)
         }
         //内容
 		memset((uint8_t*)&rbody->z_short_frmae_sp, 0, 77);
-		rbody->z_short_frmae_sp.node_id = 0x11;
-		rbody->z_short_frmae_sp.link_status = info.znode_connect_flag[MY_INDEX-1]; //暂不加zz之间通信状态，只有当前节点是否建链标志 
-		rbody->z_short_frmae_sp.z_proc_flight_control_data_rx_count = info.z_proc_flight_control_data_rx_count;
-		rbody->z_short_frmae_sp.z_proc_flight_control_data_tx_count = info.z_proc_flight_control_data_tx_count;
-		rbody->z_short_frmae_sp.z1_m_air_interface_data_rx_count = g_node_progrm[0].air_interface_data_rx_count;
-		rbody->z_short_frmae_sp.z1_m_air_interface_data_tx_count = g_node_progrm[0].air_interface_data_tx_count;
+
+        rbody->z_short_frmae_sp.time_element_number = display_data.time_element_number;
+        rbody->z_short_frmae_sp.time_frame_number = display_data.time_frame_number;
+        rbody->z_short_frmae_sp.micro_time_slot_number = display_data.micro_time_slot_number;
+        rbody->z_short_frmae_sp.node_id = id_table[MY_INDEX];
+        rbody->z_short_frmae_sp.link_status = info.znode_connect_flag[MY_INDEX - 1]; //暂不加zz之间通信状态，只有当前节点是否建链标志 
+
+        distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[MY_INDEX].pos);
+        calculate_ante_angle_coord_z(
+            overall_fddi_info[MY_INDEX].pos.x,
+            overall_fddi_info[MY_INDEX].pos.y,
+            overall_fddi_info[MY_INDEX].pos.z,
+            overall_fddi_info[MY_INDEX].q.q0,
+            overall_fddi_info[MY_INDEX].q.q1,
+            overall_fddi_info[MY_INDEX].q.q2,
+            overall_fddi_info[MY_INDEX].q.q3,
+            MY_INDEX,
+            overall_fddi_info[0].pos.x,
+            overall_fddi_info[0].pos.y,
+            overall_fddi_info[0].pos.z,
+            &ant_id,
+            &azimuth,
+            &elevation
+        );
+        rbody->z_short_frmae_sp.z1_m_distance = distance;
+        rbody->z_short_frmae_sp.z1_m_azimuth = azimuth;
+        rbody->z_short_frmae_sp.z1_m_elevation = elevation;
+
+        rbody->z_short_frmae_sp.comm_status_mode = display_data.comm_status_mode;
+        rbody->z_short_frmae_sp.z_proc_flight_control_data_tx_count = info.z_proc_flight_control_data_tx_count;
+        rbody->z_short_frmae_sp.z_proc_flight_control_data_rx_count = info.z_proc_flight_control_data_rx_count;
+        rbody->z_short_frmae_sp.z_proc_flight_control_data_tx_timestamp = display_data.tx_timestamp;
+        rbody->z_short_frmae_sp.z_proc_flight_control_data_rx_timestamp = display_data.rx_timestamp;
+        rbody->z_short_frmae_sp.z1_m_air_interface_data_tx_count = g_node_progrm[0].air_interface_data_tx_count;
+        rbody->z_short_frmae_sp.z1_m_air_interface_data_rx_count = g_node_progrm[0].air_interface_data_rx_count;
+        rbody->z_short_frmae_sp.channel_coding_frame_count = display_data.channel_coding_frame_count;
+        rbody->z_short_frmae_sp.channel_decoding_frame_count = display_data.channel_decoding_frame_count;
+        rbody->z_short_frmae_sp.modulation_frame_count = display_data.modulation_frame_count;
+        rbody->z_short_frmae_sp.demodulation_frame_count = display_data.demodulation_frame_count;
+        rbody->z_short_frmae_sp.instruction_parsing_frame_count = display_data.instruction_parsing_frame_count;
+        rbody->z_short_frmae_sp.array_status = display_data.array_status;
+        rbody->z_short_frmae_sp.instruction_crc_error_count = display_data.instruction_crc_error_count;
+        rbody->z_short_frmae_sp.address_error_count = display_data.address_error_count;
+        rbody->z_short_frmae_sp.air_packet_loss_count = display_data.air_packet_loss_count;
+        rbody->z_short_frmae_sp.recv_error_count = display_data.recv_error_count;
+        rbody->z_short_frmae_sp.send_error_count = display_data.send_error_count;           //发送数据失败计数
+        rbody->z_short_frmae_sp.antenna_selection_state = display_data.antenna_selection_state;    //天线选择状态
+        rbody->z_short_frmae_sp.antenna_txrx_state = display_data.antenna_txrx_state;         //天线收发状态
+        rbody->z_short_frmae_sp.beam_width = display_data.beam_width;                 //波束宽度
+
+		//rbody->z_short_frmae_sp.node_id = 0x11;
+		//rbody->z_short_frmae_sp.link_status = info.znode_connect_flag[MY_INDEX-1]; //暂不加zz之间通信状态，只有当前节点是否建链标志 
+		//rbody->z_short_frmae_sp.z_proc_flight_control_data_rx_count = info.z_proc_flight_control_data_rx_count;
+		//rbody->z_short_frmae_sp.z_proc_flight_control_data_tx_count = info.z_proc_flight_control_data_tx_count;
+		//rbody->z_short_frmae_sp.z1_m_air_interface_data_rx_count = g_node_progrm[0].air_interface_data_rx_count;
+		//rbody->z_short_frmae_sp.z1_m_air_interface_data_tx_count = g_node_progrm[0].air_interface_data_tx_count;
+
+
         //尾部加载
         memset((uint8_t*)&rbody->z_short_frmae_sp + Z_SHORT_FRAME_SP_LEN + 2, 0x7e, 4);
         //crc加载

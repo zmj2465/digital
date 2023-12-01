@@ -153,19 +153,19 @@ void create_msg(show_t* msg)
 
         /*msg->display_info.z1_m_azimuth[1] = fmin(p, 45);
         msg->display_info.z1_m_elevation[1] = fmin(pp, 45);*/
-        msg->display_info.z1_m_distance[1] = 0.5;
+        msg->display_info.z1_m_distance[1] = 2;
         msg->display_info.z1_m_azimuth[1] = 90;
         msg->display_info.z1_m_elevation[1] = 0;
 
-        msg->display_info.z1_m_distance[2] = 0.5;
+        msg->display_info.z1_m_distance[2] = 2;
         msg->display_info.z1_m_azimuth[2] = -90;
         msg->display_info.z1_m_elevation[2] = 0;
 
-        msg->display_info.z1_m_distance[3] = 0.5;
+        msg->display_info.z1_m_distance[3] = 2;
         msg->display_info.z1_m_azimuth[3] = 0;
         msg->display_info.z1_m_elevation[3] = 90;
 
-        msg->display_info.z1_m_distance[4] = 0.5;
+        msg->display_info.z1_m_distance[4] = 2;
         msg->display_info.z1_m_azimuth[4] = 0;
         msg->display_info.z1_m_elevation[4] = -90;
 

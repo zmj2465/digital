@@ -194,13 +194,20 @@ struct z_short_frame_sp_t {
 	uint16_t channel_decoding_frame_count;     //信道译码帧计数
 	uint16_t modulation_frame_count;           //调制帧计数
 	uint16_t demodulation_frame_count;         //解调帧计数
-	uint32_t instruction_parsing_frame_count;            // 指令解析帧计数
+	uint16_t instruction_parsing_frame_count;            // 指令解析帧计数
 	uint8_t array_status;                // 阵面工作状态
 	uint8_t instruction_crc_error_count; // 指令CRC错误计数
 	uint8_t address_error_count;         // 地址码错误计数
 	uint8_t air_packet_loss_count;       // 空口接收丢包计数
+
+	uint16_t recv_error_count;           //接收数据异常计数
+	uint16_t send_error_count;           //发送数据失败计数
+	uint8_t  antenna_selection_state;    //天线选择状态
+	uint8_t  antenna_txrx_state;         //天线收发状态
+	uint8_t  beam_width;                 //波束宽度
+
 	//uint32_t terminal_working_status_representation; // 终端工作状态表征
-	uint8_t  reserved[31];               // 状态字（5）+ 保留字段（26）
+	uint8_t  reserved[26];               // 状态字（5）+ 保留字段（26）
 	//rs_tail_t tail;
 };
 

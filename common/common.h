@@ -289,9 +289,27 @@ typedef struct _data_t {
 	uint32_t z_proc_flight_control_data_rx_tx_count;    // Z与集成处理器飞控数据收发计数，Z与集成处理器飞控数据接收计数：2字节，Z与集成处理器飞控数据发送计数：2字节
 	uint32_t z_proc_flight_control_data_rx_tx_timestamp;    // Z与集成处理器飞控数据收发时戳，Z与集成处理器飞控数据接收时戳：2字节，Z与集成处理器飞控数据发送时戳：2字节
 	uint32_t z_m_send_recv_count[4];
-	uint32_t channel_coding_decoding_frame_count;    // 信道编译码帧计数，信道编码帧计数：2字节，信道译码帧计数：2字节
-	uint32_t modulation_demodulation_frame_count;    // 调制解调帧计数，调制帧计数：2字节，解调帧计数：2字节
+	//uint32_t channel_coding_decoding_frame_count;    // 信道编译码帧计数，信道编码帧计数：2字节，信道译码帧计数：2字节
+	//uint32_t modulation_demodulation_frame_count;    // 调制解调帧计数，调制帧计数：2字节，解调帧计数：2字节
 	uint32_t instruction_parsing_frame_count;    // 指令解析帧计数：4字节
+
+
+	uint32_t tx_timestamp; //向集成处理器飞控发数据时戳
+	uint32_t rx_timestamp; //收集成处理器飞控数据时戳
+	uint16_t channel_coding_frame_count;       //信道编码帧计数
+	uint16_t channel_decoding_frame_count;     //信道译码帧计数
+	uint16_t modulation_frame_count;           //调制帧计数
+	uint16_t demodulation_frame_count;         //解调帧计数
+	uint8_t array_status;                // 阵面工作状态
+	uint8_t instruction_crc_error_count; // 指令CRC错误计数
+	uint8_t address_error_count;         // 地址码错误计数
+	uint8_t air_packet_loss_count;       // 空口接收丢包计数
+	uint16_t recv_error_count;           //接收数据异常计数
+	uint16_t send_error_count;           //发送数据失败计数
+	uint8_t  antenna_selection_state;    //天线选择状态
+	uint8_t  antenna_txrx_state;         //天线收发状态
+	uint8_t  beam_width;                 //波束宽度
+
 }data_t;
 
 
