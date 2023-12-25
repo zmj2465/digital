@@ -116,7 +116,7 @@ int master_data_proc(void)
                         msg.len = 1;
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
                         send(FD[0].fd, &msg, msg.len, 0);
-                        fsm_do(EVENT_WAIT_ACCESS);
+                        //fsm_do(EVENT_WAIT_ACCESS);
                     }
                     break;
                 case SCAN:

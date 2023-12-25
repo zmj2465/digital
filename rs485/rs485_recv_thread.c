@@ -6,6 +6,7 @@
 #include "stddef.h"
 #include <string.h>
 #include "crc.h"
+#include <windows.h>
 
 #define MSGLEN   4
 #define FLAG_LEN 1
@@ -22,7 +23,7 @@ static int lfd;
 
 static int id_table[5] = { 0x10,0x11,0x12,0x13,0x14 };
 
-#define RS485
+//#define RS485
 
 
 void* rs_485_recv_thread(void* arg)
@@ -39,6 +40,7 @@ void* rs_485_recv_thread(void* arg)
     server_init();
 #endif
 
+    display_data.micro_time_slot_number = 1;
     create_CheckResult_res();
     Sleep(100);
     create_ConfigLoad_res();
@@ -65,14 +67,18 @@ void* rs_485_recv_thread(void* arg)
             continue;
         }
 #endif
+        //struct timespec start_time, end_time;
+        //// 记录开始时间
+        //clock_gettime(CLOCK_REALTIME, &start_time);
+
 
         rs_head_t* head = (rs_head_t*)data;
-        tosche("-----get len=%d type:%x mtype=%x-----\n", ret, head->typea, head->type);
-        for (i = 0; i < ret; i++)
-        {
-            tosche("%02x ", data[i]);
-        }
-        tosche("\n");
+        //tosche("-----get len=%d type:%x mtype=%x-----\n", ret, head->typea, head->type);
+        //for (i = 0; i < ret; i++)
+        //{
+        //    tosche("%02x ", data[i]);
+        //}
+        //tosche("\n");
 
         display_data.rx_timestamp = my_get_time();
 
@@ -191,6 +197,17 @@ void* rs_485_recv_thread(void* arg)
             rs_PreSeparate_proc(data);
             break;
         }
+
+        //// 记录结束时间
+        //clock_gettime(CLOCK_REALTIME, &end_time);
+
+        //// 计算时间差
+        //double elapsed_time = (end_time.tv_sec - start_time.tv_sec) +
+        //    (end_time.tv_nsec - start_time.tv_nsec) / 1e9;
+
+        //// 输出结果
+        //printf("代码执行时间: %f 秒\n", elapsed_time);
+
     }
 }
 
@@ -202,18 +219,18 @@ void send_to_rs(int len, long offset, char* data)
     rs_head_t* rhead = (rs_head_t*)data;
 
     display_data.tx_timestamp = my_get_time();
-    printf("*****send:%d type:%x*****\n", len, rhead->typea);
-    for (i = 0; i < len; i++)
-    {
-        printf("%02x ", (uint8_t)data[i]);
-    }
-    printf("\n");
-    tosche("*****send:%d type:%x*****\n", len, rhead->typea);
-    for (i = 0; i < len; i++)
-    {
-        tosche("%02x ", (uint8_t)data[i]);
-    }
-    tosche("\n");
+    //printf("*****send:%d type:%x*****\n", len, rhead->typea);
+    //for (i = 0; i < len; i++)
+    //{
+    //    printf("%02x ", (uint8_t)data[i]);
+    //}
+    //printf("\n");
+    //tosche("*****send:%d type:%x*****\n", len, rhead->typea);
+    //for (i = 0; i < len; i++)
+    //{
+    //    tosche("%02x ", (uint8_t)data[i]);
+    //}
+    //tosche("\n");
     
 
 #ifdef RS485
@@ -322,7 +339,11 @@ void rs_ConfigLoad_proc(char* data)
         if((x&(1<<i))==1) z_num++;
     }
     if ((x & (1 << 4)) == 1) m_num++;
-
+    msg_t msg;
+    msg.data[0] = MY_INDEX;
+    msg.data[1] = MY_ID;
+    generate_packet(info.device_info.node_id[0], MY_ID, PARAMETER_LOAD, &msg);
+    send(FD[0].fd, &msg, sizeof(msg), 0);
     generate_key_event(KEY_CONFIG_LOAD, z_num, m_num);
 
 }
@@ -469,6 +490,8 @@ void rs_ShortFrame_proc(char* data)
     float distance;
     float azimuth;
     float elevation;
+
+    display_data.micro_time_slot_number *= 2;
 
     //头部加载
     head_load(data, res);

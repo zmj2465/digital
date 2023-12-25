@@ -7,12 +7,12 @@
 //file_info_t sche_file;
 
 
-
 file_config_t file_config[] = {
     {DATA_FOLDER,"data",},
     {LOG_FOLDER,"log",},
     {SCHE_FOLDER,"sche",},
 };
+
 
 
 void file_init()
@@ -22,6 +22,10 @@ void file_init()
     for (i = 0; i < sizeof(file_config) / sizeof(file_config[0]); i++)
     {
         create_file(&file_config[i].file, file_config[i].directory, file_config[i].name);
+    }
+
+    for (i = 0; i < sizeof(file_config) / sizeof(file_config[0]); i++)
+    {
         if (i == 0)
         {
             create_map(&file_config[i].file, 20);
@@ -223,6 +227,10 @@ void todata(char* data, int len)
     pthread_mutex_unlock(&file_config[0].file.lock);
     //fwrite(data, sizeof(char), len, file_config[0].file.file);
 }
+
+
+
+
 
 
 

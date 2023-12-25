@@ -10,6 +10,7 @@
 #include "display_send_thread.h"
 #include "display_recv_thread.h"
 #include "display_store_thread.h"
+#include "log.h"
 #include "display_thread.h"
 #include "master_thread.h"
 #include "link_control_thread.h"
@@ -30,34 +31,26 @@
 
 #include "comcal_dll.h"
 #include "test.h"
+#include "log.h"
+//#include "windows.h"
 
 sem_t semaphore;
 pthread_mutex_t lock;
+
+
 
 int main()
 {
     int a;
     float b;
     float c;
-    //calculate_ante_angle_coord_m(0, 0, 0, 1, 2, 3, 4, 0, 100, 2, 2, &a, &b, &c);
-    //my_add(3, 5);
-    //printf("%d %f %f\n", a, b, c);
-    //printf("%d\n", my_add(3, 5));
-    //float yaw, roll, pitch;
-    //Quaternion ttt;
-    //ttt.q0 = 0.9568315;
-    //ttt.q1 = 0.03177429;
-    //ttt.q2 = -0.2492538;
-    //ttt.q3 = -0.1460697;
-    //show_t msg;
-    //quaternionToEulerAngles(
-    //    ttt,
-    //    &msg.display_info.roll[0],
-    //    &msg.display_info.pitch[0],
-    //    &msg.display_info.yaw[0]
-    //);
-    //while (1);
-    //system("C:\\Users\\MRGT\\Desktop\\start.bat");
+
+
+    //
+    log_init();
+
+    /*485日志创建*/
+    create_log485();
 
     /*ptp时钟初始化*/
     time_init();
@@ -76,6 +69,7 @@ int main()
 
     /*文件系统初始化*/
     file_init();
+
 
     /*线程初始化*/
     thread_init();
@@ -96,13 +90,38 @@ void thread_init()
 
 
     int ret = 0;
+    int i;
     /*线程初始化*/
     pthread_t temp;
+
+    /**/
+    ret = pthread_create(&info.log_thread_id, NULL, log_thread, NULL);
+    if (ret != 0)
+    {
+        printf("error\n");
+    }
+
+    char contetn[5] = { 20,1,2,3,4 };
+    //for (i = 0; i < 1028; i++)
+    //{
+    //    p_log_string(0, "awfe%daewf\n", 30);
+    //    Sleep(1);
+    //}
+    //printf("over&&&&&&&&&&&&&&&&&&&&\n");
+    //for (i = 0; i < 1028; i++)
+    //{
+    //    p_log_data(0, 5, contetn);
+    //    Sleep(1);
+    //}
+    //printf("over&&&&&&&&&&&&&&&&&&&&\n");
+
     ret = pthread_create(&temp, NULL, rm_thread, NULL);
     if (ret != 0)
     {
         printf("error\n");
     }
+
+
 
     ret = pthread_create(&info.rs_485_recv_thread_id, NULL, rs_485_recv_thread, NULL);
     if (ret != 0)

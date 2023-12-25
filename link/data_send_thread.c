@@ -134,6 +134,7 @@ int data_send_proc(void)
                                 generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
 								g_node_progrm[index].air_interface_data_tx_count++;//对端节点相应数据计数
                                 psy_send_(&pmsg, &msg);
+
                                 send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0); //#define FD info.simulated_link		
                                 plog("M send Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                             } 
@@ -386,9 +387,9 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
 
     msg->head.antenna_id = info.current_antenna;        //发送天线id
     msg->len = msg->len + sizeof(head_t) + sizeof(int);//加上包头长度
-
+    //printf("&&&&&&&&&&&&&&%d\n", info.current_antenna);
     /*将发送天线状态信息推送到显控界面*/
-    set_antenna_parameter(info.current_antenna, index, 1);
+    //set_antenna_parameter(info.current_antenna, index, 1);
 }
 
 

@@ -7,6 +7,8 @@
 #include "math.h"
 #include "stdio.h"
 
+
+
 display_state_t display_state;
 show_t show_msg;
 static int display_fd;
@@ -121,7 +123,7 @@ void display_send_thread_init()
     Sleep(100);
     generate_key_event(KEY_POWER_ON, 0, 0);
     Sleep(100);
-    generate_key_event(KEY_CONFIG_LOAD, 4, 1);
+    generate_key_event(KEY_CONFIG_LOAD, 4, 2);
     Sleep(100);
     generate_key_event(5, 1, 1);
     Sleep(100);

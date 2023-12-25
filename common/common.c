@@ -59,3 +59,21 @@ void queue_init()
         printf("que:%d %x\n", i, &info.thread_queue[i]);
     }
 }
+
+
+void create_log485()
+{
+    char n[100];
+    char n1[100];
+    time_t t = time(NULL);
+    struct tm* tm = localtime(&t);
+    strftime(n, sizeof(n), "%Y%m%d_%H-%M-%S", tm);
+    mkdir(LOG485_FOLDER);
+
+    sprintf(n1, "%s\\%d_%s_%s.txt", LOG485_FOLDER, MY_INDEX, n, "log485");
+    log485 = fopen(n1, "w+");
+    if (log485 == NULL) {
+        printf("无法创建文件\n");
+        return 1;
+    }
+}

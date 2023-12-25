@@ -112,7 +112,7 @@ int fsm_init2off_st(int para)
 	info.chain_flag_m = 0;
 	info.chain_flag_z = 0;
 	memset(&display_data, 0, sizeof(data_t));
-	sql_init();
+	//sql_init();
 	return 0;
 }
 
@@ -123,6 +123,7 @@ int fsm_init2off_st(int para)
 */
 int fsm_init2off_ed(int para)
 {
+
 	printf("µÈ´ı½¨Á´ÃüÁî\n");
 	while (1)
 	{
