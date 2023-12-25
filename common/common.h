@@ -14,6 +14,8 @@
 //#include "windows.h"
 //#include <dirent.h>
 
+#define VERSION "V1.12***************************"
+
 
 #if(0)
 #define plog(format, ...) tofile(LOG,format,##__VA_ARGS__)
@@ -23,23 +25,18 @@
 
 #define tosche(format, ...) tofile(SCHE,format,##__VA_ARGS__)
 
-#define PT(format, ...) fprintf(log485,format,##__VA_ARGS__)
-
 extern uint64_t start_time;
 extern uint64_t end_time;
-
-FILE* log485;
 //extern pthread_spinlock_t start_spin;
 
 #define STORE_SIZE		1024	//存储文件的大小
 #define MAX_DEVICE		12		//最大终端数量
 #define HOST_NAME_LEN	20		//设备名长度
 #define IP_LEN			20		//ip地址长度
-#define MAX_DATA_LEN	2048	//最大数据长度
+#define MAX_DATA_LEN	1024	//最大数据长度
 #define START_GUN_TIME	10		//仿真开始时间：10s
 #define TIMER_DELAY		300  	//定时器时间：300ms
 #define MY_INDEX		info.link_index
-#define MY_ID           
 #define MY_ROLE         info.my_role
 #define FD				info.simulated_link					
 #define FD_NUM			info.simulated_link_num				//连接仿真系统的装置数目
@@ -440,8 +437,9 @@ extern fddi_info_t overall_fddi_info[5];
 extern int8_t link_table[5][6];
 extern int online_state[5];
 
-void queue_init();
 
-void create_log485();
+extern int return_flag;
+
+void queue_init();
 
 #endif

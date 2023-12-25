@@ -59,11 +59,13 @@ int master_data_proc(void)
                 {
                     printf("m get gui\n");
                     put(&common_data[M_GUI_RECV], msg.data, M_GUI_RECV_LEN, index);
+                    return_flag = M_GUI_RECV_LEN;
                 }
                 if (msg.data[0] == TOM_FRAME)//TOM
                 {
                     printf("m get tom\n");
                     put(&common_data[M_TOM_RECV], msg.data, M_TOM_RECV_LEN, index);
+                    return_flag = M_TOM_RECV_LEN;
                 }
 				g_node_progrm[index].air_interface_data_rx_count++;
                 plog("M recv Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, msg.head.seq);
@@ -101,8 +103,10 @@ int master_data_proc(void)
         /*从机*/
         else
         {
+            //printf("seq=%d\n", msg.head.seq);
             switch (msg.head.type)
             {
+                
                 case START_GUN:
                     if ((msg.data[0] == START_GUN_REQ)&&(1==info.chain_flag_z))//z收到建链标志和发令枪请求后，才开始回发令枪响应
                     {                                
@@ -116,7 +120,7 @@ int master_data_proc(void)
                         msg.len = 1;
                         generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
                         send(FD[0].fd, &msg, msg.len, 0);
-                        //fsm_do(EVENT_WAIT_ACCESS);
+                        fsm_do(EVENT_WAIT_ACCESS);
                     }
                     break;
                 case SCAN:
@@ -150,11 +154,13 @@ int master_data_proc(void)
                     if (msg.data[0] == GUI_FRAME)//制导
                     {
                         printf("z get gui\n");
+                        return_flag = Z_GUI_RECV_LEN;
                         put(&common_data[Z_GUI_RECV], msg.data, Z_GUI_RECV_LEN, 0);
                     }
                     if (msg.data[0] == TOM_FRAME)//TOM
                     {
                         printf("z get tom\n");
+                        return_flag = Z_TOM_RECV_LEN;
                         put(&common_data[Z_TOM_RECV], msg.data, Z_TOM_RECV_LEN, 0);
                     }
 					g_node_progrm[0].air_interface_data_rx_count++;

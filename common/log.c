@@ -5,11 +5,11 @@
 
 
 char string_buffer[200];
+static char create_time[30];
 
-struct log_info_t log_info[3] = {
-	{"C:\\Digital LOG","log",20,},
-	{},
-	{}
+struct log_info_t log_info[1] = {
+	{"D:\\Digital LOG","log",20,},
+
 };
 
 sem_t log_semaphore;
@@ -34,14 +34,34 @@ void log_init()
 	int i;
 	//char folder_name[100];
 	char file_name[100];
+
+
+	time_t t = time(NULL);
+	struct tm* tm = localtime(&t);
+	strftime(create_time, sizeof(create_time), "%Y%m%d_%H-%M-%S", tm);
+
+
 	for (i = 0; i < sizeof(log_info) / sizeof(log_info[0]); i++)
 	{
-		sprintf(log_info[i].folder_name, "%s\\%s", log_info[i].path, log_info[i].name);
-		mkdir(log_info[i].folder_name);
-		sprintf(file_name, "%s\\%d", log_info[i].folder_name, log_info[i].file_num);
+		if (MY_INDEX == 0)
+		{
+			mkdir("D:\\Digital LOG");
+			mkdir("D:\\Digital LOG\\log");
+			sprintf(log_info[i].folder_name, "%s", "D:\\Digital LOG\\log");
+		}
+		else
+		{
+			mkdir("E:\\Digital LOG");
+			mkdir("E:\\Digital LOG\\log");
+			sprintf(log_info[i].folder_name, "%s", "E:\\Digital LOG\\log");
+		}
+		
+		sprintf(file_name, "%s\\%d_%s_%s", log_info[i].folder_name, log_info[i].file_num, MY_INDEX == 0 ? "Ве" : "Цї", create_time);
 		log_info[i].file = fopen(file_name, "w");
 		
 	}
+
+
 }
 
 
@@ -59,6 +79,8 @@ void p_log_dataA(int log_index, int len, uint8_t* data, uint8_t type)
 	}
 
 	log_info[log_index].log_block[block][index].time = time(NULL);
+	//clock_gettime(CLOCK_REALTIME, &log_info[log_index].log_block[block][index].t_time);
+
 	log_info[log_index].log_block[block][index].len = len;
 	log_info[log_index].log_block[block][index].type = type;
 	memcpy(log_info[log_index].log_block[block][index].content, data, len);
@@ -80,6 +102,8 @@ void p_log_string(int log_index, char* string, ...)
 }
 
 
+
+
 void log_store(int log_index)
 {
 	int i,j;
@@ -91,14 +115,15 @@ void log_store(int log_index)
 		time_t t = log_info[log_index].log_block[block][i].time;
 		struct tm* tm = localtime(&t);
 		strftime(n, sizeof(n), "%Y%m%d_%H-%M-%S", tm);
-		fprintf(log_info[log_index].file, "[%s]->", n);
+		//sprintf(n, "%ld-%ld", log_info[log_index].log_block[block][i].t_time.tv_sec, log_info[log_index].log_block[block][i].t_time.tv_nsec*1000);
+		fprintf(log_info[log_index].file, "%s%d [%s]->", MY_INDEX == 0 ? "M" : "Z", MY_INDEX, n);
 
 		if (log_info[log_index].log_block[block][i].type == DATA_LOG)
 		{
 			
 			for (j = 0; j < log_info[log_index].log_block[block][i].len; j++)
 			{
-				fprintf(log_info[log_index].file, "%02x ", log_info[log_index].log_block[block][i].content[j]);
+				fprintf(log_info[log_index].file, "%02x ", (uint8_t)log_info[log_index].log_block[block][i].content[j]);
 			}
 			fprintf(log_info[log_index].file, "\n");
 		}
@@ -113,7 +138,7 @@ void log_store(int log_index)
 		fclose(log_info[log_index].file);
 		log_info[log_index].file_size = 0;
 		log_info[log_index].file_num++;
-		sprintf(file_name, "%s\\%d", log_info[i].folder_name, log_info[i].file_num);
+		sprintf(file_name, "%s\\%d_%s_%s", log_info[i].folder_name, log_info[i].file_num, MY_INDEX == 0 ? "Ве" : "Цї", create_time);
 		log_info[i].file = fopen(file_name, "w");
 	}
 }

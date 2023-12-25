@@ -7,6 +7,7 @@ fddi_info_t fddi_info;
 fddi_info_t overall_fddi_info[5];
 int8_t link_table[5][6];
 int online_state[5];
+int return_flag;
 
 uint64_t start_time;
 //pthread_spinlock_t start_spin;
@@ -56,24 +57,6 @@ void queue_init()
     for (i = 0; i < END_THREAD; i++)
     {
         init_msg_queue(&info.thread_queue[i], 20);
-        printf("que:%d %x\n", i, &info.thread_queue[i]);
-    }
-}
-
-
-void create_log485()
-{
-    char n[100];
-    char n1[100];
-    time_t t = time(NULL);
-    struct tm* tm = localtime(&t);
-    strftime(n, sizeof(n), "%Y%m%d_%H-%M-%S", tm);
-    mkdir(LOG485_FOLDER);
-
-    sprintf(n1, "%s\\%d_%s_%s.txt", LOG485_FOLDER, MY_INDEX, n, "log485");
-    log485 = fopen(n1, "w+");
-    if (log485 == NULL) {
-        printf("无法创建文件\n");
-        return 1;
+        //printf("que:%d %x\n", i, &info.thread_queue[i]);
     }
 }

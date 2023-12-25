@@ -27,8 +27,6 @@ typedef struct {
 	file_info_t file;
 }file_config_t;
 
-extern file_config_t file_config[];
-
 
 void create_folder();
 void create_file(file_info_t* file, char* dir, char* name);

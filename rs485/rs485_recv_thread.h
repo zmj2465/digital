@@ -8,6 +8,9 @@
 #include "common.h"
 #include "queue.h"
 
+
+
+
 #define RS_MAX_LEN 2048
 
 //addressa addressb type
@@ -123,10 +126,17 @@ typedef struct _rs_tail_t {
 	uint8_t flag[4];
 }rs_tail_t;
 
-struct result1_ack_t {
+struct result1_ack_t_m {
 	uint16_t ack;
+	uint8_t  version[9];
 	rs_tail_t tail;
 };
+struct result1_ack_t_z {
+	uint16_t ack;
+	uint8_t  version[6];
+	rs_tail_t tail;
+};
+
 
 struct config_load_t {
 	uint8_t node_role;
@@ -160,6 +170,7 @@ struct link_result_sp_t {
 
 
 struct z_short_frame_t {
+	uint8_t en;
 	uint8_t ad;
 	uint32_t rti;
 	int32_t tf;
@@ -308,7 +319,7 @@ typedef struct {
 	// 参数28~32：空口业务包统计信息
 	struct {
 		uint16_t Cang_to_Device_tx_count; // 2字节，Cang向器1发送空口业务数据包计数
-		uint16_t Cang_from_Device_rx_count // 2字节，Cang收器1空口业务包计数
+		uint16_t Cang_from_Device_rx_count; // 2字节，Cang收器1空口业务包计数
 	}rx_tx_count[4];
 
 	// 参数33~43：节点和Cang的相对信息（距离、波束方向、波束俯仰）
@@ -432,7 +443,8 @@ struct m2z_plan_frame_sp_t {
 
 typedef union _rs_body_t {
 	rs_tail_t body_tail;
-	struct result1_ack_t result1_ack; //自检结果回复
+	struct result1_ack_t_z z_result1_ack; //z自检结果回复
+	struct result1_ack_t_m m_result1_ack; //m自检结果回复
 	struct config_load_t config_load; //装订参数回复
 
 	struct z_short_frame_t z_short_frmae; //短帧
@@ -474,8 +486,6 @@ void server_init();
 
 
 
-
-
 void* rs_485_recv_thread(void* arg);
 
 
@@ -505,6 +515,12 @@ void create_ShortFrame_res();
 void head_load(char* data, char* res);
 void head_load_b(char* res);
 uint8_t crc_check(char* start_address, int len, uint16_t get_crc);
+
+
+void rs_communicate_enalbe_proc(char* data);
+void pcie_check();
+
+void send_to_rs(int len, long offset, char* data);
 
 
 

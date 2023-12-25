@@ -123,8 +123,8 @@ int fsm_init2off_st(int para)
 */
 int fsm_init2off_ed(int para)
 {
-
 	printf("等待建链命令\n");
+	//info.chain_flag_m = 1;
 	while (1)
 	{
 		if (info.chain_flag_m == 1)//收到建链命令

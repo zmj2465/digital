@@ -11,6 +11,8 @@
 
 struct log_block_t {
 	time_t time;
+	//uint64_t ptp_time; 
+	//struct timespec t_time;
 	//uint8_t index;
 	uint8_t type;
 	int len;

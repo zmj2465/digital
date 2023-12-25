@@ -130,11 +130,10 @@ int data_send_proc(void)
                                     msg.len = M_TOM_SEND_LEN;
                                     get(&common_data[M_TOM_SEND], msg.data, msg.len, index);
                                 }
-
+                                printf("m send type=%02x\n", msg.data[0]);
                                 generate_packet(info.device_info.node_id[index], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
 								g_node_progrm[index].air_interface_data_tx_count++;//对端节点相应数据计数
                                 psy_send_(&pmsg, &msg);
-
                                 send(FD[index].fd, &pmsg, sizeof(psy_msg_t), 0); //#define FD info.simulated_link		
                                 plog("M send Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                             } 
@@ -308,11 +307,13 @@ int data_send_proc(void)
                         {
                             msg.len = Z_GUI_SEND_LEN;
                             get(&common_data[Z_GUI_SEND], msg.data, msg.len, 0);
+                            send_flag = 0;
                         }
                         else if (send_flag == Z_TOM_SEND_LEN)
                         {
                             msg.len = Z_TOM_SEND_LEN;
                             get(&common_data[Z_TOM_SEND], msg.data, msg.len, 0);
+                            send_flag = 0;
                         }
 
 
@@ -375,21 +376,24 @@ void generate_packet(uint8_t dst, uint8_t src, uint8_t type, msg_t* msg)
         info.seq_data++;
     }
 
-    /*添加天线id*/
-    if (type == SCAN && msg->data[0] == SCAN_REQ)
-    {
-        info.current_antenna = info.chain_antenna;
-    }
-    else
-    {
-        info.current_antenna = select_antennaA(MY_INDEX, overall_fddi_info[index].pos);//根据索引判断当前的发送天线id       
-    }
+    ///*添加天线id*/
+    //if (type == SCAN && msg->data[0] == SCAN_REQ)
+    //{
+    //    info.current_antenna = info.chain_antenna;
+    //}
+    //else
+    //{
+    //    info.current_antenna = select_antennaA(MY_INDEX, overall_fddi_info[index].pos);//根据索引判断当前的发送天线id       
+    //}
 
-    msg->head.antenna_id = info.current_antenna;        //发送天线id
+    //msg->head.antenna_id = info.current_antenna;        //发送天线id
     msg->len = msg->len + sizeof(head_t) + sizeof(int);//加上包头长度
-    //printf("&&&&&&&&&&&&&&%d\n", info.current_antenna);
-    /*将发送天线状态信息推送到显控界面*/
+
+    ///*将发送天线状态信息推送到显控界面*/
     //set_antenna_parameter(info.current_antenna, index, 1);
+
+    
+
 }
 
 

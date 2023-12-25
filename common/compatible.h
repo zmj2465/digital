@@ -34,7 +34,6 @@
 #define FOLDER_NAME_LEN 100
 #define TOTAL_FOLDER "C:\\Digital prototype"
 #define LOG_FOLDER   "C:\\Digital prototype\\log"
-#define LOG485_FOLDER   "C:\\Digital prototype\\log485"
 #define DATA_FOLDER  "C:\\Digital prototype\\data"
 #define SCHE_FOLDER   "C:\\Digital prototype\\sche"
 
