@@ -418,7 +418,7 @@ void rs_ConfigLoad_proc(char* data)
     if ((x & (1 << 4)) == 1) m_num++;
 
     generate_key_event(KEY_CONFIG_LOAD, z_num, m_num);
-
+    MY_ID = body->config_load.node_id;
     msg_t msg;
     msg.data[0] = MY_INDEX;
     msg.data[1] = MY_ID;
@@ -427,6 +427,8 @@ void rs_ConfigLoad_proc(char* data)
     generate_key_event(KEY_CONFIG_LOAD, z_num, m_num);
 
 }
+
+
 
 //工作模式回复
 void work_mode_proc(char* data)
