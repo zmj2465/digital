@@ -419,6 +419,13 @@ void rs_ConfigLoad_proc(char* data)
 
     generate_key_event(KEY_CONFIG_LOAD, z_num, m_num);
 
+    msg_t msg;
+    msg.data[0] = MY_INDEX;
+    msg.data[1] = MY_ID;
+    generate_packet(info.device_info.node_id[0], MY_ID, PARAMETER_LOAD, &msg);
+    send(FD[0].fd, &msg, sizeof(msg), 0);
+    generate_key_event(KEY_CONFIG_LOAD, z_num, m_num);
+
 }
 
 //工作模式回复
