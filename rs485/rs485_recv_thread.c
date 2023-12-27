@@ -422,8 +422,9 @@ void rs_ConfigLoad_proc(char* data)
     msg_t msg;
     msg.data[0] = MY_INDEX;
     msg.data[1] = MY_ID;
+    msg.len = 2;
     generate_packet(info.device_info.node_id[0], MY_ID, PARAMETER_LOAD, &msg);
-    send(FD[0].fd, &msg, sizeof(msg), 0);
+    send(FD[0].fd, &msg, msg.len, 0);
     generate_key_event(KEY_CONFIG_LOAD, z_num, m_num);
 
 }
