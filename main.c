@@ -30,7 +30,7 @@
 #include "mytime.h"
 
 #include "comcal_dll.h"
-#include "test.h"
+
 #include "windows.h"
 
 sem_t semaphore;

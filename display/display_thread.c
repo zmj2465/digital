@@ -22,7 +22,6 @@ void* display_thread(void* arg)
 		{
 			send_display_msg();
 
-
 			double distance = caculate_distance(overall_fddi_info[0].pos, overall_fddi_info[1].pos)/5;
 			//printf("%f\n", te=fmax(te, overall_fddi_info[0].pos.y));
 			//printf("%f\n", overall_fddi_info[0].pos.y);
@@ -35,6 +34,8 @@ void* display_thread(void* arg)
 					generate_key_event(KEY_SEPARATE,0,0);
 					flag = 1;
 					display_state.flag = 1;
+					Sleep(FRESH_TIME);
+					generate_key_event(5, 1, 1);
 				}
 			}
 			else if (flag == 1)
@@ -86,6 +87,7 @@ void* display_thread(void* arg)
 					else
 						generate_key_event(5, 0, 0);
 					flag = 2;
+					while (1);
 				}
 			}
 			else if (flag == 2)
@@ -192,6 +194,7 @@ void create_table(show_t* msg)
 			msg->display_info.link_target[i][temp] |= 1 << j;
  		}
 	}
+
 	//temp = (temp + 1) % 6;
 	//printf("%%%%%%%%%%%%%%%%%%%%%%\n");
 	//for (i = 0; i < 5; i++)
@@ -205,13 +208,13 @@ void create_table(show_t* msg)
 	msg->display_info.link_target[0][1] |= 1 << 1;
 	msg->display_info.link_target[1][5] |= 1 << 0;
 
-	msg->display_info.link_target[0][5] |= 1 << 2;
-	msg->display_info.link_target[2][1] |= 1 << 0;
+	//msg->display_info.link_target[0][5] |= 1 << 2;
+	//msg->display_info.link_target[2][1] |= 1 << 0;
 
-	msg->display_info.link_target[0][3] |= 1 << 3;
-	msg->display_info.link_target[3][1] |= 1 << 0;
+	//msg->display_info.link_target[0][3] |= 1 << 3;
+	//msg->display_info.link_target[3][1] |= 1 << 0;
 
-	msg->display_info.link_target[0][4] |= 1 << 4;
-	msg->display_info.link_target[4][1] |= 1 << 0;
+	//msg->display_info.link_target[0][4] |= 1 << 4;
+	//msg->display_info.link_target[4][1] |= 1 << 0;
 
 }

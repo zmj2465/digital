@@ -46,6 +46,24 @@ extern "C" {
 	-*/
 	K7CTRBOARDDRIVER_API void calculate_ante_angle_coord_m(float PosX, float PosY, float PosZ, float SYq0, float SYq1, float SYq2
 		, float SYq3, u8 nodeId, float tgtPosX, float tgtPosY, float tgtPosZ, int *antenum, float *Azimuth, float *Elevation);
+
+	/*-
+	Function name : Angel_M
+	Description   : M的角度计算
+	Parameter
+	* Return      :
+	-*/
+	K7CTRBOARDDRIVER_API void Angel_M(const double q[4], const double FgTgtPos[3], const double FgPos[3],double fuyang_data[]
+		, int fuyang_size[2], double fangwei_data[],int fangwei_size[2], double anteselect_data[],int anteselect_size[2]);
+	/*-
+	Function name : Angel_Z
+	Description   : Z的角度计算
+	Parameter
+	* Return      :
+	-*/
+	K7CTRBOARDDRIVER_API void Angel_Z(const double q[4], const double FgTgtPos[3], const double FgPos[3],double fuyang_data[]
+		, int fuyang_size[2], double fangwei_data[],int fangwei_size[2], double anteselect_data[],int anteselect_size[2]);
+
 #ifdef  __cplusplus
 }
 #endif  /* end of __cplusplus */
