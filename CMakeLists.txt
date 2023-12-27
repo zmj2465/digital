@@ -35,7 +35,7 @@ link_directories(${PROJECT_SOURCE_DIR}/rs485/angle)
 target_link_libraries(project ${PROJECT_SOURCE_DIR}/rs485/angle/ComCal_Dll.dll)
 target_link_libraries(project ${PROJECT_SOURCE_DIR}/rs485/angle/ComCal_Dll.lib)
 #target_link_libraries(project ${PROJECT_SOURCE_DIR}/rs485/angle/Dll2.dll)
-target_link_libraries(project ${PROJECT_SOURCE_DIR}/rs485/angle/Dll2.lib)
+#target_link_libraries(project ${PROJECT_SOURCE_DIR}/rs485/angle/Dll2.lib)
 
 
 #数据库

@@ -84,8 +84,6 @@ void send_display_msg()
 {
     show_t msg;
     create_msg(&msg);
-    p++;
-    pp++;
     send_to_display(&msg, msg.len);
 }
 
@@ -113,9 +111,8 @@ void create_msg(show_t* msg)
     msg->display_info.system_time.tv_nsec = 0;
     //位置信息
     msg->display_info.pos_x = overall_fddi_info[0].pos.x ;
-    msg->display_info.pos_y = overall_fddi_info[0].pos.y;
+    msg->display_info.pos_y = overall_fddi_info[0].pos.y ;
     msg->display_info.pos_z = overall_fddi_info[0].pos.z ;
-    //printf("%f\n", msg->display_info.pos_y);
     msg->display_info.vel_x = 1.0;
     msg->display_info.vel_y = 2.0;
     msg->display_info.vel_z = 3.0;
@@ -133,11 +130,10 @@ void create_msg(show_t* msg)
     msg->display_info.node_id = MY_INDEX - MY_ROLE;
     msg->display_info.link_status = 1;
 
-
+    //msg->display_info.pos_x = 10000;
     //与其他节点信息
     if (MY_INDEX == 0) {
         double distance = caculate_distance(fddi_info.pos, overall_fddi_info[1].pos);
-
 
         msg->display_info.z1_m_distance[1] = distance / 50;
         //printf("distance %f %f\n", msg->display_info.z1_m_distance[1],distance);
@@ -148,32 +144,35 @@ void create_msg(show_t* msg)
             &yaw,
             &pitch);
 
-        //msg->display_info.z1_m_azimuth[1] = yaw;
-        //msg->display_info.z1_m_elevation[1] = pitch;
+        msg->display_info.z1_m_azimuth[1] = yaw;
+        msg->display_info.z1_m_elevation[1] = pitch;
+
+        msg->display_info.z1_m_distance[1] = 1;
+        msg->display_info.z1_m_azimuth[1] = 25.349274;
+        msg->display_info.z1_m_elevation[1] = -34.38982;
 
         /*msg->display_info.z1_m_azimuth[1] = fmin(p, 45);
         msg->display_info.z1_m_elevation[1] = fmin(pp, 45);*/
-        msg->display_info.z1_m_distance[1] = 2;
-        msg->display_info.z1_m_azimuth[1] = 90;
-        msg->display_info.z1_m_elevation[1] = 0;
+        //msg->display_info.z1_m_distance[1] = 2;
+        //msg->display_info.z1_m_azimuth[1] = 90;
+        //msg->display_info.z1_m_elevation[1] = 0;
 
-        msg->display_info.z1_m_distance[2] = 2;
-        msg->display_info.z1_m_azimuth[2] = -90;
-        msg->display_info.z1_m_elevation[2] = 0;
+        //msg->display_info.z1_m_distance[2] = 2;
+        //msg->display_info.z1_m_azimuth[2] = -90;
+        //msg->display_info.z1_m_elevation[2] = 0;
 
-        msg->display_info.z1_m_distance[3] = 2;
-        msg->display_info.z1_m_azimuth[3] = 0;
-        msg->display_info.z1_m_elevation[3] = 90;
+        //msg->display_info.z1_m_distance[3] = 2;
+        //msg->display_info.z1_m_azimuth[3] = 0;
+        //msg->display_info.z1_m_elevation[3] = 90;
 
-        msg->display_info.z1_m_distance[4] = 2;
-        msg->display_info.z1_m_azimuth[4] = 0;
-        msg->display_info.z1_m_elevation[4] = -90;
+        //msg->display_info.z1_m_distance[4] = 2;
+        //msg->display_info.z1_m_azimuth[4] = 0;
+        //msg->display_info.z1_m_elevation[4] = -90;
 
     }
     else if (MY_INDEX == 1)
     {
         double distance = caculate_distance(fddi_info.pos, overall_fddi_info[0].pos);
-
 
         msg->display_info.z1_m_distance[0] = distance / 50;
         //printf("distance %f\n", msg->display_info.z1_m_distance[0]);
@@ -216,19 +215,7 @@ void create_msg(show_t* msg)
     int temp = 0;
     msg->display_info.terminal_working_status_representation = temp;
 
-    //msg->display_info.antenna_params[0] = display_data.antenna_params[0];
 
-    for (j = 0; j < 6; j++)
-    {
-        //msg->display_info.antenna_params[j] = display_data.antenna_params[j];
-        //printf("%d", msg->display_info.antenna_params[j].beam_width);
-        //msg->display_info.antenna_params[MY_INDEX][j].tx_rx_status = 2;
-        //msg->display_info.antenna_params[MY_INDEX][j].beam_width = 40;
-        //msg->display_info.antenna_params[MY_INDEX][j].azimuth = 6;
-        //msg->display_info.antenna_params[MY_INDEX][j].elevation = 120;
-        //msg->display_info.antenna_params[MY_INDEX][j].eirp = 8;
-        //msg->display_info.antenna_params[MY_INDEX][j].gt = 9;
-    }
 
 
     for (j = 0; j < 4; j++)
@@ -273,21 +260,29 @@ void create_msg(show_t* msg)
         //printf("i%d: %f %f %f\n", i, msg->display_info.roll[i], msg->display_info.pitch[i], msg->display_info.yaw[i]);
     }
 
-    msg->display_info.roll[0] = 0;
-    msg->display_info.pitch[0] = 0;
-    msg->display_info.yaw[0] = 0;
-    msg->display_info.roll[1] = 0;
-    msg->display_info.pitch[1] = 0;
-    msg->display_info.yaw[1] = 0;
-    msg->display_info.roll[2] = 0;
-    msg->display_info.pitch[2] = 0;
-    msg->display_info.yaw[2] = 0;
-    msg->display_info.roll[3] = 0;
-    msg->display_info.pitch[3] = 0;
-    msg->display_info.yaw[3] = 0;
-    msg->display_info.roll[4] = 0;
-    msg->display_info.pitch[4] = 0;
-    msg->display_info.yaw[4] = 0;
+    //msg->display_info.roll[0] = 172.461716;
+    //msg->display_info.pitch[0] = -79.262207;
+    //msg->display_info.yaw[0] = 69.881042;
+
+    //msg->display_info.yaw[0] = 180;
+    //msg->display_info.pitch[0] = 180;
+
+
+    //msg->display_info.roll[0] = 0;
+    //msg->display_info.pitch[0] = 0;
+    //msg->display_info.yaw[0] = 0;
+    //msg->display_info.roll[1] = 0;
+    //msg->display_info.pitch[1] = 0;
+    //msg->display_info.yaw[1] = 0;
+    //msg->display_info.roll[2] = 0;
+    //msg->display_info.pitch[2] = 0;
+    //msg->display_info.yaw[2] = 0;
+    //msg->display_info.roll[3] = 0;
+    //msg->display_info.pitch[3] = 0;
+    //msg->display_info.yaw[3] = 0;
+    //msg->display_info.roll[4] = 0;
+    //msg->display_info.pitch[4] = 0;
+    //msg->display_info.yaw[4] = 0;
 
     //printf("0:x=%f,y=%f,z=%f,q0=%f,q1=%f,q2=%f,q3=%f\n", msg->display_info.pos_x);
     //printf("1:x=%f,y=%f,z=%f,q0=%f,q1=%f,q2=%f,q3=%f\n",);
@@ -313,20 +308,21 @@ void create_msg(show_t* msg)
         &azimuth,
         &elevation
     );
+    printf("id = %d %f %f \n", antenna_id,azimuth,elevation);
+    //antenna_id = 5;
+    //msg->display_info.z1_m_azimuth[1] = azimuth;
+    //msg->display_info.z1_m_elevation[1] = elevation;
+
     if (antenna_id >= 0 && antenna_id < 6);
     {
         /*printf("antenna_id=%d\n", antenna_id);*/
-        //msg->display_info.antenna_params[antenna_id].tx_rx_status = 1;
-        //msg->display_info.antenna_params[antenna_id].beam_width = 10;
-        //msg->display_info.antenna_params[antenna_id].elevation = elevation;
-        //msg->display_info.antenna_params[antenna_id].azimuth = azimuth;
+        msg->display_info.antenna_params[antenna_id].tx_rx_status = 1;
+        msg->display_info.antenna_params[antenna_id].beam_width = 10;
+        msg->display_info.antenna_params[antenna_id].elevation = elevation;
+        msg->display_info.antenna_params[antenna_id].azimuth = azimuth;
     }
-    msg->display_info.antenna_params[1].tx_rx_status = 1;
-    msg->display_info.antenna_params[1].beam_width = 5;
-    msg->display_info.antenna_params[1].elevation = 90;
-    msg->display_info.antenna_params[1].azimuth = 0;
 
-
+    //printf("%f %f %f\n", msg->display_info.pos_x, msg->display_info.pos_y, msg->display_info.pos_z);
     data_show(msg);
 }
 
