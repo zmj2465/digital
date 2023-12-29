@@ -428,7 +428,7 @@ int load_config(char* filename)
         printf("port : %d\n", FD[j].port);
     }
     printf("\n");
-    MY_ID = MY_INDEX;
+    MY_ID = MY_INDEX | 16;
 }
 
 
