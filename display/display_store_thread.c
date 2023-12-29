@@ -87,9 +87,7 @@ void send_display_msg()
     send_to_display(&msg, msg.len);
 }
 
-
-
-
+static fddi_info_t temp_info[5];
 
 void create_msg(show_t* msg)
 {
@@ -103,26 +101,44 @@ void create_msg(show_t* msg)
     float azimuth;
     float elevation;
     msg->type = DISPLAY_INFO;
-    //msg->len = 4 + sizeof(display_t);
+
     msg->len = MAX_SEND_LEN;
+
+    for (i = 0; i < 5; i++)
+    {
+        temp_info[i] = overall_fddi_info[i];
+    }
+    temp_info[0].pos.x = 0;
+    temp_info[0].pos.y = 0;
+    temp_info[0].pos.z = 0;
+    temp_info[0].q.q0 = 0.1;
+    temp_info[0].q.q1 = 0.1;
+    temp_info[0].q.q2 = 0.1;
+    temp_info[0].q.q3 = 0.1;
+
+    temp_info[1].pos.x = 0;
+    temp_info[1].pos.y = 50;
+    temp_info[1].pos.z = 0;
+    temp_info[1].q.q0 = 0.1;
+    temp_info[1].q.q1 = 0.1;
+    temp_info[1].q.q2 = 0.1;
+    temp_info[1].q.q3 = 0.1;
+
 
     msg->display_info.serial_number = 0;
     msg->display_info.system_time.tv_sec = 0;// 假设系统时间为 2021-06-21 12:00:00
     msg->display_info.system_time.tv_nsec = 0;
     //位置信息
-    msg->display_info.pos_x = overall_fddi_info[0].pos.x ;
-    msg->display_info.pos_y = overall_fddi_info[0].pos.y ;
-    msg->display_info.pos_z = overall_fddi_info[0].pos.z ;
+    msg->display_info.pos_x = temp_info[0].pos.x ;
+    msg->display_info.pos_y = temp_info[0].pos.y ;
+    msg->display_info.pos_z = temp_info[0].pos.z ;
     msg->display_info.vel_x = 1.0;
     msg->display_info.vel_y = 2.0;
     msg->display_info.vel_z = 3.0;
     msg->display_info.ang_vel_x = 0.1;
     msg->display_info.ang_vel_y = 0.2;
     msg->display_info.ang_vel_z = 0.3;
-    //msg->display_info.quat_q0 = 0.707;
-    //msg->display_info.quat_q1 = 0.0;
-    //msg->display_info.quat_q2 = 0.0;
-    //msg->display_info.quat_q3 = 0.707;
+
     msg->display_info.time_element_number = 0;
     msg->display_info.time_frame_number = 0;
     msg->display_info.micro_time_slot_number = 0;
@@ -130,64 +146,38 @@ void create_msg(show_t* msg)
     msg->display_info.node_id = MY_INDEX - MY_ROLE;
     msg->display_info.link_status = 1;
 
-    //msg->display_info.pos_x = 10000;
     //与其他节点信息
     if (MY_INDEX == 0) {
-        double distance = caculate_distance(fddi_info.pos, overall_fddi_info[1].pos);
+        double distance = caculate_distance(temp_info[0].pos, temp_info[1].pos);
 
-        msg->display_info.z1_m_distance[1] = distance / 50;
+        msg->display_info.z1_m_distance[1] = 1;
         //printf("distance %f %f\n", msg->display_info.z1_m_distance[1],distance);
 
-        calculateYawAndPitch(overall_fddi_info[MY_INDEX].pos,
-            overall_fddi_info[MY_INDEX].q,
-            overall_fddi_info[1].pos,
+        calculateYawAndPitch(temp_info[MY_INDEX].pos,
+            temp_info[MY_INDEX].q,
+            temp_info[1].pos,
             &yaw,
             &pitch);
 
         msg->display_info.z1_m_azimuth[1] = yaw;
         msg->display_info.z1_m_elevation[1] = pitch;
 
-        msg->display_info.z1_m_distance[1] = 1;
-        msg->display_info.z1_m_azimuth[1] = 25.349274;
-        msg->display_info.z1_m_elevation[1] = -34.38982;
-
-        /*msg->display_info.z1_m_azimuth[1] = fmin(p, 45);
-        msg->display_info.z1_m_elevation[1] = fmin(pp, 45);*/
-        //msg->display_info.z1_m_distance[1] = 2;
-        //msg->display_info.z1_m_azimuth[1] = 90;
-        //msg->display_info.z1_m_elevation[1] = 0;
-
-        //msg->display_info.z1_m_distance[2] = 2;
-        //msg->display_info.z1_m_azimuth[2] = -90;
-        //msg->display_info.z1_m_elevation[2] = 0;
-
-        //msg->display_info.z1_m_distance[3] = 2;
-        //msg->display_info.z1_m_azimuth[3] = 0;
-        //msg->display_info.z1_m_elevation[3] = 90;
-
-        //msg->display_info.z1_m_distance[4] = 2;
-        //msg->display_info.z1_m_azimuth[4] = 0;
-        //msg->display_info.z1_m_elevation[4] = -90;
-
     }
     else if (MY_INDEX == 1)
     {
-        double distance = caculate_distance(fddi_info.pos, overall_fddi_info[0].pos);
+        double distance = caculate_distance(temp_info[1].pos, temp_info[0].pos);
 
         msg->display_info.z1_m_distance[0] = distance / 50;
         //printf("distance %f\n", msg->display_info.z1_m_distance[0]);
 
-        calculateYawAndPitch(overall_fddi_info[MY_INDEX].pos,
-            overall_fddi_info[MY_INDEX].q,
-            overall_fddi_info[0].pos,
+        calculateYawAndPitch(temp_info[MY_INDEX].pos,
+            temp_info[MY_INDEX].q,
+            temp_info[0].pos,
             &yaw,
             &pitch);
 
         msg->display_info.z1_m_azimuth[0] = yaw;
         msg->display_info.z1_m_elevation[0] = pitch;
-
-        //msg->display_info.z1_m_azimuth[0] = fmin(p, 45);
-        //msg->display_info.z1_m_elevation[0] = 180 - fmin(pp, 45);
 
     }
 
@@ -252,78 +242,89 @@ void create_msg(show_t* msg)
     for (i = 0; i < 2; i++)
     {
         quaternionToEulerAngles(
-            overall_fddi_info[i].q,
+            temp_info[i].q,
             &msg->display_info.roll[i],
             &msg->display_info.pitch[i],
             &msg->display_info.yaw[i]
         );
-        //printf("i%d: %f %f %f\n", i, msg->display_info.roll[i], msg->display_info.pitch[i], msg->display_info.yaw[i]);
     }
 
-    //msg->display_info.roll[0] = 172.461716;
-    //msg->display_info.pitch[0] = -79.262207;
-    //msg->display_info.yaw[0] = 69.881042;
-
-    //msg->display_info.yaw[0] = 180;
-    //msg->display_info.pitch[0] = 180;
-
-
-    //msg->display_info.roll[0] = 0;
-    //msg->display_info.pitch[0] = 0;
-    //msg->display_info.yaw[0] = 0;
-    //msg->display_info.roll[1] = 0;
-    //msg->display_info.pitch[1] = 0;
-    //msg->display_info.yaw[1] = 0;
-    //msg->display_info.roll[2] = 0;
-    //msg->display_info.pitch[2] = 0;
-    //msg->display_info.yaw[2] = 0;
-    //msg->display_info.roll[3] = 0;
-    //msg->display_info.pitch[3] = 0;
-    //msg->display_info.yaw[3] = 0;
-    //msg->display_info.roll[4] = 0;
-    //msg->display_info.pitch[4] = 0;
-    //msg->display_info.yaw[4] = 0;
-
-    //printf("0:x=%f,y=%f,z=%f,q0=%f,q1=%f,q2=%f,q3=%f\n", msg->display_info.pos_x);
-    //printf("1:x=%f,y=%f,z=%f,q0=%f,q1=%f,q2=%f,q3=%f\n",);
-    //printf("")
-
-    //msg->display_info.antenna_params[0].azimuth = yaw;
-    //msg->display_info.antenna_params[0].elevation = pitch;
-
-
     calculate_ante_angle_coord_m(
-        overall_fddi_info[0].pos.x,
-        overall_fddi_info[0].pos.y,
-        overall_fddi_info[0].pos.z,
-        overall_fddi_info[0].q.q0,
-        overall_fddi_info[0].q.q1,
-        overall_fddi_info[0].q.q2,
-        overall_fddi_info[0].q.q3,
+        temp_info[0].pos.x,
+        temp_info[0].pos.y,
+        temp_info[0].pos.z,
+        temp_info[0].q.q0,
+        temp_info[0].q.q1,
+        temp_info[0].q.q2,
+        temp_info[0].q.q3,
         0,
-        overall_fddi_info[1].pos.x,
-        overall_fddi_info[1].pos.y,
-        overall_fddi_info[1].pos.z,
+        temp_info[1].pos.x,
+        temp_info[1].pos.y,
+        temp_info[1].pos.z,
         &antenna_id,
         &azimuth,
         &elevation
     );
-    printf("id = %d %f %f \n", antenna_id,azimuth,elevation);
-    //antenna_id = 5;
-    //msg->display_info.z1_m_azimuth[1] = azimuth;
-    //msg->display_info.z1_m_elevation[1] = elevation;
-
+    antenna_id = antenna_id - 1;
     if (antenna_id >= 0 && antenna_id < 6);
     {
-        /*printf("antenna_id=%d\n", antenna_id);*/
         msg->display_info.antenna_params[antenna_id].tx_rx_status = 1;
         msg->display_info.antenna_params[antenna_id].beam_width = 10;
         msg->display_info.antenna_params[antenna_id].elevation = elevation;
         msg->display_info.antenna_params[antenna_id].azimuth = azimuth;
     }
-
-    //printf("%f %f %f\n", msg->display_info.pos_x, msg->display_info.pos_y, msg->display_info.pos_z);
     data_show(msg);
+}
+
+void create_table(show_t* msg)
+{
+    int i, j, k;
+    int ret = 0;
+    //选择一个节点
+    for (i = 0; i < 5; i++)
+    {
+        //该节点未在网
+        if (online_state[i] == 0) continue;
+        //遍历另外4个节点
+        for (j = 0; j < 5; j++)
+        {
+            if (j == i) continue;
+            //与该节点未建链
+            if (online_state[j] == 0) continue;
+            //i节点选择ret号天线对上j
+            ret = select_antennaB(i, temp_info, temp_info[j].pos);
+            //printf("i=%d selant=%d\n", i, ret);
+            if (ret < 0)
+            {
+                continue;
+            }
+            printf("i=%d selant=%d\n", i, ret);
+            msg->display_info.link_target[i][ret] |= 1 << j;
+        }
+    }
+
+    //temp = (temp + 1) % 6;
+    //printf("%%%%%%%%%%%%%%%%%%%%%%\n");
+    //for (i = 0; i < 5; i++)
+    //{
+    //	for (j = 0; j < 6; j++)
+    //	{
+    //		printf("%d ", msg->display_info.link_target[i][j]);
+    //	}
+    //	printf("\n");
+    //}
+    msg->display_info.link_target[0][1] |= 1 << 1;
+    msg->display_info.link_target[1][5] |= 1 << 0;
+
+    //msg->display_info.link_target[0][5] |= 1 << 2;
+    //msg->display_info.link_target[2][1] |= 1 << 0;
+
+    //msg->display_info.link_target[0][3] |= 1 << 3;
+    //msg->display_info.link_target[3][1] |= 1 << 0;
+
+    //msg->display_info.link_target[0][4] |= 1 << 4;
+    //msg->display_info.link_target[4][1] |= 1 << 0;
+
 }
 
 void quaternionToEulerAngles(const Quaternion q, float* roll, float* pitch, float* yaw) {
@@ -360,19 +361,19 @@ void data_show(show_t* msg)
         msg->display_info.pos_x,
         msg->display_info.pos_y,
         msg->display_info.pos_z,
-        overall_fddi_info[0].q.q0,
-        overall_fddi_info[0].q.q1,
-        overall_fddi_info[0].q.q2,
-        overall_fddi_info[0].q.q3
+        temp_info[0].q.q0,
+        temp_info[0].q.q1,
+        temp_info[0].q.q2,
+        temp_info[0].q.q3
     );
     printf("1:x=%f,y=%f,z=%f,q0=%f,q1=%f,q2=%f,q3=%f\n",
-        overall_fddi_info[1].pos.x,
-        overall_fddi_info[1].pos.y,
-        overall_fddi_info[1].pos.z,
-        overall_fddi_info[1].q.q0,
-        overall_fddi_info[1].q.q1,
-        overall_fddi_info[1].q.q2,
-        overall_fddi_info[1].q.q3
+        temp_info[1].pos.x,
+        temp_info[1].pos.y,
+        temp_info[1].pos.z,
+        temp_info[1].q.q0,
+        temp_info[1].q.q1,
+        temp_info[1].q.q2,
+        temp_info[1].q.q3
     );
     for (i = 0; i < 6; i++)
     {
@@ -383,12 +384,12 @@ void data_show(show_t* msg)
             msg->display_info.antenna_params[i].elevation
         );
     }
-    printf("0:pitch=%f,yaw=%f,roll=%f\n",
+    printf("0:pitch=%.12f,yaw=%.12f,roll=%.12f\n",
         msg->display_info.pitch[0],
         msg->display_info.yaw[0],
         msg->display_info.roll[0]
     );
-    printf("1:pitch=%f,yaw=%f,roll=%f\n",
+    printf("1:pitch=%.12f,yaw=%.12f,roll=%.12f\n",
         msg->display_info.pitch[1],
         msg->display_info.yaw[1],
         msg->display_info.roll[1]

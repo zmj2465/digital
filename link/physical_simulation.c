@@ -434,7 +434,7 @@ void calculateYawAndPitch(Point3D my_pos, Quaternion my_q, Point3D target_pos, f
     switch_point = rotatePoint(switch_point, my_q);
     //printf("x=%f,y=%f,z=%f\n", my_pos.x, my_pos.y, my_pos.z);
     //printf("x=%f,y=%f,z=%f\n", target_pos.x, target_pos.y, target_pos.z);
-    //printf("x=%f,y=%f,z=%f\n", switch_point.x, switch_point.y, switch_point.z);
+    printf("x=%f,y=%f,z=%f\n", switch_point.x, switch_point.y, switch_point.z);
     *yaw = atan2(switch_point.y, switch_point.x) * (180.0 / 3.1415926);
     *pitch = atan2(-switch_point.z, sqrt(switch_point.x * switch_point.x + switch_point.y * switch_point.y)) * (180.0 / 3.1415926);
     return;

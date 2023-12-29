@@ -123,17 +123,18 @@ void display_send_thread_init()
     Sleep(100);
     generate_key_event(KEY_CONFIG_LOAD, 1, 1);
     Sleep(100);
-    generate_key_event(5, 1, 1);
-    Sleep(100);
     //generate_key_event(5, 2, 1);
     //Sleep(100);
     //generate_key_event(5, 3, 1);
     //Sleep(100);
     //generate_key_event(5, 4, 1);
+
+    generate_key_event(5, 1, 1);
     Sleep(100);
     send_display_msg();
     Sleep(100);
-    send_display_msg();
+    //send_display_msg();
+    while (1);
     //Sleep(100);
     //send_display_msg();
     //Sleep(100);
@@ -148,7 +149,7 @@ void display_send_thread_init()
     //generate_key_event(5, 3, 1);
     //Sleep(100);
     //generate_key_event(5, 4, 1);
-    while (1);
+    
 
 }
 

@@ -34,8 +34,8 @@ void* display_thread(void* arg)
 					generate_key_event(KEY_SEPARATE,0,0);
 					flag = 1;
 					display_state.flag = 1;
-					Sleep(FRESH_TIME);
-					generate_key_event(5, 1, 1);
+					//Sleep(FRESH_TIME);
+					//generate_key_event(5, 1, 1);
 				}
 			}
 			else if (flag == 1)
@@ -87,7 +87,7 @@ void* display_thread(void* arg)
 					else
 						generate_key_event(5, 0, 0);
 					flag = 2;
-					while (1);
+					//while (1);
 				}
 			}
 			else if (flag == 2)
@@ -169,52 +169,3 @@ void* display_thread(void* arg)
 
 
 static int temp;
-void create_table(show_t* msg)
-{
-	int i, j, k;
-	int ret = 0;
-	//选择一个节点
-	for (i = 0; i < 5; i++)
-	{
-		//该节点未在网
-		if (online_state[i] == 0) continue;
-		//遍历另外4个节点
-		for (j = 0; j < 5; j++)
-		{
-			if (j == i) continue;
-			//与该节点未建链
-			if (online_state[j] == 0) continue;
-			//i节点选择ret号天线对上j
-			ret = select_antennaA(i, overall_fddi_info[j].pos);
-			if (ret < 0)
-			{
-				continue;
-			}
-			//printf("%d\n", ret);
-			msg->display_info.link_target[i][temp] |= 1 << j;
- 		}
-	}
-
-	//temp = (temp + 1) % 6;
-	//printf("%%%%%%%%%%%%%%%%%%%%%%\n");
-	//for (i = 0; i < 5; i++)
-	//{
-	//	for (j = 0; j < 6; j++)
-	//	{
-	//		printf("%d ", msg->display_info.link_target[i][j]);
-	//	}
-	//	printf("\n");
-	//}
-	msg->display_info.link_target[0][1] |= 1 << 1;
-	msg->display_info.link_target[1][5] |= 1 << 0;
-
-	//msg->display_info.link_target[0][5] |= 1 << 2;
-	//msg->display_info.link_target[2][1] |= 1 << 0;
-
-	//msg->display_info.link_target[0][3] |= 1 << 3;
-	//msg->display_info.link_target[3][1] |= 1 << 0;
-
-	//msg->display_info.link_target[0][4] |= 1 << 4;
-	//msg->display_info.link_target[4][1] |= 1 << 0;
-
-}

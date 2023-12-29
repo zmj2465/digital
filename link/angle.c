@@ -287,7 +287,7 @@ int select_antenna(Point3D target_pos)
 
 int select_antennaA(int index,Point3D target_pos)
 {
-    int antenna_id;
+    int antenna_id = 0;
     float azimuth;
     float elevation;
 
@@ -329,8 +329,61 @@ int select_antennaA(int index,Point3D target_pos)
             &elevation
         );
     }
-    return antenna_id;
+    return antenna_id - 1;
 }
+
+
+int select_antennaB(int index, fddi_info_t* my_info,Point3D target_pos)
+{
+    int antenna_id = 0;
+    float azimuth;
+    float elevation;
+
+    if (index == 0)
+    {
+        calculate_ante_angle_coord_m(
+            my_info[index].pos.x,
+            my_info[index].pos.y,
+            my_info[index].pos.z,
+            my_info[index].q.q0,
+            my_info[index].q.q1,
+            my_info[index].q.q2,
+            my_info[index].q.q3,
+            index,
+            target_pos.x,
+            target_pos.y,
+            target_pos.z,
+            &antenna_id,
+            &azimuth,
+            &elevation
+        );
+    }
+    else
+    {
+        calculate_ante_angle_coord_z(
+            my_info[index].pos.x,
+            my_info[index].pos.y,
+            my_info[index].pos.z,
+            my_info[index].q.q0,
+            my_info[index].q.q1,
+            my_info[index].q.q2,
+            my_info[index].q.q3,
+            index,
+            target_pos.x,
+            target_pos.y,
+            target_pos.z,
+            &antenna_id,
+            &azimuth,
+            &elevation
+        );
+    }
+    return antenna_id - 1;
+}
+
+
+
+
+
 
 
 //接收天线是否为可收到信息的天线

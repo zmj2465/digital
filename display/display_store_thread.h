@@ -15,6 +15,7 @@ void* display_store_thread(void* arg);
 void data_store();
 void send_display_msg();
 void create_msg(show_t* msg);
+void create_table(show_t* msg);
 void data_show(show_t* msg);
 
 #endif
