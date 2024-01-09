@@ -151,7 +151,6 @@ void display_send_thread_init()
     //Sleep(100);
     //generate_key_event(5, 4, 1);
     
-
 }
 
 
@@ -160,10 +159,12 @@ void sim_beg_proc(show_t* msg)
     display_state.mode = SIM_MODE;
 }
 
+
 void sim_end_proc(show_t* msg)
 {
 
 }
+
 
 //仿真选择
 void rep_sel_proc(show_t* msg)
@@ -177,6 +178,7 @@ void rep_sel_proc(show_t* msg)
     //display_state.interval = 5;
     //display_state.mode = REPLAY_MODE;
 }
+
 
 void rep_beg_proc(show_t* msg)
 {

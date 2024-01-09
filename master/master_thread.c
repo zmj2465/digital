@@ -31,7 +31,7 @@ int master_data_proc(void)
 	msg_t msg;
 	uint8_t node_id;
 	dequeue(&info.thread_queue[MASTER_THREAD_DATA], &msg, &msg.len);
-
+	printf("deque %d\n", MY_ID);
 	/*½â°ü*/
 	msg.len = msg.len - sizeof(head_t) - sizeof(int);
 
@@ -102,6 +102,7 @@ int master_data_proc(void)
 				index = msg.data[0];
 				node_id = msg.data[1];
 				info.device_info.node_id[index] = node_id;
+				printf("ok %d\n",node_id);
 				break;
 			default:
 				break;
