@@ -146,7 +146,6 @@ int data_recv_proc(void)
 			plog("no sim get, msg = %d msg_type = %d seq = %d\n", rmsg->head.dst, rmsg->head.type, rmsg->head.seq);
 			if (rmsg->head.type == START_GUN || rmsg->head.type == PARAMETER_LOAD)
 			{
-				printf("enque\n");
 				enqueue(&info.thread_queue[MASTER_THREAD_DATA], rmsg, MAX_DATA_LEN);
 			}
 

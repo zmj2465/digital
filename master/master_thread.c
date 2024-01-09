@@ -31,7 +31,6 @@ int master_data_proc(void)
 	msg_t msg;
 	uint8_t node_id;
 	dequeue(&info.thread_queue[MASTER_THREAD_DATA], &msg, &msg.len);
-	printf("deque %d\n", MY_ID);
 	/*½â°ü*/
 	msg.len = msg.len - sizeof(head_t) - sizeof(int);
 
