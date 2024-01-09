@@ -146,7 +146,7 @@ int fsm_init2off_ed(int para)
 				for (i = 1; i < FD_NUM; i++)
 				{
 					generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
-					send(FD[i].fd, &msg, msg.len, 0);
+					send(FD[i].fd, &msg, sizeof(msg_t), 0);
 				}
 				//plog("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
 				printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
