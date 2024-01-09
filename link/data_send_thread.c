@@ -71,7 +71,7 @@ int data_send_proc(void)
                         
                         psy_send_(&pmsg,&msg);
                         
-                        
+
                         send(FD[real_index].fd, &pmsg, sizeof(psy_msg_t), 0);
                         plog("M send Z%d scan require, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         ///*打开扫描响应定时器*/
