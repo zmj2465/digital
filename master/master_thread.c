@@ -125,7 +125,7 @@ int master_data_proc(void)
 					msg.data[0] = START_GUN_RES;
 					msg.len = 1;
 					generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
-					send(FD[0].fd, &msg, msg.len, 0);
+					send(FD[0].fd, &msg, sizeof(msg_t), 0);
 					fsm_do(EVENT_WAIT_ACCESS);
 				}
 				break;

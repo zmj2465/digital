@@ -446,7 +446,6 @@ void rs_ConfigLoad_proc(char* data)
         msg.data[1] = MY_ID;
         msg.len = 2;
         generate_packet(0x10, MY_ID, PARAMETER_LOAD, &msg);
-        printf("%d\n",info.device_info.node_id[0]);
         send(FD[0].fd, &msg, msg.len, 0);
     }
 
