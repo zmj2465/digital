@@ -28,12 +28,9 @@ static int lfd;
 static int id_table[5] = { 0x10,0x11,0x12,0x13,0x14 };
 
 #define PRINT 
-#define RS485
-
-
+//#define RS485
 
 static int get_seq = 0;
-
 
 
 void* rs_485_recv_thread(void* arg)
@@ -87,8 +84,8 @@ void* rs_485_recv_thread(void* arg)
             printf("rs485 connect success %d\n", rs485_fd);
             continue;
         }
-        //p_log_string(0, "get\n");
-        //p_log_data(0, ret, data);
+        p_log_string(0, "get--------------------------\n");
+        p_log_data(0, ret, data);
         //for (i = 0; i < ret; i++)
         //{
         //    printf("%02x ", (uint8_t)data[i]);
@@ -153,6 +150,9 @@ void* rs_485_recv_thread(void* arg)
 			{
 				info.z_proc_flight_control_data_rx_count++;
 			}
+#ifdef PRINT
+            p_log_string(0, "recv type=RS_SELF_CHECK\n");
+#endif
             printf("recv type=RS_SELF_CHECK ");
             rs_SelfCheck_proc(data);
             break;
@@ -165,6 +165,9 @@ void* rs_485_recv_thread(void* arg)
 			{
 				info.z_proc_flight_control_data_rx_count++;
 			}
+#ifdef PRINT
+            p_log_string(0, "recv type=RS_SLEF_CHECK_RESULT\n");
+#endif
             printf("recv type=RS_SLEF_CHECK_RESULT ");
             rs_SelfCheckResult_proc(data);
             break;
@@ -177,6 +180,9 @@ void* rs_485_recv_thread(void* arg)
 			{
 				info.z_proc_flight_control_data_rx_count++;
 			}
+#ifdef PRINT
+            p_log_string(0, "recv type=RS_CONFIG_LOAD\n");
+#endif
             printf("recv type=RS_CONFIG_LOAD ");
             rs_ConfigLoad_proc(data);
             break;
@@ -211,6 +217,9 @@ void* rs_485_recv_thread(void* arg)
 			{
 				info.z_proc_flight_control_data_rx_count++;
 			}
+#ifdef PRINT
+            p_log_string(0, "recv type=RS_START_LINK\n");
+#endif
             printf("recv type=RS_START_LINK ");
             rs_Link_proc(data);
             break;
@@ -223,6 +232,9 @@ void* rs_485_recv_thread(void* arg)
 			{
 				info.z_proc_flight_control_data_rx_count++;
 			}
+#ifdef PRINT
+            p_log_string(0, "recv type=RS_LINK_RESULT\n");
+#endif
             printf("recv type=RS_LINK_RESULT ");
             rs_Link_result_proc(data);
             break;
@@ -235,6 +247,9 @@ void* rs_485_recv_thread(void* arg)
 			{
 				info.z_proc_flight_control_data_rx_count++;
 			}
+#ifdef PRINT
+            p_log_string(0, "recv type=RS_WORK_MODE\n");
+#endif
             printf("recv type=RS_WORK_MODE ");
             work_mode_proc(data);
             break;
@@ -247,6 +262,9 @@ void* rs_485_recv_thread(void* arg)
 			{
 				info.z_proc_flight_control_data_rx_count++;
 			}
+#ifdef PRINT
+            p_log_string(0, "recv type=RS_PRE_SEPARATE\n");
+#endif
             printf("recv type=RS_PRE_SEPARATE ");
             rs_PreSeparate_proc(data);
             break;
@@ -417,15 +435,16 @@ void rs_ConfigLoad_proc(char* data)
     }
     if ((x & (1 << 4)) == 1) m_num++;
 
-    generate_key_event(KEY_CONFIG_LOAD, z_num, m_num);
     MY_ID = body->config_load.node_id;
     msg_t msg;
     msg.data[0] = MY_INDEX;
     msg.data[1] = MY_ID;
+    MY_ID_INDEX = MY_ID - 0x10;
     msg.len = 2;
     generate_packet(info.device_info.node_id[0], MY_ID, PARAMETER_LOAD, &msg);
-    send(FD[0].fd, &msg, msg.len, 0);
-    generate_key_event(KEY_CONFIG_LOAD, z_num, m_num);
+    //send(FD[0].fd, &msg, msg.len, 0);
+    //generate_key_event(KEY_CONFIG_LOAD, z_num, m_num);
+    generate_key_event(KEY_CONFIG_LOAD, 1, 1);
 
 }
 
@@ -1411,11 +1430,16 @@ void server_init()
     //绑定本机ip地址、端口号
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
-    if(MY_INDEX==0)
-        inet_pton(AF_INET, "192.168.1.25", (void*)&addr.sin_addr); //**ip**
+    if (MY_INDEX == 0)
+    {
+        inet_pton(AF_INET, "127.0.0.1", (void*)&addr.sin_addr); //**ip**
+        addr.sin_port = htons(6789); //**port**
+    }
     else
-        inet_pton(AF_INET, "192.168.1.24", (void*)&addr.sin_addr); //**ip**
-    addr.sin_port = htons(6789); //**port**
+    {
+        inet_pton(AF_INET, "127.0.0.1", (void*)&addr.sin_addr); //**ip**
+        addr.sin_port = htons(7789); //**port**
+    }
     ret = bind(lfd, (struct sockaddr*)&addr, sizeof addr); //绑定ip和端口
 
     //开始监听

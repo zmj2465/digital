@@ -20,13 +20,13 @@ void* fddi_thread(void* arg)
     char data[MAX_DATA_LEN];
     int len;
 
-    len = recv(info.fddi_system.fd, data, 200, 0);
+    len = recv(info.fddi_system.fd, data, 400, 0);
     prepare_simulation = 1;
     display_state.mode = SIM_MODE;
 
     while (1)
     {
-        len = recv(info.fddi_system.fd, data, 200, 0);
+        len = recv(info.fddi_system.fd, data, 400, 0);
         if (len <= 0)
         {
             display_state.mode = NO_MODE;
@@ -37,18 +37,7 @@ void* fddi_thread(void* arg)
         }
         else
         {
-            if (MY_INDEX == 0)
-            {
-                memcpy(&fddi_info, data, sizeof(fddi_info_t));
-                memcpy(&overall_fddi_info[0], data, sizeof(fddi_info_t));
-                memcpy(&overall_fddi_info[1], data + sizeof(fddi_info_t), sizeof(fddi_info_t));
-            }
-            else
-            {
-                memcpy(&fddi_info, data + sizeof(fddi_info_t), sizeof(fddi_info_t));
-                memcpy(&overall_fddi_info[0], data, sizeof(fddi_info_t));
-                memcpy(&overall_fddi_info[1], data + sizeof(fddi_info_t), sizeof(fddi_info_t));
-            }
+            memcpy(overall_fddi_info, data, sizeof(fddi_info_t) * 5);
         }
     }
 }

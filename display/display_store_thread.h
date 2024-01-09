@@ -10,6 +10,8 @@
 #include "display_send_thread.h"
 
 
+//#define AAAAAAAAAAAA 
+
 void* display_store_thread(void* arg);
 
 void data_store();

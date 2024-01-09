@@ -93,7 +93,6 @@ static void init()
 void display_send_thread_init()
 {
     int ret = 0;
-
     //创建侦听socket
     lfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -107,7 +106,6 @@ void display_send_thread_init()
     inet_pton(AF_INET, info.display_ip, (void*)&addr.sin_addr); //**ip**
     addr.sin_port = htons(info.display_port); //**port**
     ret = bind(lfd, (struct sockaddr*)&addr, sizeof addr);
-
     //开始监听
     listen(lfd, SOMAXCONN);
 
@@ -121,20 +119,23 @@ void display_send_thread_init()
     Sleep(100);
     generate_key_event(KEY_POWER_ON, 0, 0);
     Sleep(100);
-    generate_key_event(KEY_CONFIG_LOAD, 1, 1);
+    //generate_key_event(KEY_CONFIG_LOAD, 1, 1);
     Sleep(100);
     //generate_key_event(5, 2, 1);
     //Sleep(100);
     //generate_key_event(5, 3, 1);
     //Sleep(100);
     //generate_key_event(5, 4, 1);
-
+#ifdef AAAAAAAAAAAA
     generate_key_event(5, 1, 1);
     Sleep(100);
     send_display_msg();
     Sleep(100);
-    //send_display_msg();
+    send_display_msg();
+    Sleep(100);
+    send_display_msg();
     while (1);
+#endif
     //Sleep(100);
     //send_display_msg();
     //Sleep(100);
@@ -152,7 +153,6 @@ void display_send_thread_init()
     
 
 }
-
 
 
 void sim_beg_proc(show_t* msg)
@@ -226,7 +226,6 @@ void sim_start(uint16_t mode)
 }
 
 
-
 void generate_key_event(int type,int id_znum,int role_mnum)
 {
     int i;
@@ -271,7 +270,6 @@ void generate_key_event(int type,int id_znum,int role_mnum)
     send_to_display(&msg, msg.len);
     todata(&msg, msg.len);
 }
-
 
 
 

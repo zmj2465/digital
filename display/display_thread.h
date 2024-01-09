@@ -12,6 +12,8 @@
 
 #define MAX_SEND_LEN 1024
 
+extern int ffflag;
+
 void* display_thread(void* arg);
 
 //void create_table(show_t* msg);

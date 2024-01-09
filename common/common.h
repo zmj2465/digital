@@ -38,6 +38,7 @@ extern uint64_t end_time;
 #define TIMER_DELAY		300  	//定时器时间：300ms
 #define MY_INDEX		info.link_index
 #define MY_ID           info.config_id
+#define MY_ID_INDEX     info.config_id_index
 #define MY_ROLE         info.my_role
 #define FD				info.simulated_link					
 #define FD_NUM			info.simulated_link_num				//连接仿真系统的装置数目
@@ -172,6 +173,7 @@ typedef struct _info_t
 	int simulated_link_num;
 	int link_index;
 	int config_id;
+	int config_id_index;
 	int my_role;
 	char ip[IP_LEN];				//样机设备ip
 	int port;

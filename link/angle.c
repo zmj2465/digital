@@ -341,7 +341,7 @@ int select_antennaB(int index, fddi_info_t* my_info,Point3D target_pos)
 
     if (index == 0)
     {
-        calculate_ante_angle_coord_m(
+        calculate_ante_angle_coord_z(
             my_info[index].pos.x,
             my_info[index].pos.y,
             my_info[index].pos.z,

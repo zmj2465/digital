@@ -46,9 +46,9 @@ int time_init()
 
 uint64_t my_get_time()
 {
-    //struct timespec time;
-    //clock_gettime(CLOCK_MONOTONIC, &time);
-    //return time.tv_sec * 1000 * 1000 * 1000 + time.tv_nsec;
+    struct timespec time;
+    clock_gettime(CLOCK_MONOTONIC, &time);
+    return time.tv_sec * 1000 * 1000 * 1000 + time.tv_nsec;
     uint64_t ret=0;
     if (get_time != 0)
     {
