@@ -66,16 +66,12 @@ int data_send_proc(void)
                     {
                         msg.data[0] = SCAN_REQ;
                         msg.len = 1;
-                        
-                        
+                                                
                         /*发送扫描请求帧*/
-                        generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                        
-                        psy_send_(&pmsg,&msg);
-                        
-                        
+                        generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);                       
+                        psy_send_(&pmsg,&msg);                                         
                         send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
-                        plog("M send Z%d scan require, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                        plog("M send Z%d scan require, current slot = %d.%d, seq = %d\n", real_index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         ///*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
@@ -104,9 +100,7 @@ int data_send_proc(void)
                             msg.data[1] = info.current_time_frame + 1;
                             msg.len = 1;
 
-                            //real_index = inquire_socket_id(index);
-                            generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);
-                            
+                            generate_packet(info.device_info.node_id[i], info.device_info.node_id[MY_INDEX], SCAN, &msg);                           
                             psy_send_(&pmsg, &msg);
                             send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
                             info.scan_flag_M[index] = 0;
@@ -163,7 +157,7 @@ int data_send_proc(void)
                         
                         psy_send_(&pmsg, &msg);
                         send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
-                        plog("M send Z%d scan require, current slot = %d.%d, seq = %d\n", i, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                        plog("M send Z%d scan require, current slot = %d.%d, seq = %d\n", real_index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         /*打开扫描响应定时器*/
                         //info.timerId_M[i] = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_RES_TIMER, TIME_ONESHOT);
                     }
@@ -273,7 +267,7 @@ int data_send_proc(void)
                     
                     psy_send_(&pmsg, &msg);
                     send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
-                    plog("Z%d send scan response, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);                
+                    plog("Z%d send scan response, current slot = %d.%d, seq = %d\n", MY_ID_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);                
 #ifdef _WIN32
                     /*打开扫描确认定时器*/
                     info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, SCAN_CON_TIMER, TIME_ONESHOT);
@@ -286,7 +280,7 @@ int data_send_proc(void)
         case FSM_ON:
             if (info.current_slot == 30 || info.current_slot == 35)//信令时隙
             {
-                index = beacon_z_inquire_index(MY_INDEX, info.current_slot, info.current_time_frame);
+                index = beacon_z_inquire_index(MY_ID_INDEX, info.current_slot, info.current_time_frame);
                 if (index != -1)
                 {
                     msg.data[0] = 6;
@@ -295,12 +289,12 @@ int data_send_proc(void)
                     
                     psy_send_(&pmsg, &msg);
                     send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
-                    plog("Z%d send M beacon, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                    plog("Z%d send M beacon, current slot = %d.%d, seq = %d\n", MY_ID_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                 }
             }
             else if (info.current_slot == 59)//测距时隙
             {
-                if ((info.current_time_frame % 4) + 1 == MY_INDEX)//每4个时帧给M发测距帧
+                if ((info.current_time_frame % 4) + 1 == MY_ID_INDEX)//每4个时帧给M发测距帧
                 {
                     msg.data[0] = DISTANCE_Z;
                     msg.len = 1;
@@ -308,12 +302,12 @@ int data_send_proc(void)
                     
                     psy_send_(&pmsg, &msg);
                     send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
-                    plog("Z%d send distance frame, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                    plog("Z%d send distance frame, current slot = %d.%d, seq = %d\n", MY_ID_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                 }
             }
             else//数据时隙
             {
-                index = inquire_node_index(MY_INDEX, info.current_slot);
+                index = inquire_node_index(MY_ID_INDEX, info.current_slot);
                 if (index != -1)
                 {
                     if (info.current_time_frame >= info.time_frame_flag_z)
@@ -339,7 +333,7 @@ int data_send_proc(void)
 						g_node_progrm[0].air_interface_data_tx_count++; //Zi发往M的数据包计数
                         psy_send_(&pmsg, &msg);
                         send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
-                        plog("Z%d send M data, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
+                        plog("Z%d send M data, current slot = %d.%d, seq = %d\n", MY_ID_INDEX, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                     }
                 }
             }
@@ -527,9 +521,11 @@ void ppp(common_data_t* content,int len,int index)
 }
 
 /*
-作用：依据时隙中的Zi的索引号，找到此Zi的socket编号（例如Z1的socket编号可能是2，而非1）
-参数：索引号
-返回值：socket编号
+作用：根据此时的socket编号，找到node_id[socket编号]里对应的真正的Zi
+（比如输入id = 1，发现node_id[id] = 12H，说明此时socket编号为1的数组中存储的是z2）
+（10H：m，11H：z1，12H：z2，13H：z3，14H：z4）
+参数：socket编号
+返回值：参数装订后Zi的编号
 */
 int inquire_socket_id(uint8_t id)
 {

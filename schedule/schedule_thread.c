@@ -98,7 +98,7 @@ int schedule_slot(void)
     /*从机Z*/
     else
     {
-        switch (MY_INDEX)
+        switch (MY_ID_INDEX)
         {
         case 1:
             if ((30 <= info.current_slot && info.current_slot <= 34) || (info.current_slot == 59))
@@ -205,13 +205,14 @@ int schedule_slot(void)
 
 /*
 功能：将当前数据时隙与在网终端Z匹配
-参数：索引号，当前时隙
+参数：socket编号，当前时隙
 返回值：成功则返回对应索引号，失败返回-1
 */
 int schedule_inquire_index(int index, int current_slot)
 {
     int real_index;
     real_index = inquire_socket_id(index);
+
     if ((inquire_index(real_index) == 1) && (1 <= current_slot && current_slot <= 4))
     {
         return 1;
@@ -478,7 +479,7 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         }
         printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
 #ifdef _WIN32
-        info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
+        info.timerId = timeSetEvent(1000*1000, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
 #endif
         break;
     default:
