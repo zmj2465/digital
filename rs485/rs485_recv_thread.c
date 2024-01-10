@@ -445,7 +445,7 @@ void rs_ConfigLoad_proc(char* data)
         msg.data[0] = MY_INDEX;
         msg.data[1] = MY_ID;
         msg.len = 2;
-        generate_packet(info.device_info.node_id[0], MY_ID, PARAMETER_LOAD, &msg);
+        generate_packet(0x10, MY_ID, PARAMETER_LOAD, &msg);
         send(FD[0].fd, &msg, msg.len, 0);
     }
 
@@ -510,12 +510,12 @@ void rs_Link_proc(char* data)
 
 	if (MY_INDEX == 0)
 	{
-		generate_key_event(5, 1, 1);
+		generate_key_event(5, 0, 0);
 		info.chain_flag_m = 1;
 	}
 	else
 	{
-		generate_key_event(5, 0, 0);
+		generate_key_event(5, 1, 1);
 		info.chain_flag_z = 1;
 	}
 
