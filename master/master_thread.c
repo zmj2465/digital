@@ -31,7 +31,6 @@ int master_data_proc(void)
 	msg_t msg;
 	uint8_t node_id;
 	dequeue(&info.thread_queue[MASTER_THREAD_DATA], &msg, &msg.len);
-
 	/*½â°ü*/
 	msg.len = msg.len - sizeof(head_t) - sizeof(int);
 
@@ -87,6 +86,7 @@ int master_data_proc(void)
 					info.device_info.node_num++;
 					info.device_info.node_list = info.device_info.node_list | (1 << index);
 					info.scan_flag_M[index] = 1;
+					generate_key_event(KEY_LINK_ON, index, 1);
 					plog("M recv Z%d scan response, list = %d, current slot = %d.%d, seq = %d\n", index, info.device_info.node_list, info.current_time_frame, info.current_slot, msg.head.seq);
 				}
 				break;
@@ -102,6 +102,7 @@ int master_data_proc(void)
 				index = msg.data[0];
 				node_id = msg.data[1];
 				info.device_info.node_id[index] = node_id;
+				printf("ok %d\n",node_id);
 				break;
 			default:
 				break;
@@ -125,7 +126,7 @@ int master_data_proc(void)
 					msg.data[0] = START_GUN_RES;
 					msg.len = 1;
 					generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], START_GUN, &msg);
-					send(FD[0].fd, &msg, msg.len, 0);
+					send(FD[0].fd, &msg, sizeof(msg_t), 0);
 					fsm_do(EVENT_WAIT_ACCESS);
 				}
 				break;
@@ -145,6 +146,7 @@ int master_data_proc(void)
 #endif
 					info.time_frame_flag_z = msg.data[1];
 					plog("Z%d recv M scan confirm, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
+					generate_key_event(KEY_LINK_ON, 0, 0);
 					fsm_do(EVENT_WAN_SUCC);
 				}
 				break;

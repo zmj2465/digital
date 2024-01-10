@@ -149,7 +149,7 @@ void create_msg(show_t* msg)
             temp_info[MY_INDEX].q.q1,
             temp_info[MY_INDEX].q.q2,
             temp_info[MY_INDEX].q.q3,
-            17,
+            0,
             temp_info[i].pos.x,
             temp_info[i].pos.y,
             temp_info[i].pos.z,
@@ -212,7 +212,6 @@ void create_msg(show_t* msg)
     uint16_t tx = info.m_proc_flight_control_data_tx_count + info.z_proc_flight_control_data_tx_count;
     msg->display_info.z_proc_flight_control_data_rx_tx_count = (rx << 16) | tx;
     printf("%d\n", msg->display_info.z_proc_flight_control_data_rx_tx_count = (rx << 16) | tx);
-
 
 }
 
