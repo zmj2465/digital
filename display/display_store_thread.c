@@ -212,7 +212,6 @@ void create_msg(show_t* msg)
     uint16_t rx = info.m_proc_flight_control_data_rx_count + info.z_proc_flight_control_data_rx_count;
     uint16_t tx = info.m_proc_flight_control_data_tx_count + info.z_proc_flight_control_data_tx_count;
     msg->display_info.z_proc_flight_control_data_rx_tx_count = (rx << 16) | tx;
-    printf("%d\n", msg->display_info.z_proc_flight_control_data_rx_tx_count = (rx << 16) | tx);
 
     //¿Õ¿Ú¼ÆÊý
     msg->display_info.channel_params[0].error_rate = 0.5;
