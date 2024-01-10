@@ -150,7 +150,7 @@ int fsm_init2off_ed(int para)
 				//plog("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
 				printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
 #ifdef _WIN32
-				info.timerId = timeSetEvent(3000, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
+				info.timerId = timeSetEvent(10 * 1000, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
 #endif
 				printf("start 10\n");
 				Sleep(5);

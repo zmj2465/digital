@@ -479,7 +479,7 @@ void CALLBACK TimerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1
         }
         printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
 #ifdef _WIN32
-        info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
+        info.timerId = timeSetEvent(10 * 1000, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
 #endif
         break;
     default:
