@@ -116,7 +116,8 @@ int master_data_proc(void)
 			switch (msg.head.type)
 			{
 			case START_GUN:
-				if ((msg.data[0] == START_GUN_REQ) && (info.chain_flag_z == 1))//z收到建链标志和发令枪请求后，才开始回发令枪响应
+				if (msg.data[0] == START_GUN_REQ)
+				//if ((msg.data[0] == START_GUN_REQ) && (info.chain_flag_z == 1))//z收到建链标志和发令枪请求后，才开始回发令枪响应
 				{
 					info.str.start_time = msg.data[1];
 					info.str.base_t = msg.head.send_t;
