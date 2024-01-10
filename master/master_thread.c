@@ -86,6 +86,7 @@ int master_data_proc(void)
 					info.device_info.node_num++;
 					info.device_info.node_list = info.device_info.node_list | (1 << index);
 					info.scan_flag_M[index] = 1;
+					generate_key_event(KEY_LINK_ON, index, 1);
 					plog("M recv Z%d scan response, list = %d, current slot = %d.%d, seq = %d\n", index, info.device_info.node_list, info.current_time_frame, info.current_slot, msg.head.seq);
 				}
 				break;
@@ -145,6 +146,7 @@ int master_data_proc(void)
 #endif
 					info.time_frame_flag_z = msg.data[1];
 					plog("Z%d recv M scan confirm, current slot = %d.%d, seq = %d\n", MY_INDEX, info.current_time_frame, info.current_slot, msg.head.seq);
+					generate_key_event(KEY_LINK_ON, 0, 0);
 					fsm_do(EVENT_WAN_SUCC);
 				}
 				break;

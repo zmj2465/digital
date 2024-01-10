@@ -8,6 +8,7 @@
 #include "common.h"
 #include "protocol.h"
 #include "data_send_thread.h"
+#include "display_send_thread.h"
 
 void* master_thread(void* arg);
 int	  master_data_proc(void);

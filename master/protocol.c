@@ -153,15 +153,15 @@ int fsm_init2off_ed(int para)
 #ifdef _WIN32
 				info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
 #endif
-				generate_key_event(0, 0, 0);
-				Sleep(1000);
-				generate_key_event(1, 0, 0);
-				Sleep(1000);
-				generate_key_event(2, 1, 1);
-				Sleep(1000);
-				send_start();
-				generate_key_event(3, 0, 0);
-				Sleep(1000);
+				//generate_key_event(0, 0, 0);
+				//Sleep(1000);
+				//generate_key_event(1, 0, 0);
+				//Sleep(1000);
+				//generate_key_event(2, 1, 1);
+				//Sleep(1000);
+				//send_start();
+				//generate_key_event(3, 0, 0);
+				//Sleep(1000);
 			}
 			break;
 		}
@@ -222,14 +222,14 @@ int fsm_off2wan_st(int para)
 	//{
 	//	clock_gettime(CLOCK_REALTIME, &str_m);
 	//}
-	generate_key_event(0,0,0);
-	Sleep(1000);
-	generate_key_event(1,0,0);
-	Sleep(1000);
-	generate_key_event(2,1,1);
-	Sleep(1000);
-	generate_key_event(3,0,0);
-	Sleep(1000);
+	//generate_key_event(0,0,0);
+	//Sleep(1000);
+	//generate_key_event(1,0,0);
+	//Sleep(1000);
+	//generate_key_event(2,1,1);
+	//Sleep(1000);
+	//generate_key_event(3,0,0);
+	//Sleep(1000);
 	uint64_t str;
 	str = my_get_time();
 	while (str < (info.str.base_t + info.str.start_time * 1000000000))
