@@ -121,9 +121,9 @@ void create_msg(show_t* msg)
     temp_info[0].q.q1 = 0;
     temp_info[0].q.q2 = 0.017449114418712;
     temp_info[0].q.q3 = 0;
-    temp_info[1].pos.x = 0;
-    temp_info[1].pos.y = 3*5*5;
-    temp_info[1].pos.z = 3*5*5;
+    temp_info[1].pos.x = 75;
+    temp_info[1].pos.y = 75;
+    temp_info[1].pos.z = 75;
     temp_info[1].q.q0 = 0.999847752613368;
     temp_info[1].q.q1 = 0;
     temp_info[1].q.q2 = 0.017449114418712;
@@ -149,7 +149,7 @@ void create_msg(show_t* msg)
             temp_info[MY_INDEX].q.q1,
             temp_info[MY_INDEX].q.q2,
             temp_info[MY_INDEX].q.q3,
-            17,
+            0,
             temp_info[i].pos.x,
             temp_info[i].pos.y,
             temp_info[i].pos.z,
@@ -161,12 +161,12 @@ void create_msg(show_t* msg)
         if (antenna_id >= 0 && antenna_id < 6);
         {
             msg->display_info.antenna_params[antenna_id].tx_rx_status = 1;
-            msg->display_info.antenna_params[antenna_id].beam_width = 120;
+            msg->display_info.antenna_params[antenna_id].beam_width = elevation * 2 + 10;
             msg->display_info.antenna_params[antenna_id].elevation = 90;
 #ifdef AAAAAAAAAAAA
-            msg->display_info.antenna_params[antenna_id].elevation = elevation;
+            msg->display_info.antenna_params[antenna_id].elevation = 90;
 #endif
-            msg->display_info.antenna_params[antenna_id].azimuth = azimuth;
+            msg->display_info.antenna_params[antenna_id].azimuth = 0;
 
         }
     }
@@ -207,6 +207,12 @@ void create_msg(show_t* msg)
         msg->display_info.antenna_params[ttround].azimuth = 0;
     }
     ttround = (ttround + 1) % 6;
+
+    uint16_t rx = info.m_proc_flight_control_data_rx_count + info.z_proc_flight_control_data_rx_count;
+    uint16_t tx = info.m_proc_flight_control_data_tx_count + info.z_proc_flight_control_data_tx_count;
+    msg->display_info.z_proc_flight_control_data_rx_tx_count = (rx << 16) | tx;
+    printf("%d\n", msg->display_info.z_proc_flight_control_data_rx_tx_count = (rx << 16) | tx);
+
 }
 
 
@@ -232,6 +238,7 @@ void create_table(show_t* msg)
         }
         msg->display_info.link_target[i][ret] |= 1 << MY_INDEX;
     }
+
 }
 
 
