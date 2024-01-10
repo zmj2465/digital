@@ -124,14 +124,13 @@ int fsm_init2off_st(int para)
 int fsm_init2off_ed(int para)
 {
 	printf("等待建链命令\n");
-	//info.chain_flag_m = 1;
-	while (1)
+	/*主机发送信令枪帧*/
+	if (MY_INDEX == 0)
 	{
-		if (info.chain_flag_m == 1)//收到建链命令
+		while (1)
 		{
-			/*主机发送信令枪帧*/
-			if (MY_INDEX == 0)
-			{
+			if (info.chain_flag_m == 1)//m收到建链命令
+			{	
 #ifdef _WIN32
 				Sleep(1000);
 #endif
@@ -162,11 +161,11 @@ int fsm_init2off_ed(int para)
 				send_start();
 				generate_key_event(3, 0, 0);
 				Sleep(1000);
+				
+				break;
 			}
-			break;
 		}
 	}
-	
 	return 0;
 }
 

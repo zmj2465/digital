@@ -210,19 +210,21 @@ int schedule_slot(void)
 */
 int schedule_inquire_index(int index, int current_slot)
 {
-    if ((inquire_index(index) == 1) && (1 <= current_slot && current_slot <= 4))
+    int real_index;
+    real_index = inquire_socket_id(index);
+    if ((inquire_index(real_index) == 1) && (1 <= current_slot && current_slot <= 4))
     {
         return 1;
     }
-    if ((inquire_index(index) == 2) && (6 <= current_slot && current_slot <= 9))
+    if ((inquire_index(real_index) == 2) && (6 <= current_slot && current_slot <= 9))
     {
         return 2;
     }
-    if ((inquire_index(index) == 3) && (10 <= current_slot && current_slot <= 13))
+    if ((inquire_index(real_index) == 3) && (10 <= current_slot && current_slot <= 13))
     {
         return 3;
     }
-    if ((inquire_index(index) == 4) && (14 <= current_slot && current_slot <= 17))
+    if ((inquire_index(real_index) == 4) && (14 <= current_slot && current_slot <= 17))
     {
         return 4;
     }
@@ -262,19 +264,21 @@ int beacon_z_inquire_index(int index, int slot, int time_frame)
 */
 int beacon_m_inquire_index(int index, int slot, int time_frame)
 {
-    if ((inquire_index(index) == 1) && (slot == 0) && (time_frame % 2 == 1))
+    int real_index;
+    real_index = inquire_socket_id(index);
+    if ((inquire_index(real_index) == 1) && (slot == 0) && (time_frame % 2 == 1))
     {
         return 1;
     }
-    if ((inquire_index(index) == 2) && (slot == 5) && (time_frame % 2 == 1))
+    if ((inquire_index(real_index) == 2) && (slot == 5) && (time_frame % 2 == 1))
     {
         return 2;
     }
-    if ((inquire_index(index) == 3) && (slot == 0) && (time_frame % 2 == 0))
+    if ((inquire_index(real_index) == 3) && (slot == 0) && (time_frame % 2 == 0))
     {
         return 3;
     }
-    if ((inquire_index(index) == 4) && (slot == 5) && (time_frame % 2 == 0))
+    if ((inquire_index(real_index) == 4) && (slot == 5) && (time_frame % 2 == 0))
     {
         return 4;
     }

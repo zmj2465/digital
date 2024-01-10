@@ -436,15 +436,18 @@ void rs_ConfigLoad_proc(char* data)
     if ((x & (1 << 4)) == 1) m_num++;
 
     MY_ID = body->config_load.node_id;
-    msg_t msg;
-    msg.data[0] = MY_INDEX;
-    msg.data[1] = MY_ID;
     MY_ID_INDEX = MY_ID - 0x10;
-    msg.len = 2;
-    generate_packet(info.device_info.node_id[0], MY_ID, PARAMETER_LOAD, &msg);
-    //send(FD[0].fd, &msg, msg.len, 0);
-    //generate_key_event(KEY_CONFIG_LOAD, z_num, m_num);
     generate_key_event(KEY_CONFIG_LOAD, 1, 1);
+
+    if (MY_INDEX != 0)
+    {
+        msg_t msg;
+        msg.data[0] = MY_INDEX;
+        msg.data[1] = MY_ID;
+        msg.len = 2;
+        generate_packet(info.device_info.node_id[0], MY_ID, PARAMETER_LOAD, &msg);
+        send(FD[0].fd, &msg, sizeof(msg_t), 0);
+    }
 
 }
 
