@@ -269,7 +269,7 @@ int data_send_proc(void)
                 {
                     msg.data[0] = SCAN_RES;
                     msg.len = 1;
-                    generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], SCAN, &msg);
+                    generate_packet(info.device_info.node_id[0], MY_ID, SCAN, &msg);
                     
                     psy_send_(&pmsg, &msg);
                     send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
@@ -291,7 +291,7 @@ int data_send_proc(void)
                 {
                     msg.data[0] = 6;
                     msg.len = 1;
-                    generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], BEACON, &msg);
+                    generate_packet(info.device_info.node_id[0], MY_ID, BEACON, &msg);
                     
                     psy_send_(&pmsg, &msg);
                     send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
@@ -304,7 +304,7 @@ int data_send_proc(void)
                 {
                     msg.data[0] = DISTANCE_Z;
                     msg.len = 1;
-                    generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], DISTANCE, &msg);
+                    generate_packet(info.device_info.node_id[0], MY_ID, DISTANCE, &msg);
                     
                     psy_send_(&pmsg, &msg);
                     send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
@@ -335,7 +335,7 @@ int data_send_proc(void)
 
 
                         printf("z send type %02x\n", msg.data[0]);
-                        generate_packet(info.device_info.node_id[0], info.device_info.node_id[MY_INDEX], LONG_FRAME, &msg);
+                        generate_packet(info.device_info.node_id[0], MY_ID, LONG_FRAME, &msg);
 						g_node_progrm[0].air_interface_data_tx_count++; //Zi发往M的数据包计数
                         psy_send_(&pmsg, &msg);
                         send(FD[0].fd, &pmsg, sizeof(psy_msg_t), 0);
