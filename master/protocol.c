@@ -125,8 +125,8 @@ int fsm_init2off_ed(int para)
 {
 	printf("等待建链命令\n");
 	/*主机发送信令枪帧*/
-	//if (MY_INDEX == 0)
-	//{
+	if (MY_INDEX == 0)
+	{
 		while (1)
 		{
 			if (info.chain_flag_m == 1)//m收到建链命令
@@ -150,23 +150,14 @@ int fsm_init2off_ed(int para)
 				//plog("M base time=%lld, %ld, start_time = %d\n", info.str.base_time.tv_sec, info.str.base_time.tv_nsec, info.str.start_time);
 				printf("M base time=%lld ns, start_time = %d s\n", info.str.base_t, info.str.start_time);
 #ifdef _WIN32
-				info.timerId = timeSetEvent(TIMER_DELAY, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
+				info.timerId = timeSetEvent(3000, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
 #endif
 				printf("start 10\n");
 				Sleep(5);
 				printf("start 5\n");
 				break;
 			}
-			if (info.chain_flag_z == 1)//z收到建链命令
-			{
-#ifdef _WIN32
-				Sleep(1000);
-#endif
-				break;
-			}
-
-
-		//}
+		}
 	}
 	return 0;
 }
