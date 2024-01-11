@@ -429,6 +429,7 @@ int load_config(char* filename)
     }
     printf("\n");
     MY_ID = MY_INDEX | 16;
+    MY_ID_INDEX = MY_INDEX;
 }
 
 

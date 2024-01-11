@@ -165,7 +165,6 @@ int data_recv_proc(void)
 			//ret = antenna_match(psy_msg, &msg, info.device_info.node_role);
 			//antenna_recv(&msg);
 			//ret_val = antenna_match_(psy_msg);//天线匹配，若成功则接收数据包
-
 			if (ret_val == true)
 			{
 				recv_time = my_get_time();
