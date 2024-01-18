@@ -102,8 +102,6 @@ void p_log_string(int log_index, char* string, ...)
 }
 
 
-
-
 void log_store(int log_index)
 {
 	int i,j;

@@ -32,7 +32,6 @@ static int id_table[5] = { 0x10,0x11,0x12,0x13,0x14 };
 
 static int get_seq = 0;
 
-
 void* rs_485_recv_thread(void* arg)
 {
     pthread_detach(pthread_self());
@@ -579,6 +578,7 @@ void rs_PreSeparate_proc(char* data)
 
     generate_key_event(KEY_PRE_SEPARATE, 0, 0);
 }
+
 
 
 
@@ -1513,6 +1513,16 @@ void pcie_check()
     //    printf("pcie checking success\n");
     //}
     //printf("pcie checking success\n");
+}
+
+
+void rs485_exit_proc()
+{
+    reset_devices(user_hdev);
+    CloseHandle(user_hdev);
+    CloseHandle(recv_hdev);
+    CloseHandle(send_hdev);
+    printf("close rs485");
 }
 
 

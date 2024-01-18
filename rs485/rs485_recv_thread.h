@@ -522,6 +522,8 @@ void pcie_check();
 
 void send_to_rs(int len, long offset, char* data);
 
+void rs485_exit_proc();
+
 
 
 #endif

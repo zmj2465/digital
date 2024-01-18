@@ -37,13 +37,20 @@ sem_t semaphore;
 pthread_mutex_t lock;
 
 
+
 bool ctrlhandler(DWORD fdwctrltype)
 {
-
+    int ret = 0;
+    switch (fdwctrltype)
+    {
+    case CTRL_CLOSE_EVENT:
+        rs485_exit_proc();
+        thread_exit_proc();
+        log_store(0);
+        Sleep(1000);
+        return(true);
+    }
 }
-
-
-
 
 
 int main()
@@ -51,49 +58,54 @@ int main()
     int a=0;
     float b=0;
     float c=0;
-    //calculate_ante_angle_coord_m(6305.516113, 490.071899
-    //    , 1772.316162
-    //    , -0.405952
-    //    , -0.606029
-    //    , 0.492796
-    //    , 0.474429
-    //    , 0
-    //    , 6302.225098
-    //    , 486.320496
-    //    , 1774.466064
-    //    , &a, &b, &c);
-    ////my_add(3, 5);
-    //printf("%d %f %f\n", a, b, c);
-    //calculate_ante_angle_coord_m(6305.120117, 490.386810
-    //    , 1774.043945
-    //    , -0.405952
-    //    , -0.606029
-    //    , 0.492796
-    //    , 0.474429
-    //    , 0
-    //    , 6302.225098
-    //    , 486.320496
-    //    , 1774.466064
-    //    , &a, &b, &c);
-    ////my_add(3, 5);
-    //printf("%d %f %f\n", a, b, c);
-    //printf("%d\n", my_add(3, 5));
-    //float yaw, roll, pitch;
-    //Quaternion ttt;
-    //ttt.q0 = 0.9568315;
-    //ttt.q1 = 0.03177429;
-    //ttt.q2 = -0.2492538;
-    //ttt.q3 = -0.1460697;
-    //show_t msg;
-    //quaternionToEulerAngles(
-    //    ttt,
-    //    &msg.display_info.roll[0],
-    //    &msg.display_info.pitch[0],
-    //    &msg.display_info.yaw[0]
+
+    //float yaw, pitch;
+    //float x = 0;
+    //float y = 0;
+    //float z = -1;
+    //yaw = atan2(y, x) * (180.0 / 3.1415926);
+    //pitch = atan2(z, sqrt(x * x + y * y)) * (180.0 / 3.1415926);
+    //printf("%f %f\n", yaw, pitch);
+    //float azimuth;
+    //float elevation;
+    //int antenna_id;
+    //fddi_info_t temp_info[5];
+    //temp_info[0].pos.x = 0;
+    //temp_info[0].pos.y = 0;
+    //temp_info[0].pos.z = 0;
+    //temp_info[0].q.q0 = 0.999847752613368;
+    //temp_info[0].q.q1 = 0;
+    //temp_info[0].q.q2 = 0.017449114418712;
+    //temp_info[0].q.q3 = 0;
+    //temp_info[1].pos.x = 75;
+    //temp_info[1].pos.y = -75;
+    //temp_info[1].pos.z = -75;
+    //temp_info[1].q.q0 = 0.999847752613368;
+    //temp_info[1].q.q1 = 0;
+    //temp_info[1].q.q2 = 0.017449114418712;
+    //temp_info[1].q.q3 = 0;
+
+    //calculate_ante_angle_coord_z(
+    //    temp_info[0].pos.x,
+    //    temp_info[0].pos.y,
+    //    temp_info[0].pos.z,
+    //    temp_info[0].q.q0,
+    //    temp_info[0].q.q1,
+    //    temp_info[0].q.q2,
+    //    temp_info[0].q.q3,
+    //    0,
+    //    temp_info[1].pos.x,
+    //    temp_info[1].pos.y,
+    //    temp_info[1].pos.z,
+    //    &antenna_id,
+    //    &azimuth,
+    //    &elevation
     //);
     //while (1);
-    //system("C:\\Users\\MRGT\\Desktop\\start.bat");
-    //info.chain_flag_m = 1;
+
+
+
+    SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrlhandler, true);
     
     /*ptp ±÷”≥ı ºªØ*/
     time_init();
@@ -434,3 +446,10 @@ int load_config(char* filename)
 
 
 
+void thread_exit_proc()
+{
+    pthread_cancel(info.rs_485_recv_thread_id);
+    pthread_cancel(info.rs_485_send_thread_id);
+    pthread_cancel(info.schedule_thread_id);
+    pthread_cancel(info.master_thread_id);
+}

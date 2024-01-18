@@ -17,27 +17,7 @@ static int ttround = 0;
 void* display_store_thread(void* arg)
 {
     int i = 0;
-    display_data.antenna_params[0].beam_width = 0;
-    display_data.antenna_params[1].beam_width = 0;
-    display_data.antenna_params[2].beam_width = 0;
-    display_data.antenna_params[3].beam_width = 0;
-    display_data.antenna_params[4].beam_width = 0;
-    display_data.antenna_params[5].beam_width = 0;
 
-    display_data.antenna_params[0].tx_rx_status = 0;
-    display_data.antenna_params[1].tx_rx_status = 0;
-    display_data.antenna_params[2].tx_rx_status = 0;
-    display_data.antenna_params[3].tx_rx_status = 0;
-    display_data.antenna_params[4].tx_rx_status = 0;
-    display_data.antenna_params[5].tx_rx_status = 0;
-
-    display_data.antenna_params[0].elevation = 90;
-    display_data.antenna_params[1].elevation = 90;
-    display_data.antenna_params[2].elevation = 90;
-    display_data.antenna_params[3].elevation = 90;
-    display_data.antenna_params[4].elevation = 90;
-    display_data.antenna_params[5].elevation = 90;
-    //display_state.mode = SIM_MODE;
 	while (1)
 	{
         //if (info.data_store_flag == 1)
@@ -47,30 +27,8 @@ void* display_store_thread(void* arg)
         //}
         if (display_state.mode == SIM_MODE)
         {
-            //data_store();
-            //if (display_state.flag == 1)
-            //{
-            //    display_data.antenna_params[0].tx_rx_status = 0;
-            //    display_data.antenna_params[1].tx_rx_status = 0;
-            //    display_data.antenna_params[2].tx_rx_status = 0;
-            //    display_data.antenna_params[3].tx_rx_status = 0;
-            //    display_data.antenna_params[4].tx_rx_status = 0;
-            //    display_data.antenna_params[5].tx_rx_status = 0;
-            //    display_data.antenna_params[0].beam_width = 0;
-            //    display_data.antenna_params[1].beam_width = 0;
-            //    display_data.antenna_params[2].beam_width = 0;
-            //    display_data.antenna_params[3].beam_width = 0;
-            //    display_data.antenna_params[4].beam_width = 0;
-            //    display_data.antenna_params[5].beam_width = 0;
-            //    
-
-            //    display_data.antenna_params[ttround].tx_rx_status = 2;
-            //    display_data.antenna_params[ttround].beam_width = 30;
-            //    ttround = (ttround + 1) % 6;
-            //}
-          
-
-            Sleep(4);
+            data_store();
+            Sleep(5);
         }
 	}
 }
@@ -93,6 +51,8 @@ void send_display_msg()
 
 static fddi_info_t temp_info[5];
 
+
+static int a, b, c, d, e, f, g, o, pppp, q;
 
 void create_msg(show_t* msg)
 {
@@ -122,8 +82,8 @@ void create_msg(show_t* msg)
     temp_info[0].q.q2 = 0.017449114418712;
     temp_info[0].q.q3 = 0;
     temp_info[1].pos.x = 75;
-    temp_info[1].pos.y = 75;
-    temp_info[1].pos.z = 75;
+    temp_info[1].pos.y = -75;
+    temp_info[1].pos.z = -75;
     temp_info[1].q.q0 = 0.999847752613368;
     temp_info[1].q.q1 = 0;
     temp_info[1].q.q2 = 0.017449114418712;
@@ -163,10 +123,9 @@ void create_msg(show_t* msg)
             msg->display_info.antenna_params[antenna_id].tx_rx_status = 1;
             msg->display_info.antenna_params[antenna_id].beam_width = elevation * 2 + 10;
             msg->display_info.antenna_params[antenna_id].elevation = 90;
-#ifdef AAAAAAAAAAAA
-            msg->display_info.antenna_params[antenna_id].elevation = 90;
-#endif
             msg->display_info.antenna_params[antenna_id].azimuth = 0;
+            msg->display_info.m_node_beam_azimuth_direction = azimuth;
+            msg->display_info.m_node_beam_elevation_direction = elevation;
 
         }
     }
@@ -193,6 +152,7 @@ void create_msg(show_t* msg)
             &pitch);
         msg->display_info.z1_m_azimuth[i] = yaw;
         msg->display_info.z1_m_elevation[i] = pitch;
+        //printf("%f %f\n", yaw, pitch);
 
     }
     //连线信息
@@ -218,6 +178,18 @@ void create_msg(show_t* msg)
     msg->display_info.channel_params[0].distance = 1000;
     msg->display_info.channel_params[0].packet_loss_rate  = 0.5;
 
+    msg->display_info.z_proc_flight_control_data_rx_tx_count = (a++) << 16 | (b++);
+    msg->display_info.channel_coding_decoding_frame_count = (c++)<<16|(d++);
+    msg->display_info.modulation_demodulation_frame_count = (e++)<<16|(f++);
+    msg->display_info.instruction_parsing_frame_count = g++;
+    msg->display_info.time_element_number = o++;
+    msg->display_info.time_frame_number = pppp++;
+    msg->display_info.micro_time_slot_number = q++;
+    msg->display_info.z_proc_flight_control_data_rx_tx_timestamp = (a++) << 16 | (b++);
+
+    msg->display_info.z_m_send_recv_count[0] = (a++) << 16 | (b++);
+
+    //printf("%d %d %d\n",msg->display_info.time_element_number, msg->display_info.time_frame_number, msg->display_info.micro_time_slot_number);
 
 }
 

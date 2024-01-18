@@ -240,7 +240,7 @@ int data_send_proc(void)
                             send(FD[i].fd, &pmsg, sizeof(psy_msg_t), 0);
                             plog("M send Z%d data, current slot = %d.%d, seq = %d\n", index, info.current_time_frame, info.current_slot, pmsg.msg.head.seq);
                         }
-                        return 0;    
+                        return 0;
                     }
                 }
             }
@@ -326,7 +326,6 @@ int data_send_proc(void)
                             get(&common_data[Z_TOM_SEND], msg.data, msg.len, 0);
                             send_flag = 0;
                         }
-
 
                         printf("z send type %02x\n", msg.data[0]);
                         generate_packet(info.device_info.node_id[0], MY_ID, LONG_FRAME, &msg);

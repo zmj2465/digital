@@ -292,10 +292,10 @@ typedef struct _data_t {
 	uint16_t m_node_time_freq_sync_status;      // M节点时频同步工作状态，M节点,时间同步状态：1字节，频率同步状态：1字节
 	uint8_t m_node_downlink_link_status;    // M节点下行链路工作状态，M节点，1字节
 	uint8_t frequency_synthesizer_status;    // 频综状态，频综工作状态指示
-	channel_t channel_params[4];    // 信道参数，与其它4个节点的数据传输的信道信息
+	channel_t channel_params;    // 信道参数
 	uint32_t z_proc_flight_control_data_rx_tx_count;    // Z与集成处理器飞控数据收发计数，Z与集成处理器飞控数据接收计数：2字节，Z与集成处理器飞控数据发送计数：2字节
 	uint32_t z_proc_flight_control_data_rx_tx_timestamp;    // Z与集成处理器飞控数据收发时戳，Z与集成处理器飞控数据接收时戳：2字节，Z与集成处理器飞控数据发送时戳：2字节
-	uint32_t z_m_send_recv_count[4];
+	uint32_t z_m_send_recv_count;
 	//uint32_t channel_coding_decoding_frame_count;    // 信道编译码帧计数，信道编码帧计数：2字节，信道译码帧计数：2字节
 	//uint32_t modulation_demodulation_frame_count;    // 调制解调帧计数，调制帧计数：2字节，解调帧计数：2字节
 	uint32_t instruction_parsing_frame_count;    // 指令解析帧计数：4字节

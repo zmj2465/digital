@@ -48,12 +48,12 @@ void* display_thread(void* arg)
 					{
 						generate_key_event(5, 1, 1);
 						Sleep(FRESH_TIME);
-						//generate_key_event(5, 2, 1);
-						//Sleep(FRESH_TIME);
-						//generate_key_event(5, 3, 1);
-						//Sleep(FRESH_TIME);
-						//generate_key_event(5, 4, 1);
-						//Sleep(FRESH_TIME);
+						generate_key_event(5, 2, 1);
+						Sleep(FRESH_TIME);
+						generate_key_event(5, 3, 1);
+						Sleep(FRESH_TIME);
+						generate_key_event(5, 4, 1);
+						Sleep(FRESH_TIME);
 					}
 					else
 						generate_key_event(5, 0, 0);
@@ -63,7 +63,7 @@ void* display_thread(void* arg)
 			}
 			else if (ffflag == 2)
 			{
-				if (distance > 2)//断链
+				if (distance > 1)//断链
 				{
 					display_state.flag = 1;
 					Sleep(FRESH_TIME);
@@ -76,7 +76,7 @@ void* display_thread(void* arg)
 			}
 			else if (ffflag == 3)
 			{
-				if (distance > 2.3)//再建链
+				if (distance > 1.3)//再建链
 				{
 					display_state.flag = 0;
 					Sleep(FRESH_TIME);

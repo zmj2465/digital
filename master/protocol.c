@@ -152,9 +152,6 @@ int fsm_init2off_ed(int para)
 #ifdef _WIN32
 				info.timerId = timeSetEvent(10 * 1000, 0, TimerCallback, START_GUN_TIMER, TIME_ONESHOT);
 #endif
-				printf("start 10\n");
-				Sleep(5);
-				printf("start 5\n");
 				break;
 			}
 		}

@@ -4,6 +4,7 @@
 
 
 void thread_init();
+void thread_exit_proc();
 
 
 int GetIniKeyString(char* title, char* key, char* filename, char* buf);

@@ -75,7 +75,7 @@ void find_data()
     if (msg.len == 0)
     {
         flag_ = 1;
-        display_state.interval = 1000;
+        display_state.interval = 20;
     }
 }
 
@@ -119,8 +119,8 @@ void display_send_thread_init()
     Sleep(100);
     generate_key_event(KEY_POWER_ON, 0, 0);
     Sleep(100);
-    /*generate_key_event(KEY_CONFIG_LOAD, 1, 1);
-    Sleep(100);*/
+    generate_key_event(KEY_CONFIG_LOAD, 1, 1);
+    Sleep(100);
     //generate_key_event(5, 2, 1);
     //Sleep(100);
     //generate_key_event(5, 3, 1);
@@ -177,8 +177,8 @@ void rep_sel_proc(show_t* msg)
     printf("file num=%d select seq=%d\n", num, msg->file_seq);
     //选择文件
     select_file(msg);
-    //display_state.interval = 5;
-    //display_state.mode = REPLAY_MODE;
+    display_state.interval = 5;
+    display_state.mode = REPLAY_MODE;
 }
 
 
@@ -277,7 +277,6 @@ void generate_key_event(int type,int id_znum,int role_mnum)
 
 
 
-
 #define MAX_PATH_LENGTH 256
 void select_file(show_t* msg)
 {
@@ -292,7 +291,6 @@ void select_file(show_t* msg)
     char searchPattern[MAX_PATH_LENGTH];
     snprintf(searchPattern, sizeof(searchPattern), "%s/*.txt", directory);
 
-#ifdef _WIN32
     // Windows下的代码
     WIN32_FIND_DATA findData;
     HANDLE hFind = FindFirstFile(searchPattern, &findData);
@@ -341,54 +339,6 @@ void select_file(show_t* msg)
 
     FindClose(hFind);
 
-#else
-    // Linux下的代码
-    FILE* pipe;
-    char command[MAX_PATH_LENGTH + 8];  // "ls -1 <dir>"
-    snprintf(command, sizeof(command), "ls -1 %s", searchPattern);
-
-    // 执行ls命令获取文件列表
-    pipe = popen(command, "r");
-    if (pipe == NULL) {
-        plog("无法打开目录！\n");
-        return 1;
-    }
-
-    char fileName[MAX_PATH_LENGTH];
-    while (fgets(fileName, sizeof(fileName), pipe) != NULL) {
-        // 删除文件名末尾的换行符
-        fileName[strcspn(fileName, "\n")] = '\0';
-
-        if (currentIndex == targetFileIndex) {
-            // 构建完整的文件路径
-            char filePath[MAX_PATH_LENGTH];
-            snprintf(filePath, sizeof(filePath), "%s/%s", directory, fileName);
-
-            // 打开文件
-            FILE* file = fopen(filePath, "r");
-            if (file == NULL) {
-                plog("无法打开文件：%s\n", filePath);
-                pclose(pipe);
-                return 1;
-            }
-
-            // 在这里处理或使用所打开的文件
-            // ...
-
-            // 关闭文件
-            fclose(file);
-
-            // 找到目标文件后退出循环
-            break;
-        }
-
-        currentIndex++;
-    }
-
-    pclose(pipe);
-
-#endif
-
     return;
 }
 
@@ -397,9 +347,6 @@ void set_zero(show_t* msg)
     int i, j;
     memset(msg, 0, sizeof(show_t));
 }
-
-
-
 
 
 void send_to_display(char* data,int len)
@@ -417,7 +364,6 @@ void send_to_display(char* data,int len)
 }
 
 
-
 void file_num(int fd)
 {
     show_t msg;
@@ -426,7 +372,7 @@ void file_num(int fd)
     msg.type = 4;
     msg.file_info.file_num = get_file_num("C:\\Digital prototype\\data");
     msg.len = 6 + 30 * msg.file_info.file_num;
-    
+    msg.file_info.file_num = fmin(msg.file_info.file_num, 30);
     for (i = 0; i < msg.file_info.file_num; i++)
     {
         sprintf(msg.file_info.file_name[i], "%d:", i);

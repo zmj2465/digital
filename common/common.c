@@ -60,3 +60,6 @@ void queue_init()
         //printf("que:%d %x\n", i, &info.thread_queue[i]);
     }
 }
+
+
+

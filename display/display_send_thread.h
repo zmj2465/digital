@@ -157,7 +157,7 @@ typedef struct {
 typedef struct _file_t
 {
     uint16_t file_num;
-    uint8_t  file_name[100][30];
+    uint8_t  file_name[30][30];
 }file_t;
 
 typedef struct {
