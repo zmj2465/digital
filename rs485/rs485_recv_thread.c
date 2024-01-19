@@ -1523,7 +1523,6 @@ void rs485_exit_proc()
     CloseHandle(recv_hdev);
     CloseHandle(send_hdev);
     printf("close rs485");
-    printf("send\n");
 }
 
 
