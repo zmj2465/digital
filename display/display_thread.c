@@ -48,12 +48,12 @@ void* display_thread(void* arg)
 					{
 						generate_key_event(5, 1, 1);
 						Sleep(FRESH_TIME);
-						generate_key_event(5, 2, 1);
-						Sleep(FRESH_TIME);
-						generate_key_event(5, 3, 1);
-						Sleep(FRESH_TIME);
-						generate_key_event(5, 4, 1);
-						Sleep(FRESH_TIME);
+						//generate_key_event(5, 2, 1);
+						//Sleep(FRESH_TIME);
+						//generate_key_event(5, 3, 1);
+						//Sleep(FRESH_TIME);
+						//generate_key_event(5, 4, 1);
+						//Sleep(FRESH_TIME);
 					}
 					else
 						generate_key_event(5, 0, 0);
