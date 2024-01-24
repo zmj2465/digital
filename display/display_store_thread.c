@@ -145,6 +145,7 @@ void create_msg(show_t* msg)
         if (i == MY_INDEX) continue;
         distance = caculate_distance(temp_info[MY_INDEX].pos, temp_info[i].pos);
         msg->display_info.z1_m_distance[i] = distance;
+        //msg->display_info.channel_params[0].distance = distance;
         calculateYawAndPitch(temp_info[MY_INDEX].pos,
             temp_info[MY_INDEX].q,
             temp_info[i].pos,
@@ -153,7 +154,6 @@ void create_msg(show_t* msg)
         msg->display_info.z1_m_azimuth[i] = yaw;
         msg->display_info.z1_m_elevation[i] = pitch;
         //printf("%f %f\n", yaw, pitch);
-
     }
     //连线信息
     create_table(msg);
@@ -190,6 +190,8 @@ void create_msg(show_t* msg)
     msg->display_info.z_m_send_recv_count[0] = (a++) << 16 | (b++);
 
     //printf("%d %d %d\n",msg->display_info.time_element_number, msg->display_info.time_frame_number, msg->display_info.micro_time_slot_number);
+
+
 
 }
 
