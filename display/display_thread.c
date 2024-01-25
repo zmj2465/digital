@@ -104,4 +104,3 @@ void* display_thread(void* arg)
 }
 
 
-static int temp;
