@@ -119,7 +119,7 @@ void display_send_thread_init()
     Sleep(100);
     generate_key_event(KEY_POWER_ON, 0, 0);
     Sleep(100);
-    generate_key_event(KEY_CONFIG_LOAD, 1, 1);
+    //generate_key_event(KEY_CONFIG_LOAD, 1, 1);
     Sleep(100);
     //generate_key_event(5, 2, 1);
     //Sleep(100);

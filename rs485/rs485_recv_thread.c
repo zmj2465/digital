@@ -395,6 +395,8 @@ void rs_SelfCheckResult_proc(char* data)
         rbody->z_result1_ack.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + 2+6);
         send_to_rs(RS_RESULT_LEN+6, 0, res);
     }
+
+    generate_key_event(KEY_CHECK_RESULT, 0, 0);
 }
 
 
@@ -478,6 +480,7 @@ void work_mode_proc(char* data)
     rbody->work_modes_sp.tail.crc = CalCRC16_V2((uint8_t*)rhead->flag + 4, ADD_TYPE_LEN + 1);
 
     send_to_rs(RS_WORK_MODE_SP_LEN, 0, res);
+    generate_key_event(KEY_WORK_MODE, 0, 0);
 }
 
 //½¨Á´»Ø¸´

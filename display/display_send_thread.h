@@ -45,6 +45,8 @@ enum {
     KEY_LINK_ON,
     KEY_LINK_OFF,
     KEY_RELINK_ON,
+    KEY_CHECK_RESULT,
+    KEY_WORK_MODE
 };
 
 #pragma pack(1)
